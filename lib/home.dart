@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:overlay/image_upload.dart';
 
 class MainScreen extends StatelessWidget {
   @override
@@ -92,43 +93,47 @@ class MainScreen extends StatelessWidget {
                           Image.asset(
                             'assets/images/barcode-scan.png',
                             width: 70, // Adjust the width as needed
-                            height: 120, // Adjust the height as needed
+                            height: 100, // Adjust the height as needed
                           ),
                           const SizedBox(width: 20),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Scan the product",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF055b49)),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.arrow_forward),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => MainScreen(),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              const Text(
-                                "Know the nutritional value of \nyour product",
-                                style:
-                                TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 20),
-                            ],
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "Scan the product",
+                                      style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF055b49)),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.arrow_forward),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ImageUpload(),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                // const SizedBox(height: 10),
+                                const Text(
+                                  "Know the nutritional value of your product",
+                                  style:
+                                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  softWrap: true,
+                                  overflow: TextOverflow.visible,
+                                ),
+                                
+                              ],
+                            ),
                           ),
                         ],
                       ),

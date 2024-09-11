@@ -43,6 +43,8 @@ dependencies:
   supercharged: ^2.1.1
   flutter_accessibility_service: ^0.2.4
   flutter_overlay_window: ^0.4.5
+  image_picker: ^1.1.2
+  mobile_scanner: ^5.1.1
 
 dev_dependencies:
   flutter_test:

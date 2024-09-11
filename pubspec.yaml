@@ -45,6 +45,9 @@ dependencies:
   flutter_overlay_window: ^0.4.5
   image_picker: ^1.1.2
   mobile_scanner: ^5.1.1
+  google_generative_ai: ^0.4.6
+  http: ^1.1.0
+
 
 dev_dependencies:
   flutter_test:

@@ -6,7 +6,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Timer(
-      const Duration(seconds: 3), // Duration of the splash screen
+      Duration(seconds: 3), // Duration of the splash screen
           () {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(

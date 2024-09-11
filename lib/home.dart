@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:overlay/image_upload.dart';
+import 'package:overlay/calorie_counter_page.dart';
 
 class MainScreen extends StatelessWidget {
   @override
@@ -26,7 +27,7 @@ class MainScreen extends StatelessWidget {
       ),
       body:
       Container(
-        color: Color(0xFFFFF6E7),
+        color: const Color(0xFFFFF6E7),
           child:
             SingleChildScrollView(
               //padding: EdgeInsets.all(16.0),
@@ -239,6 +240,10 @@ class MainScreen extends StatelessWidget {
                                 ElevatedButton(
                                   onPressed: () {
                                     // Action for the button
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => CalorieCounterPage()),
+                                      );
                                   },
                                   child: Text(
                                     'Let\'s Go',

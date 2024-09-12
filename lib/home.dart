@@ -8,6 +8,8 @@ import 'package:overlay/search.dart';
 import 'package:http/http.dart' as http;
 
 class MainScreen extends StatefulWidget {
+  Map<String, dynamic> user;
+  MainScreen({super.key, required this.user});
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -83,7 +85,9 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => MainScreen(),
+                  builder: (context) => MainScreen(
+                    user: const {},
+                  ),
                 ),
               );
             },
@@ -123,7 +127,7 @@ class _MainScreenState extends State<MainScreen> {
                           borderSide: BorderSide.none,
                         ),
                         suffixIcon: IconButton(
-                          icon: Icon(Icons.search),
+                          icon: const Icon(Icons.search),
                           onPressed: () {
                             onSearchSubmitted(_searchController.text);
                           },
@@ -204,7 +208,8 @@ class _MainScreenState extends State<MainScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ImageUpload(),
+                                        builder: (context) =>
+                                            const ImageUpload(),
                                       ),
                                     );
                                   },
@@ -336,10 +341,6 @@ class _MainScreenState extends State<MainScreen> {
                                           CalorieCounterPage()),
                                 );
                               },
-                              child: Text(
-                                'Let\'s Go',
-                                style: TextStyle(fontSize: 20),
-                              ),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor: const Color(
@@ -351,6 +352,10 @@ class _MainScreenState extends State<MainScreen> {
                                   borderRadius: BorderRadius.circular(
                                       30), // Rounded corners
                                 ),
+                              ),
+                              child: const Text(
+                                'Let\'s Go',
+                                style: TextStyle(fontSize: 20),
                               ),
                             ),
                           ],
@@ -403,7 +408,10 @@ class _MainScreenState extends State<MainScreen> {
             case 0:
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => MainScreen()),
+                MaterialPageRoute(
+                    builder: (context) => MainScreen(
+                          user: const {},
+                        )),
               );
               break;
             case 1:

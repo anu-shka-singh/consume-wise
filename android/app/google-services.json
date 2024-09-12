@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "420047878605",
+    "firebase_url": "https://consumewise-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "consumewise",
+    "storage_bucket": "consumewise.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420047878605:android:28d80291ea15484c7d6c84",
+        "android_client_info": {
+          "package_name": "com.example.overlay"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtVa60BMtcxrzxd_dl3A01MNe2SPQCzRc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

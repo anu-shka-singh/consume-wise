@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'home.dart';
+import 'package:overlay/signin_page.dart';
 
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Timer(
       Duration(seconds: 3), // Duration of the splash screen
-          () {
+      () {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => MainScreen(), // Replace with your main screen widget
+            builder: (context) =>
+                LoginPage(), // Replace with your main screen widget
           ),
         );
       },
@@ -24,4 +25,3 @@ class SplashScreen extends StatelessWidget {
     );
   }
 }
-

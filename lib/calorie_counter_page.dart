@@ -5,6 +5,8 @@ import 'calorie_counter_result.dart';
 import 'loading_screen.dart';
 
 class CalorieCounterPage extends StatefulWidget {
+  const CalorieCounterPage({super.key});
+
   @override
   _CalorieCounterPageState createState() => _CalorieCounterPageState();
 }

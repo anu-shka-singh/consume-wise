@@ -1,9 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:overlay/health_analysis.dart';
 import 'package:overlay/home.dart';
@@ -23,13 +18,12 @@ class _ImageUploadState extends State<ImageUpload> {
 
   // Function to scan barcode
   void scanBarcode(BarcodeCapture capture) {
-    
     //print("barcode:"+barcode!);
-    if (!isScanned) {      
-      setState(() {  
+    if (!isScanned) {
+      setState(() {
         barcode = capture.barcodes.isNotEmpty
             ? capture.barcodes.first.rawValue
-            : null;      
+            : null;
         isScanned = barcode != null;
         // lastCapture = capture;
       });
@@ -72,7 +66,7 @@ class _ImageUploadState extends State<ImageUpload> {
           // ],
         ),
         body: Container(
-          color: Color(0xFFFFF6E7),
+          color: const Color(0xFFFFF6E7),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -87,7 +81,8 @@ class _ImageUploadState extends State<ImageUpload> {
                       bottomRight: Radius.circular(20),
                     ),
                   ),
-                  padding: const EdgeInsets.only(top : 0, left: 16, right : 16, bottom: 16),
+                  padding: const EdgeInsets.only(
+                      top: 0, left: 16, right: 16, bottom: 16),
                   child: const Text(
                     "Scan & Find",
                     textAlign: TextAlign.center,
@@ -108,16 +103,17 @@ class _ImageUploadState extends State<ImageUpload> {
                       borderRadius:
                           BorderRadius.circular(20), // Rounded corners
                       border: Border.all(
-                        color: const Color(0xFF055b49), // Border color
-                        width: 3, // Border width
-                        strokeAlign: BorderSide.strokeAlignOutside
-                      ),
+                          color: const Color(0xFF055b49), // Border color
+                          width: 3, // Border width
+                          strokeAlign: BorderSide.strokeAlignOutside),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF055b49).withOpacity(0.5), // Shadow color
+                          color: const Color(0xFF055b49)
+                              .withOpacity(0.5), // Shadow color
                           spreadRadius: 2, // Spread the shadow
                           blurRadius: 8, // Blur effect
-                          offset: Offset(0, 3), // Position of shadow (x, y)
+                          offset:
+                              const Offset(0, 3), // Position of shadow (x, y)
                         ),
                       ],
                       gradient: LinearGradient(
@@ -133,7 +129,9 @@ class _ImageUploadState extends State<ImageUpload> {
                       borderRadius: BorderRadius.circular(20),
                       child: AspectRatio(
                         aspectRatio: 1,
-                        child: isScanned && lastCapture != null && lastCapture!.image != null
+                        child: isScanned &&
+                                lastCapture != null &&
+                                lastCapture!.image != null
                             ? Image.memory(
                                 lastCapture!
                                     .image!, // Display the captured image
@@ -150,18 +148,19 @@ class _ImageUploadState extends State<ImageUpload> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF055b49),
+                    backgroundColor: const Color(0xFF055b49),
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () async {
                     //scanBarcode(await cameraController.barcodes.first);
-                    
+
                     if (isScanned) {
                       cameraController.stop();
                       print('Barcode Captured: $barcode');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Please scan a barcode first')),
+                        const SnackBar(
+                            content: Text('Please scan a barcode first')),
                       );
                     }
                   },
@@ -173,17 +172,17 @@ class _ImageUploadState extends State<ImageUpload> {
                 if (isScanned)
                   Text(
                     'Barcode Captured: $barcode',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Color(0xFF055b49),
                     ),
                   ),
-                SizedBox(
+                const SizedBox(
                   height: 15,
                 ),
                 Card(
                   elevation: 4,
-                  color: Color.fromARGB(255, 216, 255, 165),
+                  color: const Color.fromARGB(255, 216, 255, 165),
                   margin: const EdgeInsets.all(14.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -220,7 +219,8 @@ class _ImageUploadState extends State<ImageUpload> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => HealthAnalysis(),
+                                          builder: (context) =>
+                                              HealthAnalysis(),
                                         ),
                                       );
                                     },

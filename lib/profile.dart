@@ -72,16 +72,16 @@ class _ProfilePageState extends State<ProfilePage> {
         actions: [
           isEditMode
               ? IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () {
-              toggleEditMode();
-              // Save profile logic
-            },
-          )
+                  icon: const Icon(Icons.check),
+                  onPressed: () {
+                    toggleEditMode();
+                    // Save profile logic
+                  },
+                )
               : IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: toggleEditMode,
-          ),
+                  icon: const Icon(Icons.edit),
+                  onPressed: toggleEditMode,
+                ),
         ],
       ),
       body: Container(
@@ -99,18 +99,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   bgcolor: cardColor,
                   children: isEditMode
                       ? [
-                    _buildEditableInfoRow(
-                        'Name', nameController.text, nameController),
-                    _buildEditableInfoRow(
-                        'Age', ageController.text, ageController),
-                    _buildEditableInfoRow(
-                        'Gender', genderController.text, genderController),
-                  ]
+                          _buildEditableInfoRow(
+                              'Name', nameController.text, nameController),
+                          _buildEditableInfoRow(
+                              'Age', ageController.text, ageController),
+                          _buildEditableInfoRow('Gender', genderController.text,
+                              genderController),
+                        ]
                       : [
-                    _buildInfoRow('Name', nameController.text),
-                    _buildInfoRow('Age', ageController.text),
-                    _buildInfoRow('Gender', genderController.text),
-                  ],
+                          _buildInfoRow('Name', nameController.text),
+                          _buildInfoRow('Age', ageController.text),
+                          _buildInfoRow('Gender', genderController.text),
+                        ],
                 ),
                 _buildSection(
                   title: 'Allergies',
@@ -119,9 +119,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: isEditMode
                       ? [_buildTextField(allergiesController)]
                       : (allergiesController.text.split(', '))
-                      .map<Widget>((allergy) {
-                    return _buildInfoRow("", allergy);
-                  }).toList(),
+                          .map<Widget>((allergy) {
+                          return _buildInfoRow("", allergy);
+                        }).toList(),
                 ),
                 _buildSection(
                   title: 'Diet',
@@ -130,8 +130,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: isEditMode
                       ? [_buildTextField(dietController)]
                       : widget.user['diet']
-                      .map<Widget>((diet) => _buildInfoRow("", diet))
-                      .toList(),
+                          .map<Widget>((diet) => _buildInfoRow("", diet))
+                          .toList(),
                 ),
                 _buildSection(
                   title: 'Medical Conditions',
@@ -140,8 +140,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: isEditMode
                       ? [_buildTextField(medCondController)]
                       : widget.user['medicalConditions']
-                      .map<Widget>((condition) => _buildInfoRow("", condition))
-                      .toList(),
+                          .map<Widget>(
+                              (condition) => _buildInfoRow("", condition))
+                          .toList(),
                 ),
               ],
             ),
@@ -221,10 +222,33 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       child: (!isEditMode && imagePath.isNotEmpty)
           ? Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Column(
+                        children: children,
+                      ),
+                    ],
+                  ),
+                ),
+                Image.asset(
+                  imagePath,
+                  height: 70,
+                ),
+              ],
+            )
+          : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -240,29 +264,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ),
-          ),
-          Image.asset(
-            imagePath,
-            height: 70,
-          ),
-        ],
-      )
-          : Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Column(
-            children: children,
-          ),
-        ],
-      ),
     );
   }
 
@@ -355,10 +356,9 @@ class _ProfilePageState extends State<ProfilePage> {
         controller: controller,
         decoration: InputDecoration(
           hintText:
-          'Enter ${controller == allergiesController ? 'allergies' : controller == dietController ? 'diet' : 'medical conditions'}',
+              'Enter ${controller == allergiesController ? 'allergies' : controller == dietController ? 'diet' : 'medical conditions'}',
           hintStyle: const TextStyle(fontSize: 16),
           fillColor: Colors.white,
-
         ),
       ),
     );

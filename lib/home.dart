@@ -86,7 +86,7 @@ class _MainScreenState extends State<MainScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => MainScreen(
-                    user: const {},
+                    user: widget.user,
                   ),
                 ),
               );
@@ -410,7 +410,7 @@ class _MainScreenState extends State<MainScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => MainScreen(
-                          user: const {},
+                          user: widget.user,
                         )),
               );
               break;
@@ -422,15 +422,7 @@ class _MainScreenState extends State<MainScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ProfilePage(
-                    user: const {
-                      'email': 'bob@example.com',
-                      'name': 'Bob',
-                      'age': '70',
-                      'gender': 'male',
-                      'allergies': ['Peanuts', 'Shellfish'],
-                      'medicalConditions': ['High Blood Pressure', 'Diabetes'],
-                      'diet': ['vegan', 'low-fat']
-                    },
+                    user: widget.user,
                   ),
                 ),
               );

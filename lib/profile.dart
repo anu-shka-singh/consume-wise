@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'user_datamodel.dart';
@@ -30,6 +31,8 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController ageController = TextEditingController();
   TextEditingController genderController = TextEditingController();
+  TextEditingController heightController = TextEditingController();
+  TextEditingController weightController = TextEditingController();
   TextEditingController allergiesController = TextEditingController();
   TextEditingController dietController = TextEditingController();
   TextEditingController medCondController = TextEditingController();
@@ -42,6 +45,8 @@ class _ProfilePageState extends State<ProfilePage> {
     nameController.text = widget.user['name']?.toString() ?? '';
     ageController.text = widget.user['age']?.toString() ?? '';
     genderController.text = widget.user['gender']?.toString() ?? '';
+    heightController.text = widget.user['height']?.toString() ?? '';
+    weightController.text = widget.user['weight']?.toString() ?? '';
     allergiesController.text =
         (widget.user['allergies'] as List<dynamic>?)?.join(', ') ?? '';
     dietController.text =
@@ -74,8 +79,20 @@ class _ProfilePageState extends State<ProfilePage> {
               ? IconButton(
                   icon: const Icon(Icons.check),
                   onPressed: () {
+                    final user = User(
+                      id: widget.user['id'],
+                      email: widget.user['email'],
+                      name: nameController.text,
+                      age: ageController.text,
+                      gender: genderController.text,
+                      height: heightController.text,
+                      weight: weightController.text,
+                      allergies: allergiesController.text.split(','),
+                      diet: dietController.text.split(','),
+                      medicalConditions: medCondController.text.split(','),
+                    );
+                    saveUserProfile(user);
                     toggleEditMode();
-                    // Save profile logic
                   },
                 )
               : IconButton(
@@ -110,6 +127,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           _buildInfoRow('Name', nameController.text),
                           _buildInfoRow('Age', ageController.text),
                           _buildInfoRow('Gender', genderController.text),
+                          _buildInfoRow('Height', heightController.text),
+                          _buildInfoRow('Weight', weightController.text),
                         ],
                 ),
                 _buildSection(
@@ -362,5 +381,26 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  void saveUserProfile(
+    User userProfile,
+  ) {
+    String path = 'userProfiles/${userProfile.id}';
+    FirebaseFirestore.instance.doc(path).update({
+      'email': userProfile.email,
+      'name': userProfile.name,
+      'age': userProfile.age,
+      'gender': userProfile.gender,
+      'height': userProfile.height,
+      'weight': userProfile.weight,
+      'allergies': userProfile.allergies,
+      'diet': userProfile.diet,
+      'medicalConditions': userProfile.medicalConditions,
+    }).then((value) {
+      //Successfully saved data to Firestore
+    }).catchError((error) {
+//Handle errors, e.g., Firestore is unreachable
+    });
   }
 }

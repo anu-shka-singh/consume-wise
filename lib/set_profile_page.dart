@@ -22,6 +22,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
   final TextEditingController _allergiesController = TextEditingController();
   final TextEditingController _dietController = TextEditingController();
   final TextEditingController _medicalConditionsController =
@@ -36,6 +38,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
         appBar: AppBar(
           title: const Text('Profile Setup'),
           automaticallyImplyLeading: false,
+          backgroundColor: const Color(0xFF055b49),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -110,6 +113,23 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                       return null;
                     },
                   ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _heightController,
+                    decoration: const InputDecoration(
+                      labelText: 'Height (in cm)',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _weightController,
+                    decoration: const InputDecoration(
+                      labelText: 'Weight (in kg)',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                 ],
               ),
               _buildSection(
@@ -149,6 +169,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                       name: _nameController.text,
                       age: _ageController.text,
                       gender: _selectedGender,
+                      height: _heightController.text,
+                      weight: _weightController.text,
                       allergies: _allergiesController.text.split(','),
                       diet: _dietController.text.split(','),
                       medicalConditions:
@@ -162,6 +184,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                       'name': _nameController.text,
                       'age': _ageController.text,
                       'gender': _selectedGender,
+                      'height': _heightController.text,
+                      'weight': _weightController.text,
                       'allergies': _allergiesController.text.split(','),
                       'diet': _dietController.text.split(','),
                       'medicalConditions':
@@ -218,6 +242,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
         'name': userProfile.name,
         'age': userProfile.age,
         'gender': userProfile.gender,
+        'height': userProfile.height,
+        'weight': userProfile.weight,
         'allergies': userProfile.allergies,
         'diet': userProfile.diet,
         'medicalConditions': userProfile.medicalConditions,

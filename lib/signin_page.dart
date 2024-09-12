@@ -63,7 +63,11 @@ class _LoginState extends State<LoginPage> {
                   height: 20,
                   width: 20,
                 ),
-                Image.asset("assets/images/login.png"),
+                Image.asset(
+                  "assets/images/login.png",
+                  height: 150,
+                  width: 150,
+                ),
                 const SizedBox(
                   height: 40,
                 ),

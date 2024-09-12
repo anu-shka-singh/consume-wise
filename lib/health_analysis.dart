@@ -706,7 +706,9 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ClaimCheckerPage(),
+                                        builder: (context) => ClaimCheckerPage(
+                                          product: {},
+                                        ),
                                       ),
                                     );
                                   },
@@ -855,7 +857,8 @@ ExpansionPanel _buildPanel(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ListTile(
-                  contentPadding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 10),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 4.0, horizontal: 10),
                   title: Text(
                     '${entry.key}', // Key as title
                     style: TextStyle(

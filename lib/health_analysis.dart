@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:overlay/claim_checker.dart';
 import 'package:overlay/image_upload.dart';
 
 class HealthAnalysis extends StatefulWidget {
@@ -705,7 +706,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ImageUpload(),
+                                        builder: (context) => ClaimCheckerPage(),
                                       ),
                                     );
                                   },

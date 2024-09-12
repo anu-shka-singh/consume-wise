@@ -27,6 +27,7 @@ class _SignUpState extends State<SignUp> {
         foregroundColor: Colors.white,
         backgroundColor: const Color(0xFF055b49),
       ),
+      backgroundColor: const Color(0xFFFFF6E7),
       body: SizedBox(
         height: size.height,
         width: size.width,
@@ -34,18 +35,13 @@ class _SignUpState extends State<SignUp> {
           child: Padding(
             padding: EdgeInsets.only(
               left: 20,
-              top: size.height * 0.1,
               right: 20,
             ),
             child: Column(
               children: <Widget>[
-                const SizedBox(
-                  height: 20,
-                ),
                 Image.asset(
-                  "assets/images/login.png",
-                  height: 150,
-                  width: 150,
+                  "assets/images/logo.png",
+                  height: 250,
                 ),
                 TextFormField(
                   decoration: const InputDecoration(

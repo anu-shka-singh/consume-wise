@@ -47,6 +47,7 @@ class _LoginState extends State<LoginPage> {
         automaticallyImplyLeading: false,
         foregroundColor: Colors.white,
       ),
+      backgroundColor: const Color(0xFFFFF6E7),
       body: SizedBox(
         height: size.height,
         width: size.width,
@@ -54,23 +55,15 @@ class _LoginState extends State<LoginPage> {
           child: Padding(
             padding: EdgeInsets.only(
               left: 20,
-              top: size.height * 0.1,
               right: 20,
             ),
             child: Column(
               children: <Widget>[
-                const SizedBox(
-                  height: 20,
-                  width: 20,
-                ),
                 Image.asset(
-                  "assets/images/login.png",
-                  height: 150,
-                  width: 150,
+                  "assets/images/logo.png",
+                  height: 250,
                 ),
-                const SizedBox(
-                  height: 40,
-                ),
+
                 TextFormField(
                   decoration: const InputDecoration(
                     labelText: "Enter Email",

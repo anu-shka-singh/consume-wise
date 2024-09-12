@@ -101,7 +101,7 @@ class ResultScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 10),
-                    _buildNutrientRow("assets/images/calories.png", 'Calories', '$totalCalories kcal'),
+                    _buildNutrientRow("assets/images/calories.png", 'Calories', '$totalCalories cal'),
                     _buildNutrientRow("assets/images/salad.png", 'Protein', '$totalProtein g'),
                     _buildNutrientRow("assets/images/fats.png", 'Fat', '$totalFat g'),
                   ],

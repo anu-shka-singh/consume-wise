@@ -65,32 +65,35 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
             const SizedBox(height: 20),
 
             // Sample answers
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Wrap(
                 spacing: 5.0,
                 runSpacing: 1.0,
                 children: [
                   Chip(
-                    label: Text(
-                      '1 Bowl of Rice with 1 Bowl of Moong Dal',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 13,
-                      ),
+                    label: const Text(
+                      '2 Rotis with some Shahi Paneer',
+                      style: TextStyle(color: Colors.grey),
                     ),
-                    backgroundColor:
-                        Color(0xFFFFF6E7), // Light background for the chip
+                    deleteIcon: const Icon(Icons.add, color: Color(0xFF055b49)), // Use a plus icon instead of the cross
+                    onDeleted: () {
+                      setState(() {
+                        _textController.text = '2 Rotis with some Shahi Paneer';
+                      });
+                    },
                   ),
                   Chip(
-                    label: Text(
-                      '2 Rotis with some Shahi Paneer',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 13,
-                      ),
+                    label: const Text(
+                      '1 Bowl of Rice with 1 Bowl of Moong Dal',
+                      style: TextStyle(color: Colors.grey),
                     ),
-                    backgroundColor: Color(0xFFFFF6E7),
+                    deleteIcon: const Icon(Icons.add, color: Color(0xFF055b49)), // Use a plus icon instead of the cross
+                    onDeleted: () {
+                      setState(() {
+                        _textController.text = '1 Bowl of Rice with 1 Bowl of Moong Dal';
+                      });
+                    },
                   ),
                 ],
               ),
@@ -116,6 +119,7 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                       hintText: 'Enter the food you ate',
                       filled: true,
                       fillColor: Colors.white,
+                      prefixIcon: Icon(Icons.fastfood, color: Colors.grey.shade600),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide: BorderSide.none, // Remove the border
@@ -140,28 +144,38 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
             // Submit button
             Center(
               child: ElevatedButton(
-                onPressed: () async {
-                  setState(() {
-                    userMeal = _textController.text;
-                  });
-                  // Show the loading screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoadingScreen()),
-                  );
+                  onPressed: () async {
+                    if (_textController.text.trim().isEmpty) {
+                      // If the text field is empty, show a SnackBar with a message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please enter a meal'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    } else {
+                      setState(() {
+                        userMeal = _textController.text;
+                      });
 
-                  // Call your API and wait for the response
-                  var response = await calorieCalculator(userMeal);
+                      // Show the loading screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoadingScreen()),
+                      );
 
-                  // Once the response is received, pop the loading screen
-                  Navigator.pop(context);
+                      // Call your API and wait for the response
+                      var response = await calorieCalculator(userMeal);
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ResultScreen(response: response)),
-                  );
-                },
+                      // Once the response is received, pop the loading screen
+                      Navigator.pop(context);
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ResultScreen(response: response)),
+                      );
+                    }
+                  },
                 child: const Text(
                   'Submit',
                   style: TextStyle(fontSize: 18),

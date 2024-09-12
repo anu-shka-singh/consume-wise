@@ -10,7 +10,7 @@ void main() {
     'gender': 'male',
     'allergies': ['Peanuts', 'Shellfish'],
     'medicalConditions': ['High Blood Pressure', 'Diabetes'],
-    'diet': ['vegan', 'low-fat']
+    'diet': ['Vegan', 'Low-fat']
   };
   runApp(MaterialApp(
     home: ProfilePage(user: data),
@@ -33,13 +33,12 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController allergiesController = TextEditingController();
   TextEditingController dietController = TextEditingController();
   TextEditingController medCondController = TextEditingController();
-  final cardColor = const Color(0xFFFFF6E7);
+
+  final cardColor = const Color.fromARGB(255, 255, 255, 255);
 
   @override
   void initState() {
     super.initState();
-    //print(widget.user);
-
     nameController.text = widget.user['name']?.toString() ?? '';
     ageController.text = widget.user['age']?.toString() ?? '';
     genderController.text = widget.user['gender']?.toString() ?? '';
@@ -62,191 +61,141 @@ class _ProfilePageState extends State<ProfilePage> {
     final imageURL = (genderController.text == 'male')
         ? 'assets/images/male.png'
         : 'assets/images/female.png';
+
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF055b49),
-          foregroundColor: Colors.white,
-          title: const Text('My Profile'),
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF055b49),
+        foregroundColor: Colors.white,
+        title: const Text('My Profile'),
+        centerTitle: true,
+        elevation: 0,
+        actions: [
+          isEditMode
+              ? IconButton(
+            icon: const Icon(Icons.check),
             onPressed: () {
-              Navigator.of(context).pop();
+              toggleEditMode();
+              // Save profile logic
             },
+          )
+              : IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: toggleEditMode,
           ),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  color: Color(0xFF055b49),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(70),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 40.0,
-                            backgroundColor: Colors.transparent,
-                            backgroundImage: AssetImage(imageURL),
-                          ),
-                          const SizedBox(width: 16),
-                          Text(
-                            nameController.text,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+        ],
+      ),
+      body: Container(
+        color: const Color(0xFFFFF6E7),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 40.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildHeader(imageURL),
+                const SizedBox(height: 20),
+                _buildSection(
+                  title: 'Personal Info',
+                  bgcolor: cardColor,
+                  children: isEditMode
+                      ? [
+                    _buildEditableInfoRow(
+                        'Name', nameController.text, nameController),
+                    _buildEditableInfoRow(
+                        'Age', ageController.text, ageController),
+                    _buildEditableInfoRow(
+                        'Gender', genderController.text, genderController),
+                  ]
+                      : [
+                    _buildInfoRow('Name', nameController.text),
+                    _buildInfoRow('Age', ageController.text),
+                    _buildInfoRow('Gender', genderController.text),
                   ],
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              _buildSection(
-                title: 'Personal Info',
-                bgcolor: cardColor,
-                children: isEditMode
-                    ? [
-                        _buildEditableInfoRow(
-                            'Name', nameController.text, nameController),
-                        _buildEditableInfoRow(
-                            'Age', ageController.text, ageController),
-                        _buildEditableInfoRow(
-                            'Gender', genderController.text, genderController),
-                      ]
-                    : [
-                        _buildInfoRow('Name', nameController.text),
-                        _buildInfoRow('Age', ageController.text),
-                        _buildInfoRow('Gender', genderController.text),
-                      ],
-              ),
-              _buildSection(
-                title: 'Allergies',
-                bgcolor: cardColor,
-                imagePath: 'assets/images/allergy.png',
-                children: isEditMode
-                    ? [_buildTextField(allergiesController)]
-                    : (allergiesController.text.split(', '))
-                        .map<Widget>((allergies) {
-                        return _buildInfoRow(" ", allergies);
-                      }).toList(),
-              ),
-              _buildSection(
-                title: 'Diet',
-                bgcolor: cardColor,
-                imagePath: 'assets/images/better-health.png',
-                children: isEditMode
-                    ? [_buildTextField(medCondController)]
-                    : widget.user['diet'].map<Widget>((condition) {
-                        return _buildInfoRow(' ', condition);
-                      }).toList(),
-              ),
-              _buildSection(
-                title: 'Medical Conditions',
-                bgcolor: cardColor,
-                imagePath: 'assets/images/sick.png',
-                children: isEditMode
-                    ? [_buildTextField(medCondController)]
-                    : widget.user['medicalConditions'].map<Widget>((condition) {
-                        return _buildInfoRow(' ', condition);
-                      }).toList(),
-              ),
-              isEditMode
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            final user = User(
-                              id: widget.user['id'],
-                              email: widget.user['email'],
-                              name: nameController.text,
-                              age: ageController.text,
-                              gender: genderController.text,
-                              allergies: allergiesController.text.split(','),
-                              diet: dietController.text.split(','),
-                              medicalConditions:
-                                  medCondController.text.split(','),
-                            );
-                            //saveUserProfile(user);
-                            toggleEditMode();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF055b49),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            minimumSize: const Size(150, 50),
-                          ),
-                          child: const Text(
-                            "Save Details",
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: toggleEditMode,
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            backgroundColor: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            minimumSize: const Size(150, 50),
-                          ),
-                          child: const Text(
-                            "Cancel",
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: Colors.white,
-                            ),
-                          ),
-                        )
-                      ],
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: toggleEditMode,
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            backgroundColor: Color(0xFF055b49),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            minimumSize: const Size(150, 50),
-                          ),
-                          child: const Text(
-                            "Edit Profile",
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-            ],
+                _buildSection(
+                  title: 'Allergies',
+                  bgcolor: cardColor,
+                  imagePath: 'assets/images/allergy.png',
+                  children: isEditMode
+                      ? [_buildTextField(allergiesController)]
+                      : (allergiesController.text.split(', '))
+                      .map<Widget>((allergy) {
+                    return _buildInfoRow("", allergy);
+                  }).toList(),
+                ),
+                _buildSection(
+                  title: 'Diet',
+                  bgcolor: cardColor,
+                  imagePath: 'assets/images/diet.png',
+                  children: isEditMode
+                      ? [_buildTextField(dietController)]
+                      : widget.user['diet']
+                      .map<Widget>((diet) => _buildInfoRow("", diet))
+                      .toList(),
+                ),
+                _buildSection(
+                  title: 'Medical Conditions',
+                  bgcolor: cardColor,
+                  imagePath: 'assets/images/health-report.png',
+                  children: isEditMode
+                      ? [_buildTextField(medCondController)]
+                      : widget.user['medicalConditions']
+                      .map<Widget>((condition) => _buildInfoRow("", condition))
+                      .toList(),
+                ),
+              ],
+            ),
           ),
-        ));
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(String imageURL) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFF055b49),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(70),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 50.0,
+              backgroundColor: Colors.transparent,
+              backgroundImage: AssetImage(imageURL),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    nameController.text,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    widget.user['email'],
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildSection({
@@ -270,33 +219,12 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
         borderRadius: BorderRadius.circular(30),
       ),
-      child: (!isEditMode && imagePath != '')
+      child: (!isEditMode && imagePath.isNotEmpty)
           ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Column(
-                      children: children,
-                    ),
-                  ],
-                ),
-                Image.asset(
-                  imagePath,
-                  height: 100,
-                ),
-              ],
-            )
-          : Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -312,87 +240,127 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ),
+          ),
+          Image.asset(
+            imagePath,
+            height: 70,
+          ),
+        ],
+      )
+          : Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Column(
+            children: children,
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildInfoRow(String label, String value) {
-    if (label == ' ') {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            value,
-            style: const TextStyle(fontSize: 20),
+    if (label == '') {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        child: Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: Colors.black54,
           ),
-        ],
+        ),
       );
     }
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Label Section
+          Expanded(
+            flex: 3,
+            child: Text(
+              label.isNotEmpty ? label : '',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
           ),
-        ),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 20),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildTextField(TextEditingController controller) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        hintText:
-            'Enter ${controller == allergiesController ? 'allergies' : controller == dietController ? 'diet' : 'medical conditions'}',
+          // Value Section
+          Expanded(
+            flex: 4,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                value,
+                textAlign: TextAlign.right,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildEditableInfoRow(
       String label, String value, TextEditingController controller) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Text(
-          '$label :  ',
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              '$label :',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
-        ),
-        Expanded(
-          child: TextFormField(
-            controller: controller,
-            decoration: const InputDecoration(),
+          Expanded(
+            flex: 4,
+            child: TextFormField(
+              controller: controller,
+              decoration: const InputDecoration(),
+              style: const TextStyle(fontSize: 18),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-//   void saveUserProfile(
-//     User userProfile,
-//   ) {
-//     String path = 'userProfiles/${userProfile.id}';
-//     FirebaseFirestore.instance.doc(path).update({
-//       'email': userProfile.email,
-//       'name': userProfile.name,
-//       'age': userProfile.age,
-//       'gender': userProfile.gender,
-//       'allergies': userProfile.allergies,
-//       'diet': userProfile.deit,
-//       'medicalConditions': userProfile.medicalConditions,
-//     }).then((value) {
-//       // Successfully saved data to Firestore
-//     }).catchError((error) {
-//       // Handle errors, e.g., Firestore is unreachable
-//     });
-//   }
+  Widget _buildTextField(TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText:
+          'Enter ${controller == allergiesController ? 'allergies' : controller == dietController ? 'diet' : 'medical conditions'}',
+          hintStyle: const TextStyle(fontSize: 16),
+          fillColor: Colors.white,
+
+        ),
+      ),
+    );
+  }
 }

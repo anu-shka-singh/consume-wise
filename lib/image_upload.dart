@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:overlay/health_analysis.dart';
 import 'package:overlay/home.dart';
 
 class ImageUpload extends StatefulWidget {
@@ -219,7 +220,7 @@ class _ImageUploadState extends State<ImageUpload> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => ImageUpload(),
+                                          builder: (context) => HealthAnalysis(),
                                         ),
                                       );
                                     },
@@ -228,68 +229,6 @@ class _ImageUploadState extends State<ImageUpload> {
                               ),
                               const Text(
                                 "Know the implications of consuming this product",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                                softWrap:
-                                    true, // Ensures text wraps if necessary
-                                overflow: TextOverflow
-                                    .visible, // Makes sure text doesn't get cut off
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                
-                Card(
-                  elevation: 4,
-                  color: Color.fromARGB(255, 216, 255, 165),
-                  margin: const EdgeInsets.all(14.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.asset(
-                          'assets/images/claim.png',
-                          width: 60, // Adjust the width as needed
-                          height: 80, // Adjust the height as needed
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Verify Product Claims",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF055b49)),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.arrow_forward),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ImageUpload(),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                              const Text(
-                                "Know the truth of product claims",
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                                 softWrap:

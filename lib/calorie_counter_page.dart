@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:overlay/services/calorie-counter_gemini.dart';
+import 'package:overlay/services/prompts.dart';
 
 import 'calorie_counter_result.dart';
 import 'loading_screen.dart';
@@ -10,7 +10,6 @@ class CalorieCounterPage extends StatefulWidget {
 }
 
 class _CalorieCounterPageState extends State<CalorieCounterPage> {
-
   final TextEditingController _textController = TextEditingController();
   String userMeal = "";
 
@@ -28,7 +27,8 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
+              padding:
+                  const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
               decoration: const BoxDecoration(
                 color: Color(0xFF055b49),
                 borderRadius: BorderRadius.only(
@@ -79,7 +79,8 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                         fontSize: 13,
                       ),
                     ),
-                    backgroundColor: Color(0xFFFFF6E7), // Light background for the chip
+                    backgroundColor:
+                        Color(0xFFFFF6E7), // Light background for the chip
                   ),
                   Chip(
                     label: Text(
@@ -107,7 +108,8 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                   borderRadius: BorderRadius.circular(12.0), // Rounded corners
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0), // Optional padding inside the card
+                  padding: const EdgeInsets.all(
+                      8.0), // Optional padding inside the card
                   child: TextField(
                     controller: _textController,
                     decoration: InputDecoration(
@@ -124,13 +126,14 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                       ),
                     ),
                     style: const TextStyle(fontSize: 18.0),
-                    maxLines: null, // Allows the text to wrap and grow vertically
-                    keyboardType: TextInputType.multiline, // Allows multi-line input
+                    maxLines:
+                        null, // Allows the text to wrap and grow vertically
+                    keyboardType:
+                        TextInputType.multiline, // Allows multi-line input
                   ),
                 ),
               ),
             ),
-
 
             const SizedBox(height: 20),
 
@@ -138,7 +141,7 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  setState((){
+                  setState(() {
                     userMeal = _textController.text;
                   });
                   // Show the loading screen
@@ -155,7 +158,8 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
 
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ResultScreen(response: response)),
+                    MaterialPageRoute(
+                        builder: (context) => ResultScreen(response: response)),
                   );
                 },
                 child: const Text(
@@ -181,5 +185,4 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
       backgroundColor: const Color(0xFFFFF6E7),
     );
   }
-
 }

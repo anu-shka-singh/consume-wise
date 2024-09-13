@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:overlay/claim_checker.dart';
+import 'package:overlay/loading_screen.dart';
+import 'package:overlay/services/gemini.dart';
+import 'package:overlay/services/prompts.dart';
 
 void main() {
   final product = {
-    'name': 'munch',
+    'name': 'Maggi',
     'company': 'Nestle',
     'ingredients': [
       "Wheat flour (atta) (85.3%)",
@@ -54,29 +59,16 @@ void main() {
     'calories': '15kcal',
     'sugar': '20g',
   };
-  final analysis = {
-    'rating': 2.5,
-    'positive': ['high protein', 'low fat'],
-    'negative': ['low fibre', 'high sugar', 'low minerals'],
-    'allergens': ['peanuts'],
-    'diet': [
-      {'name': 'good', 'description': 'Description of fact 1...'},
-      {'name': 'funny', 'description': 'Description of fact 2...'}
-    ]
-  };
   runApp(MaterialApp(
     home: HealthAnalysis(
       product: product,
-      analysis: analysis,
     ),
   ));
 }
 
 class HealthAnalysis extends StatefulWidget {
   final Map<String, dynamic> product;
-  final Map<String, dynamic> analysis;
-  const HealthAnalysis(
-      {super.key, required this.product, required this.analysis});
+  const HealthAnalysis({super.key, required this.product});
 
   @override
   State<HealthAnalysis> createState() => _HealthAnalysisState();
@@ -85,10 +77,10 @@ class HealthAnalysis extends StatefulWidget {
 class _HealthAnalysisState extends State<HealthAnalysis> {
   final List<bool> _isExpanded = [false, false];
   late List<String> ingredients;
-  late List<bool> _panelExpanded;
-  late List<Map<String, String>> diet;
-  late dynamic positive;
-  late dynamic negative;
+  late Map<String, dynamic> analysis;
+  bool isLoading = false;
+  final allergies = ['Wheat', 'Milk'];
+  //late List<bool> _panelExpanded;
 
   Map<String, String> allergyIcons = {
     "Peanuts": "assets/images/peanuts.png",
@@ -101,20 +93,28 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     "Sesame Seeds": "assets/images/sesame.png",
   };
 
-  List<String> allergyInfo = ["Peanuts", "Eggs", "Fish"];
-
   @override
   void initState() {
     super.initState();
+    isLoading = true;
+    performHealthAnalysis();
     ingredients = widget.product['ingredients'];
-    diet = widget.analysis['diet'];
-    positive = widget.analysis['positive'];
-    negative = widget.analysis['positive'];
     // _scrollController = ScrollController();
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   startAutoScroll(); // Start auto-scrolling after the first frame
     // });
     // _panelExpanded = List.generate(ingredients.length, (index) => false);
+  }
+
+  Future<void> performHealthAnalysis() async {
+    final String response = await healthAnalysis(widget.product);
+    final cleanResponse = getCleanResponse(response);
+    if (cleanResponse.isNotEmpty) {
+      setState(() {
+        analysis = jsonDecode(cleanResponse);
+        isLoading = false;
+      });
+    }
   }
 
   // void startAutoScroll() {
@@ -151,574 +151,584 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
         foregroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Container(
-        color: const Color(0xFFFFF6E7),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: const EdgeInsets.all(8.0),
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
+      body: isLoading
+          ? LoadingScreen()
+          : Container(
+              color: const Color(0xFFFFF6E7),
+              child: SingleChildScrollView(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Left: Product Image
-                    Image.asset(
-                      'assets/images/kit-kat.png',
-                      width: 120, // Adjust the width as needed
-                      height: 100, // Adjust the height as needed
-                    ),
-                    const SizedBox(width: 40),
-
-                    // Right: Heading, subtext, and health rating
-                    Expanded(
-                      child: Column(
+                    Container(
+                      margin: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Heading: KIT-KAT
-                          Text(
-                            widget.product['name'].toString(),
-                            style: const TextStyle(
-                              fontSize: 35,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 30, 30, 30),
+                          // Left: Product Image
+                          Image.asset(
+                            'assets/images/kit-kat.png',
+                            width: 120, // Adjust the width as needed
+                            height: 100, // Adjust the height as needed
+                          ),
+                          const SizedBox(width: 40),
+
+                          // Right: Heading, subtext, and health rating
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Heading: KIT-KAT
+                                Text(
+                                  widget.product['name'].toString(),
+                                  style: const TextStyle(
+                                    fontSize: 35,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 30, 30, 30),
+                                  ),
+                                ),
+
+                                // Subtext: By Nestle
+                                Text(
+                                  "By: ${widget.product['company'].toString()}",
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 63, 81, 90),
+                                  ),
+                                ),
+                                const SizedBox(
+                                    height:
+                                        16.0), // Spacing before health rating
+
+                                // Health Rating Text
+                                const Text(
+                                  "Health Rating:",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 30, 30, 30),
+                                  ),
+                                ),
+                                const SizedBox(
+                                    height: 8.0), // Spacing before star rating
+
+                                // Health Rating: Star Bar (out of 5 stars)
+                                buildHealthRatingWidget(analysis[
+                                    'rating']), // Replace 4.5 with dynamic rating value
+                              ],
                             ),
                           ),
-
-                          // Subtext: By Nestle
-                          Text(
-                            "By: ${widget.product['company'].toString()}",
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 63, 81, 90),
-                            ),
-                          ),
-                          const SizedBox(
-                              height: 16.0), // Spacing before health rating
-
-                          // Health Rating Text
-                          const Text(
-                            "Health Rating:",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 30, 30, 30),
-                            ),
-                          ),
-                          const SizedBox(
-                              height: 8.0), // Spacing before star rating
-
-                          // Health Rating: Star Bar (out of 5 stars)
-                          buildHealthRatingWidget(widget.analysis[
-                              'rating']), // Replace 4.5 with dynamic rating value
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
 
-              // horizontally scrolling keywords
-              Container(
-                height: 40, // Adjust height as needed
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: positive.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF055b49),
-                          borderRadius:
-                              BorderRadius.circular(12), // Rounded corners
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black
-                                  .withOpacity(0.2), // Subtle shadow for depth
-                              spreadRadius: 1,
-                              blurRadius: 4,
-                              offset: const Offset(0, 2), // Offset shadow
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        child: Center(
-                          child: Text(
-                            positive[index],
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white, // Text color
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: 40, // Adjust height as needed
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: negative.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.redAccent,
-                          borderRadius:
-                              BorderRadius.circular(12), // Rounded corners
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black
-                                  .withOpacity(0.2), // Subtle shadow for depth
-                              spreadRadius: 1,
-                              blurRadius: 4,
-                              offset: const Offset(0, 2), // Offset shadow
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        child: Center(
-                          child: Text(
-                            negative[index],
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white, // Text color
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(
-                height: 20,
-              ),
-
-              //Allergy Info
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-                    child: Text(
-                      'Allergy Warnings',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF333333),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Wrap(
-                      spacing: 20.0,
-                      runSpacing: 16.0,
-                      children: allergyInfo.map((allergy) {
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Image.asset(
-                              allergyIcons[allergy]!,
-                              width: 50,
-                              height: 50,
-                            ),
-                            const SizedBox(height: 8.0),
-                            // Display the allergy name
-                            Text(
-                              allergy,
-                              style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFF555555),
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              ),
-              //SizedBox(height: 20,),
-
-              Divider(
-                thickness: 1,
-                color: Colors.grey[300],
-                height: 40,
-                indent: 16,
-                endIndent: 16,
-              ),
-
-              //nutritional information
-              Card(
-                elevation: 3,
-                color: const Color.fromARGB(255, 255, 255, 255),
-                margin: const EdgeInsets.all(14.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    children: [
-                      // Nutritional Information Header
-                      const Text(
-                        "Nutritional Information",
-                        style: TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF2C2C2C),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Calories Section (Non-Collapsible)
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              'assets/images/calories.png', // Use your image asset
-                              width: 30, // Adjust the size as needed
-                              height: 30,
-                            ),
-                            const SizedBox(width: 15),
-                            const Text(
-                              'Calories:',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2C2C2C),
-                              ),
-                            ),
-                            const SizedBox(width: 20),
-                            Text(
-                              widget.product['calories'],
-                              style: const TextStyle(
-                                fontSize: 18,
-                                color: Color(0xFF2C2C2C),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 5),
-
-                      // Sugar Section (Non-Collapsible)
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              'assets/images/sugar.png', // Use your image asset
-                              width: 30, // Adjust the size as needed
-                              height: 30,
-                            ),
-                            const SizedBox(width: 15),
-                            const Text(
-                              'Sugar:',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2C2C2C),
-                              ),
-                            ),
-                            const SizedBox(width: 20),
-                            Text(
-                              widget.product['sugar'],
-                              style: const TextStyle(
-                                fontSize: 18,
-                                color: Color(0xFF2C2C2C),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // ExpansionPanel for Macronutrients
-                      StatefulBuilder(
-                        builder: (context, setState) {
-                          return Card(
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ExpansionPanelList(
-                                elevation: 0,
-                                expandedHeaderPadding: const EdgeInsets.all(5),
-                                animationDuration:
-                                    const Duration(milliseconds: 500),
-                                materialGapSize: 5,
-                                expansionCallback:
-                                    (int index, bool isExpanded) {
-                                  setState(() {
-                                    _isExpanded[index] = !_isExpanded[
-                                        index]; // Toggle expansion state
-                                  });
-                                },
-                                children: [
-                                  _buildMacronutrientPanel(
-                                    0, // Make sure index matches the _isExpanded list index
-                                    "Macronutrients",
-                                    [
-                                      {
-                                        "Carbohydrates": 7.23,
-                                        "image": 'assets/images/bread.png'
-                                      },
-                                      {
-                                        "Protein": 0.0,
-                                        "image": 'assets/images/salad.png'
-                                      },
-                                      {
-                                        "Fats": 9.77,
-                                        "image": 'assets/images/fats.png'
-                                      }
-                                    ],
-                                    _isExpanded,
-                                    setState,
+                    // horizontally scrolling keywords
+                    Container(
+                      height: 40, // Adjust height as needed
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: analysis['positive'].length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF055b49),
+                                borderRadius: BorderRadius.circular(
+                                    12), // Rounded corners
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(
+                                        0.2), // Subtle shadow for depth
+                                    spreadRadius: 1,
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2), // Offset shadow
                                   ),
                                 ],
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
+                              child: Center(
+                                child: Text(
+                                  analysis['positive'][index],
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white, // Text color
+                                  ),
+                                ),
                               ),
                             ),
                           );
                         },
                       ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
 
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Ingredients Section
-                  Card(
-                    color: Colors.white,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    const SizedBox(
+                      height: 10,
                     ),
-                    elevation: 2,
-                    child: ExpansionTile(
-                      leading: const Icon(Icons.list,
-                          color: Colors.deepPurple), // Ingredients Icon
-                      title: const Text(
-                        'Ingredients',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF333333),
-                        ),
-                      ),
-                      children: ingredients.map((ingredient) {
-                        return ListTile(
-                          title: Text(
-                            ingredient,
-                            style: const TextStyle(
-                                fontSize: 16, color: Color(0xFF555555)),
-                          ),
-                          // subtitle: Text(
-                          //   '${ingredient['description']}',
-                          //   style: TextStyle(
-                          //       fontSize: 14, color: Color(0xFF888888)),
-                          // ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-
-                  // Diet Compliance Section
-                  Card(
-                    color: Colors.white,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                    child: ExpansionTile(
-                      leading: const Icon(Icons.check_circle,
-                          color: Colors.teal), // Diet Compliance Icon
-                      title: const Text(
-                        'Diet Compliance',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF333333),
-                        ),
-                      ),
-                      children: diet.map((item) {
-                        return ListTile(
-                          title: Text(
-                            '${item['name']}',
-                            style: const TextStyle(
-                                fontSize: 16, color: Color(0xFF555555)),
-                          ),
-                          subtitle: Text(
-                            '${item['description']}',
-                            style: const TextStyle(
-                                fontSize: 14, color: Color(0xFF888888)),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              ),
-
-              Divider(
-                thickness: 1,
-                color: Colors.grey[300],
-                height: 40,
-                indent: 16,
-                endIndent: 16,
-              ),
-              // claim analysis
-              Card(
-                elevation: 4,
-                color: const Color(0xFF86b649),
-                margin: const EdgeInsets.all(14.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Image.asset(
-                        'assets/images/claim.png',
-                        width: 60, // Adjust the width as needed
-                        height: 80, // Adjust the height as needed
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  "Verify Product Claims",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
+                    Container(
+                      height: 40, // Adjust height as needed
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: analysis['negative'].length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent,
+                                borderRadius: BorderRadius.circular(
+                                    12), // Rounded corners
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(
+                                        0.2), // Subtle shadow for depth
+                                    spreadRadius: 1,
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2), // Offset shadow
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
+                              child: Center(
+                                child: Text(
+                                  analysis['negative'][index],
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white, // Text color
+                                  ),
                                 ),
-                                IconButton(
-                                  color: Colors.white,
-                                  icon: const Icon(Icons.arrow_forward),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ClaimCheckerPage(
-                                          product: widget.product,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
+                              ),
                             ),
+                          );
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 20,
+                    ),
+
+                    //Allergy Info
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 20.0),
+                          child: Text(
+                            'Allergy Warnings',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF333333),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: Wrap(
+                            spacing: 20.0,
+                            runSpacing: 16.0,
+                            children: allergies.map((allergy) {
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset(
+                                    allergyIcons[allergy]!,
+                                    width: 50,
+                                    height: 50,
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  // Display the allergy name
+                                  Text(
+                                    allergy,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF555555),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    //SizedBox(height: 20,),
+
+                    Divider(
+                      thickness: 1,
+                      color: Colors.grey[300],
+                      height: 40,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+
+                    //nutritional information
+                    Card(
+                      elevation: 3,
+                      color: const Color.fromARGB(255, 255, 255, 255),
+                      margin: const EdgeInsets.all(14.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          children: [
+                            // Nutritional Information Header
                             const Text(
-                              "Know the truth of product claims",
+                              "Nutritional Information",
                               style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white60),
-                              softWrap: true, // Ensures text wraps if necessary
-                              overflow: TextOverflow
-                                  .visible, // Makes sure text doesn't get cut off
+                                fontSize: 21,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF2C2C2C),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+
+                            // Calories Section (Non-Collapsible)
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/calories.png', // Use your image asset
+                                    width: 30, // Adjust the size as needed
+                                    height: 30,
+                                  ),
+                                  const SizedBox(width: 15),
+                                  const Text(
+                                    'Calories:',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF2C2C2C),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Text(
+                                    widget.product['calories'],
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Color(0xFF2C2C2C),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 5),
+
+                            // Sugar Section (Non-Collapsible)
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/sugar.png', // Use your image asset
+                                    width: 30, // Adjust the size as needed
+                                    height: 30,
+                                  ),
+                                  const SizedBox(width: 15),
+                                  const Text(
+                                    'Sugar:',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF2C2C2C),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Text(
+                                    widget.product['sugar'],
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Color(0xFF2C2C2C),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // ExpansionPanel for Macronutrients
+                            StatefulBuilder(
+                              builder: (context, setState) {
+                                return Card(
+                                  color:
+                                      const Color.fromARGB(255, 255, 255, 255),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ExpansionPanelList(
+                                      elevation: 0,
+                                      expandedHeaderPadding:
+                                          const EdgeInsets.all(5),
+                                      animationDuration:
+                                          const Duration(milliseconds: 500),
+                                      materialGapSize: 5,
+                                      expansionCallback:
+                                          (int index, bool isExpanded) {
+                                        setState(() {
+                                          _isExpanded[index] = !_isExpanded[
+                                              index]; // Toggle expansion state
+                                        });
+                                      },
+                                      children: [
+                                        _buildMacronutrientPanel(
+                                          0, // Make sure index matches the _isExpanded list index
+                                          "Macronutrients",
+                                          [
+                                            {
+                                              "Carbohydrates": 7.23,
+                                              "image": 'assets/images/bread.png'
+                                            },
+                                            {
+                                              "Protein": 0.0,
+                                              "image": 'assets/images/salad.png'
+                                            },
+                                            {
+                                              "Fats": 9.77,
+                                              "image": 'assets/images/fats.png'
+                                            }
+                                          ],
+                                          _isExpanded,
+                                          setState,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
 
-              const Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 10, left: 20),
-                child: Text(
-                  "Better Options",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF333333),
-                  ),
-                ),
-              ),
-              // List for Popular Products
-              SizedBox(
-                height: 170,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                  ),
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      popularProductCard(
-                        productName: 'Maggi Noodles',
-                        barcode: 120,
-                        imagePath: 'assets/images/maggi.png',
-                      ),
-                      const SizedBox(width: 10),
-                      popularProductCard(
-                        productName: 'Harvest Bread',
-                        barcode: 120,
-                        imagePath: 'assets/images/bread.jpeg',
-                      ),
-                      const SizedBox(width: 10),
-                      popularProductCard(
-                        productName: 'Kissan Jam',
-                        barcode: 120,
-                        imagePath: 'assets/images/jam.jpeg',
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Ingredients Section
+                        Card(
+                          color: Colors.white,
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
+                          child: ExpansionTile(
+                            leading: const Icon(Icons.list,
+                                color: Colors.deepPurple), // Ingredients Icon
+                            title: const Text(
+                              'Ingredients',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF333333),
+                              ),
+                            ),
+                            children: ingredients.map<Widget>((ingredient) {
+                              return ListTile(
+                                title: Text(
+                                  ingredient,
+                                  style: const TextStyle(
+                                      fontSize: 16, color: Color(0xFF555555)),
+                                ),
+                                // subtitle: Text(
+                                //   '${ingredient['description']}',
+                                //   style: TextStyle(
+                                //       fontSize: 14, color: Color(0xFF888888)),
+                                // ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
 
-              const SizedBox(
-                height: 40,
-              )
-            ],
-          ),
-        ),
-      ),
+                        // Diet Compliance Section
+                        Card(
+                          color: Colors.white,
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
+                          child: ExpansionTile(
+                            leading: const Icon(Icons.check_circle,
+                                color: Colors.teal), // Diet Compliance Icon
+                            title: const Text(
+                              'Diet Compliance',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF333333),
+                              ),
+                            ),
+                            children: analysis['diet'].map<Widget>((item) {
+                              return ListTile(
+                                title: Text(
+                                  '${item['name']}',
+                                  style: const TextStyle(
+                                      fontSize: 16, color: Color(0xFF555555)),
+                                ),
+                                subtitle: Text(
+                                  '${item['description']}',
+                                  style: const TextStyle(
+                                      fontSize: 14, color: Color(0xFF888888)),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    Divider(
+                      thickness: 1,
+                      color: Colors.grey[300],
+                      height: 40,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+                    // claim analysis
+                    Card(
+                      elevation: 4,
+                      color: const Color(0xFF86b649),
+                      margin: const EdgeInsets.all(14.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.asset(
+                              'assets/images/claim.png',
+                              width: 60, // Adjust the width as needed
+                              height: 80, // Adjust the height as needed
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "Verify Product Claims",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
+                                      ),
+                                      IconButton(
+                                        color: Colors.white,
+                                        icon: const Icon(Icons.arrow_forward),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ClaimCheckerPage(
+                                                product: widget.product,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  const Text(
+                                    "Know the truth of product claims",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white60),
+                                    softWrap:
+                                        true, // Ensures text wraps if necessary
+                                    overflow: TextOverflow
+                                        .visible, // Makes sure text doesn't get cut off
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10, bottom: 10, left: 20),
+                      child: Text(
+                        "Better Options",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF333333),
+                        ),
+                      ),
+                    ),
+                    // List for Popular Products
+                    SizedBox(
+                      height: 170,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                        ),
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            popularProductCard(
+                              productName: 'Maggi Noodles',
+                              barcode: 120,
+                              imagePath: 'assets/images/maggi.png',
+                            ),
+                            const SizedBox(width: 10),
+                            popularProductCard(
+                              productName: 'Harvest Bread',
+                              barcode: 120,
+                              imagePath: 'assets/images/bread.jpeg',
+                            ),
+                            const SizedBox(width: 10),
+                            popularProductCard(
+                              productName: 'Kissan Jam',
+                              barcode: 120,
+                              imagePath: 'assets/images/jam.jpeg',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 40,
+                    )
+                  ],
+                ),
+              ),
+            ),
     );
   }
 }

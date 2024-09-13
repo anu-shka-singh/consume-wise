@@ -221,7 +221,6 @@ class _ImageUploadState extends State<ImageUpload> {
                                           builder: (context) =>
                                               const HealthAnalysis(
                                             product: {},
-                                            analysis: {},
                                           ),
                                         ),
                                       );

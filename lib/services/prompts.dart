@@ -44,44 +44,75 @@ Future<Map<String, dynamic>?> fetchProductInfo(int productId) async {
   }
 }
 
-Future<String?> healthAnalysis(int productId) async {
+Future<String> healthAnalysis(Map<String, dynamic> product) async {
   // Fetch the product information from OpenFoodFacts API
-  final productInfo = await fetchProductInfo(productId);
+  // final productInfo = await fetchProductInfo(productId);
 
-  if (productInfo == null) {
-    return 'Product information could not be retrieved.';
-  }
+  // if (productInfo == null) {
+  //   return 'Product information could not be retrieved.';
+  // }
 
-  // Extract relevant information from productInfo for the prompt
-  final productName = productInfo['product_name'] ?? 'Unknown Product';
-  final ingredients = productInfo['ingredients_text'] ?? 'No ingredients info';
-  final nutritionInfo = productInfo['nutriments'] != null
-      ? productInfo['nutriments']
-          .map((key, value) => MapEntry(key, '$key: $value'))
-          .values
-          .join(', ')
-      : 'No nutritional info available';
+  // // Extract relevant information from productInfo for the prompt
+  // final productName = productInfo['product_name'] ?? 'Unknown Product';
+  // final ingredients = productInfo['ingredients_text'] ?? 'No ingredients info';
+  // final nutritionInfo = productInfo['nutriments'] != null
+  //     ? productInfo['nutriments']
+  //         .map((key, value) => MapEntry(key, '$key: $value'))
+  //         .values
+  //         .join(', ')
+  //     : 'No nutritional info available';
 
   final prompt = '''
-    Please analyze the health impact of the following product:
+    You are tasked with analyzing the health impact of a packaged food product based on the provided product details in JSON format. Your goal is to provide a thorough analysis covering both the positive and negative aspects of the product from a health perspective. The analysis must also check for allergens, compliance with certain diets, harmful ingredients, and provide recommendations for healthier alternatives. The final output should be in the following JSON format.
 
-    Product Name: $productName
-    Ingredients: $ingredients
-    Nutritional Information: $nutritionInfo
+    Required Analysis:
+    1. Positive Impacts: Identify and list the prominent positive health benefits of the product, such as high protein, low sugar, presence of vitamins or minerals, etc.
 
-    Please provide the health analysis in JSON format with the following keys:
-    - "positive": A list of major positive health impacts of the product.
-    - "negative": A list of major negative health impacts of the product.
-    - "allergy": A list of major possible allergies that the product may cause.
-    - "diet": A list of diets with which the product is compatible with.
-    - "rating" : A score out of 5, you think is suitable for the product based on its impact on health. This rating could be in decimal upto one place.
+    2. Negative Impacts: Identify and list the prominent negative health impacts of the product, such as high sugar, high sodium, low fiber, artificial additives, etc.
 
-    Include only the headings (e.g., "High Sugar Content") without detailed explanations. The response should be a JSON object where each key maps to a list of relevant headings. Keep the lists extremely relevant and do not include any headings that are not applicable. Make sure to analyze the health impact of the product strictly with respect to the Indian Context.
+    3. Allergens: Check for the presence of common allergens from these only [Peanuts, Eggs, Wheat, Soybeans, Milk, Fish, Tree Nuts, Sesame Seeds] and list any allergens found. Do not add any other allergen than these.
+
+    4. Dietary Compliance: Determine which common diets the product complies with, and for each diet provide a brief description of why it is compliant. If it does not comply with any specific diet, state that.
+
+    5. Harmful Ingredients: Identify and list any harmful or controversial ingredients present, such as trans fats, artificial sweeteners, artificial preservatives, etc.
+
+    6. Rating: Provide a rating for how healthy the product is based on all the analyzed factors (positive and negative impacts, allergens, harmful ingredients). The rating should be on a scale of 1 to 5 (1 being unhealthy, 5 being very healthy).
+
+    7. Recommendations for Healthier Alternatives: Suggest 3 healthier alternative products from the same category (e.g., healthier versions of the same type of snack, beverage, etc.) For alternatives, make sure you are recommending packaged food and not home made food alternatives. Also keep in mind to recommend only those alternatives which are available in Indian Markets.
+
+    The response should only contain the following JSON format:
+
+    {
+      
+      "positive": [<list of positive impacts>],  // Example: ['high protein', 'low fat']
+      "negative": [<list of negative impacts>],  // Example: ['high sugar', 'low fiber']
+      "allergens": [<list of allergens found>],  // Example: ['peanuts', 'wheat']
+      "diet": [
+        {
+          "name": <diet name>,  // Example: 'vegan', 'keto'
+          "description": <brief explanation of compliance or non-compliance>
+        }
+      ],
+      "harmful_ingredients": [<list of harmful ingredients>],  // Example: ['trans fats', 'aspartame'],
+      "rating": <rating>,  // A decimal number from 1 to 5
+      "recommendations": [<alternative product 1>, <alternative product 2>, <alternative product 3>]  // Suggest 3 healthier alternative products
+    }
+
+    Instructions:
+    1. Evaluate the product’s ingredients and nutritional values carefully to determine its positive and negative health impacts.
+    2. Identify any common allergens based on the ingredient list.
+    3. Analyze which diets the product complies with and provide a brief description.
+    4. Detect harmful ingredients, if any, and list them.
+    5. Rate the product based on its overall health impact, from 1 to 5.
+    6. Provide three healthier alternatives from the same category of food products.
+    
+    Based on the above, please provide the health analysis of the following product whose information is given below:
+    $product
 
   ''';
 
   final response = await getResponse(prompt);
-  return response;
+  return response ?? "";
 }
 
 Future<String> analyzeClaim(String claim, Map<String, dynamic> product) async {

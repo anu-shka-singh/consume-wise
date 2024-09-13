@@ -7,7 +7,6 @@ Future<String?> getResponse(String prompt) async {
     final model = GenerativeModel(model: 'gemini-1.5-flash-latest', apiKey: '');
 
     final response = await model.generateContent([Content.text(prompt)]);
-    print(response.text);
     return response.text;
   } on SocketException catch (e) {
     print("No Internet connection: $e");

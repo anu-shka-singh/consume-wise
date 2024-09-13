@@ -3,6 +3,13 @@ import 'package:overlay/services/prompts.dart';
 
 import 'calorie_counter_result.dart';
 import 'loading_screen.dart';
+import 'user_datamodel.dart';
+
+void main() {
+  runApp(MaterialApp(
+    home: CalorieCounterPage(),
+  ));
+}
 
 class CalorieCounterPage extends StatefulWidget {
   const CalorieCounterPage({super.key});
@@ -78,7 +85,9 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                       '2 Rotis with some Shahi Paneer',
                       style: TextStyle(color: Colors.grey),
                     ),
-                    deleteIcon: const Icon(Icons.add, color: Color(0xFF055b49)), // Use a plus icon instead of the cross
+                    deleteIcon: const Icon(Icons.add,
+                        color: Color(
+                            0xFF055b49)), // Use a plus icon instead of the cross
                     onDeleted: () {
                       setState(() {
                         _textController.text = '2 Rotis with some Shahi Paneer';
@@ -90,10 +99,13 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                       '1 Bowl of Rice with 1 Bowl of Moong Dal',
                       style: TextStyle(color: Colors.grey),
                     ),
-                    deleteIcon: const Icon(Icons.add, color: Color(0xFF055b49)), // Use a plus icon instead of the cross
+                    deleteIcon: const Icon(Icons.add,
+                        color: Color(
+                            0xFF055b49)), // Use a plus icon instead of the cross
                     onDeleted: () {
                       setState(() {
-                        _textController.text = '1 Bowl of Rice with 1 Bowl of Moong Dal';
+                        _textController.text =
+                            '1 Bowl of Rice with 1 Bowl of Moong Dal';
                       });
                     },
                   ),
@@ -121,7 +133,8 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                       hintText: 'Enter the food you ate',
                       filled: true,
                       fillColor: Colors.white,
-                      prefixIcon: Icon(Icons.fastfood, color: Colors.grey.shade600),
+                      prefixIcon:
+                          Icon(Icons.fastfood, color: Colors.grey.shade600),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide: BorderSide.none, // Remove the border
@@ -146,38 +159,40 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
             // Submit button
             Center(
               child: ElevatedButton(
-                  onPressed: () async {
-                    if (_textController.text.trim().isEmpty) {
-                      // If the text field is empty, show a SnackBar with a message
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please enter a meal'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    } else {
-                      setState(() {
-                        userMeal = _textController.text;
-                      });
+                onPressed: () async {
+                  if (_textController.text.trim().isEmpty) {
+                    // If the text field is empty, show a SnackBar with a message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please enter a meal'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  } else {
+                    setState(() {
+                      userMeal = _textController.text;
+                    });
 
-                      // Show the loading screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoadingScreen()),
-                      );
+                    // Show the loading screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoadingScreen()),
+                    );
 
-                      // Call your API and wait for the response
-                      var response = await calorieCalculator(userMeal);
+                    // Call your API and wait for the response
+                    var response = await calorieCalculator(userMeal);
 
-                      // Once the response is received, pop the loading screen
-                      Navigator.pop(context);
+                    // Once the response is received, pop the loading screen
+                    Navigator.pop(context);
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ResultScreen(response: response)),
-                      );
-                    }
-                  },
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ResultScreen(response: response)),
+                    );
+                  }
+                },
                 child: const Text(
                   'Submit',
                   style: TextStyle(fontSize: 18),

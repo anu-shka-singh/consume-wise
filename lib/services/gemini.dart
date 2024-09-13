@@ -7,6 +7,7 @@ Future<String?> getResponse(String prompt) async {
     final model = GenerativeModel(model: 'gemini-1.5-flash-latest', apiKey: '');
 
     final response = await model.generateContent([Content.text(prompt)]);
+    print(response.text);
     return response.text;
   } on SocketException catch (e) {
     print("No Internet connection: $e");
@@ -17,5 +18,16 @@ Future<String?> getResponse(String prompt) async {
   } catch (e) {
     print("Unexpected error: $e");
     return "An unexpected error occurred. Please try again.";
+  }
+}
+
+String getCleanResponse(String response) {
+  print("Original response: $response");
+  final start = response.indexOf('{');
+  final end = response.lastIndexOf('}');
+  if (start != -1 && end != -1 && end >= start) {
+    return response.substring(start, end + 1);
+  } else {
+    throw const FormatException('Invalid JSON format');
   }
 }

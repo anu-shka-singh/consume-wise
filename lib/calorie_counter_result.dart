@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'calorie_counter_page.dart';
 import 'error_screen.dart';
+import 'services/gemini.dart';
 
 class ResultScreen extends StatelessWidget {
   final String? response;
@@ -13,7 +14,7 @@ class ResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     late Map<String, dynamic> jsonResponse;
     try {
-      final cleanResponse = _cleanResponse(response!);
+      final cleanResponse = getCleanResponse(response!);
       print("Cleaned response: $cleanResponse");
       jsonResponse = jsonDecode(cleanResponse);
     } catch (e) {
@@ -36,7 +37,7 @@ class ResultScreen extends StatelessWidget {
     final timeJog = jsonResponse['time_jog'] ?? 'N/A';
     final timeWalk = jsonResponse['time_walk'] ?? 'N/A';
 
-    if(comment == 'No comment provided') {
+    if (comment == 'No comment provided') {
       return ErrorScreen(
         errorMessage: 'Please provide a valid input.',
         onRedirect: () {
@@ -101,9 +102,12 @@ class ResultScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 10),
-                    _buildNutrientRow("assets/images/calories.png", 'Calories', '$totalCalories cal'),
-                    _buildNutrientRow("assets/images/salad.png", 'Protein', '$totalProtein g'),
-                    _buildNutrientRow("assets/images/fats.png", 'Fat', '$totalFat g'),
+                    _buildNutrientRow("assets/images/calories.png", 'Calories',
+                        '$totalCalories cal'),
+                    _buildNutrientRow("assets/images/salad.png", 'Protein',
+                        '$totalProtein g'),
+                    _buildNutrientRow(
+                        "assets/images/fats.png", 'Fat', '$totalFat g'),
                   ],
                 ),
               ),
@@ -121,7 +125,8 @@ class ResultScreen extends StatelessWidget {
             const SizedBox(height: 10),
             // Time to Burn Section (Infographic Style)
             _buildInfographicRow(Icons.directions_run, 'Jogging Time', timeJog),
-            _buildInfographicRow(Icons.directions_walk, 'Walking Time', timeWalk),
+            _buildInfographicRow(
+                Icons.directions_walk, 'Walking Time', timeWalk),
           ],
         ),
       ),
@@ -158,23 +163,14 @@ class ResultScreen extends StatelessWidget {
             children: [
               Text(
                 '$label: $time',
-                style: const TextStyle(fontSize: 18.0,),
+                style: const TextStyle(
+                  fontSize: 18.0,
+                ),
               ),
             ],
           ),
         ],
       ),
     );
-  }
-
-  String _cleanResponse(String response) {
-    print("Original response: $response");
-    final start = response.indexOf('{');
-    final end = response.lastIndexOf('}');
-    if (start != -1 && end != -1 && end >= start) {
-      return response.substring(start, end + 1);
-    } else {
-      throw const FormatException('Invalid JSON format');
-    }
   }
 }

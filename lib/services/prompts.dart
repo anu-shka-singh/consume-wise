@@ -83,3 +83,33 @@ Future<String?> healthAnalysis(int productId) async {
   final response = await getResponse(prompt);
   return response;
 }
+
+Future<String> analyzeClaim(String claim, Map<String, dynamic> product) async {
+  final String prompt = '''
+    You are tasked with analyzing claims made by packaged food products. Your goal is to evaluate whether the claim is:
+
+    1. Accurate: The claim is factually correct and based on the provided product details.
+    2. Misleading: The claim is somewhat correct but exaggerated or incomplete, potentially confusing or misinforming consumers.
+    3. Invalid Input: The claim cannot be analyzed due to lack of sufficient information or the claim being nonsensical or out of scope.
+
+    The response should include the following in JSON format:
+
+    Verdict: Whether the claim is accurate, misleading, or invalid input.
+    Percentage Accuracy: A percentage (0% to 100%) representing how confident you are in the verdict.
+    Reasons: An explanation of why the claim is accurate, misleading, or invalid. If misleading, explain which parts of the claim are exaggerated or contradictory to the product information.
+    Detailed Analysis: A deeper analysis of the product's ingredients, nutrients, or other information to back up your verdict. Mention specific ingredients or nutrient values that support the decision.
+
+    Instructions for Analysis:
+
+    1. Evaluate Ingredients & Nutrients: Check the product's ingredient list and nutrient values to see if they support or contradict the claim.
+    2. Verdict Accuracy: Determine if the claim is accurate, misleading, or if the input is invalid (e.g., if the claim is nonsensical or cannot be analyzed).
+    3. Justify the Verdict: Provide a clear explanation, including specific reasons and references to the product's ingredients or nutrients.
+    4. Deliver Detailed Analysis: Offer a comprehensive analysis of how the product's components align with or deviate from the claim.
+
+    Based on the above instructions, please provide the claim analysis for the following input:
+    Product Information : $product
+    Claim to be analyzed : $claim
+    ''';
+  final response = await getResponse(prompt);
+  return response ?? "";
+}

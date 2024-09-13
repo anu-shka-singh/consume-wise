@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:overlay/services/gemini.dart';
 
 import 'loading_screen.dart';
+import 'services/prompts.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -36,50 +38,84 @@ class ClaimCheckerPage extends StatefulWidget {
 class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
   final TextEditingController claimController = TextEditingController();
   ClaimResult? result;
-  bool isLoading = false; // New loading state
+  bool isLoading = false;
 
-  Future<void> analyzeClaim(String claim) async {
+  void helper() async {
+    // Mark helper function as async
     setState(() {
-      isLoading = true; // Set loading to true when analysis starts
+      isLoading = true;
     });
 
-    const String apiUrl =
-        'https://cwbackend-a3332a655e1f.herokuapp.com/claims/analyze';
-
-    Map<String, String> queryParams = {
-      'ingredients': widget.product['ingredients'].join(', '),
-      'claim': claim
-    };
-
-    final Uri uri = Uri.parse(apiUrl).replace(queryParameters: queryParams);
-
     try {
-      final response = await http.get(uri);
+      // Await the response from the analyzeClaim function
+      final String response =
+          await analyzeClaim(claimController.text, widget.product);
+      final cleanResponse = getCleanResponse(response);
 
-      if (response.statusCode == 200) {
-        String decodedString = jsonDecode(response.body);
-        Map<String, dynamic> data = jsonDecode(decodedString);
+      // Decode the response string (if it's valid JSON)
+      if (cleanResponse.isNotEmpty) {
+        Map<String, dynamic> data = jsonDecode(cleanResponse);
+
         setState(() {
           result = ClaimResult(
-            verdict: data['verdict'],
-            why: data['why'],
-            details: data['detailed_analysis'],
+            verdict: data['Verdict'],
+            confidence: data['Percentage Accuracy'],
+            why: data['Reasons'],
+            details: data['Detailed Analysis'],
           );
           isLoading = false; // Stop loading when analysis is complete
         });
-      } else {
-        print('Failed to load data. Status code: ${response.statusCode}');
-        setState(() {
-          isLoading = false;
-        });
       }
     } catch (e) {
-      print('Error occurred: $e');
+      print("Error decoding response: $e");
       setState(() {
-        isLoading = false; // Stop loading in case of an error
+        isLoading = false;
       });
     }
   }
+
+  // Future<void> analyzeClaim(String claim) async {
+  //   setState(() {
+  //     isLoading = true; // Set loading to true when analysis starts
+  //   });
+
+  //   const String apiUrl =
+  //       'https://cwbackend-a3332a655e1f.herokuapp.com/claims/analyze';
+
+  //   Map<String, String> queryParams = {
+  //     'ingredients': widget.product['ingredients'].join(', '),
+  //     'claim': claim
+  //   };
+
+  //   final Uri uri = Uri.parse(apiUrl).replace(queryParameters: queryParams);
+
+  //   try {
+  //     final response = await http.get(uri);
+
+  //     if (response.statusCode == 200) {
+  //       String decodedString = jsonDecode(response.body);
+  //       Map<String, dynamic> data = jsonDecode(decodedString);
+  //       setState(() {
+  //         result = ClaimResult(
+  //           verdict: data['verdict'],
+  //           why: data['why'],
+  //           details: data['detailed_analysis'],
+  //         );
+  //         isLoading = false; // Stop loading when analysis is complete
+  //       });
+  //     } else {
+  //       print('Failed to load data. Status code: ${response.statusCode}');
+  //       setState(() {
+  //         isLoading = false;
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print('Error occurred: $e');
+  //     setState(() {
+  //       isLoading = false; // Stop loading in case of an error
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +193,7 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                   Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        analyzeClaim(claimController.text);
+                        helper();
                       },
                       child: Text(
                         'Check Claim',
@@ -223,12 +259,12 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                             ),
                             SizedBox(height: 8.0),
                             Text(
-                              result!.verdict,
+                              '${result!.confidence}% ${result!.verdict}',
                               style: TextStyle(
                                   fontSize: 24, fontWeight: FontWeight.bold),
                             ),
                             SizedBox(height: 8.0),
-                            Text(result!.why.join()),
+                            Text(result!.why),
                             Text(result!.details),
                           ],
                         ),
@@ -244,12 +280,13 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
 
 class ClaimResult {
   final String verdict;
-  final List<dynamic> why;
+  final String why;
   final String details;
+  final double confidence;
 
-  ClaimResult({
-    required this.verdict,
-    required this.why,
-    required this.details,
-  });
+  ClaimResult(
+      {required this.verdict,
+      required this.why,
+      required this.details,
+      required this.confidence});
 }

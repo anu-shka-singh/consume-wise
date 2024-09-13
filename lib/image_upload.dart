@@ -220,7 +220,7 @@ class _ImageUploadState extends State<ImageUpload> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              HealthAnalysis(),
+                                              const HealthAnalysis(),
                                         ),
                                       );
                                     },

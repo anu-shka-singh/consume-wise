@@ -14,9 +14,8 @@ class HealthAnalysis extends StatefulWidget {
 }
 
 class _HealthAnalysisState extends State<HealthAnalysis> {
-  List<bool> _isExpanded = [false, false, false];
-  late ScrollController? _scrollController;
-  late Timer? _timer;
+  final List<bool> _isExpanded = [false, false];
+
   List<String> keywords = [
     "Health",
     "Fitness",
@@ -42,41 +41,54 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     {'name': 'fact 4', 'description': 'Description of fact 4...'},
   ];
 
+  Map<String, String> allergyIcons = {
+    "Peanuts": "assets/images/peanuts.png",
+    "Eggs": "assets/images/egg.png",
+    "Wheat": "assets/images/wheat.png",
+    "Soybeans": "assets/images/soy.png",
+    "Milk": "assets/images/milk.png",
+    "Fish": "assets/images/fish.png",
+    "Tree Nuts": "assets/images/treenut.png",
+    "Sesame Seeds": "assets/images/sesame.png",
+  };
+
+  List<String> allergyInfo = ["Peanuts", "Eggs", "Fish"];
+
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      startAutoScroll(); // Start auto-scrolling after the first frame
-    });
-    _panelExpanded = List.generate(ingredients.length, (index) => false);
+    // _scrollController = ScrollController();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   startAutoScroll(); // Start auto-scrolling after the first frame
+    // });
+    // _panelExpanded = List.generate(ingredients.length, (index) => false);
   }
 
-  void startAutoScroll() {
-    _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
-      if (_scrollController != null && _scrollController!.hasClients) {
-        double maxScrollExtent = _scrollController!.position.maxScrollExtent;
-        double currentScroll = _scrollController!.position.pixels;
-
-        if (currentScroll < maxScrollExtent) {
-          _scrollController!.animateTo(
-            currentScroll + 2.0, // Speed of the scroll
-            duration: Duration(milliseconds: 50),
-            curve: Curves.linear,
-          );
-        } else {
-          _scrollController!.jumpTo(0); // Restart scrolling
-        }
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollController?.dispose();
-    _timer?.cancel();
-    super.dispose();
-  }
+  // void startAutoScroll() {
+  //   _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
+  //     if (_scrollController != null && _scrollController!.hasClients) {
+  //       double maxScrollExtent = _scrollController!.position.maxScrollExtent;
+  //       double currentScroll = _scrollController!.position.pixels;
+  //
+  //       if (currentScroll < maxScrollExtent) {
+  //         _scrollController!.animateTo(
+  //           currentScroll + 2.0, // Speed of the scroll
+  //           duration: Duration(milliseconds: 50),
+  //           curve: Curves.linear,
+  //         );
+  //       } else {
+  //         _scrollController!.jumpTo(0); // Restart scrolling
+  //       }
+  //     }
+  //   });
+  // }
+  //
+  // @override
+  // void dispose() {
+  //   _scrollController?.dispose();
+  //   _timer?.cancel();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -93,233 +105,70 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF055b49),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                ),
-                padding: const EdgeInsets.only(
-                    top: 0, left: 16, right: 16, bottom: 16),
-                child: const Text(
-                  "Health Analysis",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Card(
-                elevation: 4,
-                color: Color.fromARGB(147, 255, 196, 0),
-                margin: const EdgeInsets.all(14.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                  child: Column(
-                    children: [
-                      Row(
+                margin: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(16.0),
+
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Left: Product Image
+                    Image.asset(
+                      'assets/images/kit-kat.png',
+                      width: 120, // Adjust the width as needed
+                      height: 100, // Adjust the height as needed
+                    ),
+                    const SizedBox(width: 40),
+
+                    // Right: Heading, subtext, and health rating
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.asset(
-                            'assets/images/kit-kat.png',
-                            width: 120, // Adjust the width as needed
-                            height: 100, // Adjust the height as needed
-                          ),
-                          const SizedBox(width: 20),
-                          const Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "Kit-Kat",
-                                    style: TextStyle(
-                                        fontSize: 35,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color.fromARGB(255, 30, 30, 30)),
-                                  ),
-                                  const Text(
-                                    "By: Nestle",
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color.fromARGB(255, 63, 81, 90)),
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                  ),
-                                ],
-                              ),
+                          // Heading: KIT-KAT
+                          const Text(
+                            "Kit-Kat",
+                            style: TextStyle(
+                              fontSize: 35,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 30, 30, 30),
                             ),
-                          )
+                          ),
+
+                          // Subtext: By Nestle
+                          const Text(
+                            "By: Nestle",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 63, 81, 90),
+                            ),
+                          ),
+                          const SizedBox(height: 16.0), // Spacing before health rating
+
+                          // Health Rating Text
+                          const Text(
+                            "Health Rating:",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 30, 30, 30),
+                            ),
+                          ),
+                          const SizedBox(height: 8.0), // Spacing before star rating
+
+                          // Health Rating: Star Bar (out of 5 stars)
+                          buildHealthRatingWidget(4.5), // Replace 4.5 with dynamic rating value
                         ],
                       ),
-                      // const Divider(
-                      //   color: Color.fromARGB(255, 70, 84, 14),
-                      //   thickness: 2,
-                      // ),
-                      Container(
-                        width: double
-                            .infinity, // Ensure it takes the full width of the card
-                        decoration: const BoxDecoration(
-                          color: Color.fromARGB(255, 143, 28, 19),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(15),
-                          ),
-                        ),
-                        // Red color for the band
-                        padding: EdgeInsets.symmetric(
-                            vertical: 5), // Padding for the text
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.warning_amber_outlined,
-                              size: 20,
-                              color: Colors.white,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              "Ultra Processed Food", // Your text here
-                              textAlign: TextAlign.center, // Center the text
-                              style: TextStyle(
-                                color: Colors.white, // White color for the text
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          const Column(
-                            children: [
-                              Text(
-                                "Health",
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                              Text(
-                                "Rating",
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ],
-                          ),
-                          buildHealthRatingWidget(5),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      )
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              //nutritional information
-              Card(
-                elevation: 4,
-                color: Color(0xFFB0E0E6),
-                margin: const EdgeInsets.all(14.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Nutritional Information",
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF2C2C2C),
-                        ),
-                      ),
-                      StatefulBuilder(builder: (context, state) {
-                        return Card(
-                          color: Color(0xFFF0F8FF),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ExpansionPanelList(
-                              elevation: 0,
-                              expandedHeaderPadding: EdgeInsets.all(5),
-                              animationDuration: Duration(milliseconds: 500),
-                              materialGapSize: 5,
-                              expandIconColor: Colors.blueGrey,
-                              expansionCallback: (int index, bool isExpanded) {
-                                setState(() {
-                                  _isExpanded[index] = !_isExpanded[index];
-                                });
-                              },
-                              children: [
-                                _buildPanel(
-                                    0,
-                                    "Calories",
-                                    [
-                                      {"Item 1": 10},
-                                      {"Item 2": 10},
-                                      {"Item 3": 10}
-                                    ],
-                                    _isExpanded,
-                                    setState),
-                                _buildPanel(
-                                    1,
-                                    "Macronutrients",
-                                    [
-                                      {"Carbohydrates": 7.23},
-                                      {"Protien": 0.0},
-                                      {"Fats": 9.77}
-                                    ],
-                                    _isExpanded,
-                                    setState),
-                                _buildPanel(
-                                    2,
-                                    "Micronutrients",
-                                    [
-                                      {"Item 1": 10},
-                                      {"Item 2": 10},
-                                      {"Item 3": 10}
-                                    ],
-                                    _isExpanded,
-                                    setState),
-                              ],
-                            ),
-                          ),
-                        );
-                      })
-                    ],
-                  ),
-                ),
-              ),
+
               // horizontally scrolling keywords
               Container(
                 height: 40, // Adjust height as needed
                 child: ListView.builder(
-                  controller: _scrollController,
                   scrollDirection: Axis.horizontal,
                   itemCount: keywords.length,
                   itemBuilder: (context, index) {
@@ -327,10 +176,9 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Color(
-                              0xFF9BCC9E), // Complementary background color for the box
+                          color: const Color(0xFF055b49),
                           borderRadius:
-                              BorderRadius.circular(12), // Rounded corners
+                          BorderRadius.circular(12), // Rounded corners
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black
@@ -342,7 +190,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           ],
                         ),
                         padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         child: Center(
                           child: Text(
                             keywords[index],
@@ -350,7 +198,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color:
-                                  Color.fromARGB(255, 27, 67, 53), // Text color
+                              Colors.white, // Text color
                             ),
                           ),
                         ),
@@ -359,318 +207,326 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                   },
                 ),
               ),
-              SizedBox(
-                height: 10,
-              ),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // ingredients card
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible:
-                              true, // Can close by tapping outside
-                          builder: (BuildContext context) {
-                            return BackdropFilter(
-                              filter: ImageFilter.blur(
-                                  sigmaX: 5, sigmaY: 5), // Blurred backdrop
-                              child: StatefulBuilder(
-                                builder: (context, setState) {
-                                  return Dialog(
-                                    backgroundColor:
-                                        Color.fromARGB(255, 213, 154, 239),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        maxHeight: MediaQuery.of(context)
-                                                .size
-                                                .height *
-                                            0.6, // Maximum height (60% of screen height)
-                                        minWidth:
-                                            MediaQuery.of(context).size.width *
-                                                0.8,
-                                        maxWidth:
-                                            MediaQuery.of(context).size.width *
-                                                0.9,
-                                      ),
-                                      child: SingleChildScrollView(
-                                        child: Column(
-                                          children: [
-                                            const SizedBox(
-                                                height: 10), // Space at the top
-                                            ...ingredients
-                                                .asMap()
-                                                .entries
-                                                .map((entry) {
-                                              int index = entry.key;
-                                              Map<String, dynamic> ingredient =
-                                                  entry.value;
-
-                                              return Card(
-                                                elevation: 4,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(16),
-                                                ),
-                                                margin: EdgeInsets.symmetric(
-                                                    vertical: 8,
-                                                    horizontal: 16),
-                                                child: ExpansionPanelList(
-                                                  elevation: 1,
-                                                  expandedHeaderPadding:
-                                                      EdgeInsets.all(0),
-                                                  expansionCallback:
-                                                      (int panelIndex,
-                                                          bool isExpanded) {
-                                                    setState(() {
-                                                      _panelExpanded[index] =
-                                                          !_panelExpanded[
-                                                              index];
-                                                    });
-                                                  },
-                                                  children: [
-                                                    ExpansionPanel(
-                                                      headerBuilder:
-                                                          (BuildContext context,
-                                                              bool isExpanded) {
-                                                        return ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .vertical(
-                                                            top:
-                                                                Radius.circular(
-                                                                    16),
-                                                          ),
-                                                          child: ListTile(
-                                                            title: Text(
-                                                              '${ingredient['name']}',
-                                                              style: TextStyle(
-                                                                fontSize: 30,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                      body: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .vertical(
-                                                          bottom:
-                                                              Radius.circular(
-                                                                  16),
-                                                        ),
-                                                        child: Container(
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(16.0),
-                                                            child: Text(
-                                                              '${ingredient['description']}',
-                                                              style: TextStyle(
-                                                                fontSize: 20,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      isExpanded:
-                                                          _panelExpanded[index],
-                                                      canTapOnHeader: true,
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            }).toList(),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      child: Card(
-                        elevation: 4,
-                        color: Color.fromARGB(255, 47, 12, 78),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+              SizedBox(height: 10,),
+              Container(
+                height: 40, // Adjust height as needed
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: keywords.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent,
+                          borderRadius:
+                          BorderRadius.circular(12), // Rounded corners
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black
+                                  .withOpacity(0.2), // Subtle shadow for depth
+                              spreadRadius: 1,
+                              blurRadius: 4,
+                              offset: Offset(0, 2), // Offset shadow
+                            ),
+                          ],
                         ),
-                        margin: EdgeInsets.only(left: 4, right: 4),
-                        child: const Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.list_alt,
-                                size: 50,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                'Ingredients',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                        padding:
+                        EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Center(
+                          child: Text(
+                            keywords[index],
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color:
+                              Colors.white, // Text color
+                            ),
                           ),
                         ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              SizedBox(height: 20,),
+
+              //Allergy Info
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+                    child: Text(
+                      'Allergy Warnings',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF333333),
                       ),
                     ),
                   ),
 
-                  SizedBox(
-                    width: 10,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Wrap(
+                      spacing: 20.0,
+                      runSpacing: 16.0,
+                      children: allergyInfo.map((allergy) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset(
+                              allergyIcons[allergy]!,
+                              width: 50,
+                              height: 50,
+                            ),
+                            const SizedBox(height: 8.0),
+                            // Display the allergy name
+                            Text(
+                              allergy,
+                              style: const TextStyle(fontSize: 14, color: Color(0xFF555555), fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
                   ),
-                  // Serving Tips
-                  Stack(
+                ],
+              ),
+              //SizedBox(height: 20,),
+
+              Divider(
+                thickness: 1,
+                color: Colors.grey[300],
+                height: 40,
+                indent: 16,
+                endIndent: 16,
+              ),
+
+              //nutritional information
+              Card(
+                elevation: 3,
+                color: const Color.fromARGB(255, 255, 255, 255),
+                margin: const EdgeInsets.all(14.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
                     children: [
-                      Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (BuildContext context) {
-                                return BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                      sigmaX: 5, sigmaY: 5), // Blurred backdrop
-                                  child: DraggableScrollableSheet(
-                                    initialChildSize:
-                                        0.6, // Start with 60% height
-                                    minChildSize: 0.3, // Minimum height (30%)
-                                    maxChildSize: 1.0, // Maximum height (100%)
-                                    builder: (BuildContext context,
-                                        ScrollController scrollController) {
-                                      return Container(
-                                        padding: EdgeInsets.all(16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.vertical(
-                                              top: Radius.circular(16)),
-                                        ),
-                                        child: SingleChildScrollView(
-                                          controller:
-                                              scrollController, // Use the ScrollController
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Chocolates', // product tag
-                                                style: TextStyle(
-                                                  fontSize: 40,
-                                                  fontWeight: FontWeight.normal,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                              SizedBox(height: 20),
-                                              // Build list items from the provided items
-                                              ...facts.map((fact) {
-                                                return Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(vertical: 4.0),
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    //crossAxisAlignment: CrossAxisAlignment.center,
-                                                    children: [
-                                                      Text(
-                                                        '${fact['name']}: ',
-                                                        style: TextStyle(
-                                                          fontSize: 40,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      Text(
-                                                        '${fact['description']}',
-                                                        style: TextStyle(
-                                                          fontSize: 20,
-                                                        ),
-                                                      ),
-                                                      const Divider(
-                                                        color: Colors.black,
-                                                        height: 50,
-                                                        indent: 60,
-                                                        endIndent: 60,
-                                                        thickness: 2,
-                                                      )
-                                                    ],
-                                                  ),
-                                                );
-                                              }).toList(),
-                                              SizedBox(height: 20),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                          child: Card(
-                            elevation: 4,
-                            color: Color.fromARGB(255, 92, 21, 57),
+                      // Nutritional Information Header
+                      Text(
+                        "Nutritional Information",
+                        style: TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF2C2C2C),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+
+                      // Calories Section (Non-Collapsible)
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              'assets/images/calories.png', // Use your image asset
+                              width: 30, // Adjust the size as needed
+                              height: 30,
+                            ),
+                            SizedBox(width: 15),
+                            Text(
+                              'Calories:',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2C2C2C),
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Text(
+                              '10 kcal',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Color(0xFF2C2C2C),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height: 5),
+
+                      // Sugar Section (Non-Collapsible)
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              'assets/images/sugar.png', // Use your image asset
+                              width: 30, // Adjust the size as needed
+                              height: 30,
+                            ),
+                            SizedBox(width: 15),
+                            Text(
+                              'Sugar:',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2C2C2C),
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Text(
+                              '10g',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Color(0xFF2C2C2C),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // ExpansionPanel for Macronutrients
+                      StatefulBuilder(
+                        builder: (context, setState) {
+                          return Card(
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: const Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ExpansionPanelList(
+                                elevation: 0,
+                                expandedHeaderPadding: EdgeInsets.all(5),
+                                animationDuration: Duration(milliseconds: 500),
+                                materialGapSize: 5,
+                                expansionCallback: (int index, bool isExpanded) {
+                                  setState(() {
+                                    _isExpanded[index] = !_isExpanded[index]; // Toggle expansion state
+                                  });
+                                },
                                 children: [
-                                  Icon(
-                                    Icons.restaurant,
-                                    size: 50,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'Serving Tips',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  _buildMacronutrientPanel(
+                                    0, // Make sure index matches the _isExpanded list index
+                                    "Macronutrients",
+                                    [
+                                      {"Carbohydrates": 7.23, "image": 'assets/images/bread.png'},
+                                      {"Protein": 0.0, "image": 'assets/images/salad.png'},
+                                      {"Fats": 9.77, "image": 'assets/images/fats.png'}
+                                    ],
+                                    _isExpanded,
+                                    setState,
                                   ),
                                 ],
                               ),
                             ),
-                          ),
+                          );
+                        },
+                      ),
+
+                    ],
+                  ),
+                ),
+              ),
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Ingredients Section
+                  Card(
+                    color: Colors.white,
+                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                    child: ExpansionTile(
+                      leading: Icon(Icons.list, color: Colors.deepPurple), // Ingredients Icon
+                      title: Text(
+                        'Ingredients',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF333333),
                         ),
                       ),
-                    ],
+                      children: ingredients.map((ingredient) {
+                        return ListTile(
+                          title: Text(
+                            '${ingredient['name']}',
+                            style: TextStyle(fontSize: 16, color: Color(0xFF555555)),
+                          ),
+                          subtitle: Text(
+                            '${ingredient['description']}',
+                            style: TextStyle(fontSize: 14, color: Color(0xFF888888)),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+                  // Diet Compliance Section
+                  Card(
+                    color: Colors.white,
+                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                    child: ExpansionTile(
+                      leading: Icon(Icons.check_circle, color: Colors.teal), // Diet Compliance Icon
+                      title: Text(
+                        'Diet Compliance',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF333333),
+                        ),
+                      ),
+                      children: ingredients.map((ingredient) {
+                        return ListTile(
+                          title: Text(
+                            '${ingredient['name']}',
+                            style: TextStyle(fontSize: 16, color: Color(0xFF555555)),
+                          ),
+                          subtitle: Text(
+                            '${ingredient['description']}',
+                            style: TextStyle(fontSize: 14, color: Color(0xFF888888)),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ],
               ),
 
+              Divider(
+                thickness: 1,
+                color: Colors.grey[300],
+                height: 40,
+                indent: 16,
+                endIndent: 16,
+              ),
               // claim analysis
               Card(
                 elevation: 4,
-                color: Color.fromARGB(255, 216, 255, 165),
+                color: const Color(0xFF86b649),
                 margin: const EdgeInsets.all(14.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
@@ -698,9 +554,10 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF055b49)),
+                                      color: Colors.white),
                                 ),
                                 IconButton(
+                                  color: Colors.white,
                                   icon: const Icon(Icons.arrow_forward),
                                   onPressed: () {
                                     Navigator.push(
@@ -718,7 +575,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                             const Text(
                               "Know the truth of product claims",
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                                  fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white60),
                               softWrap: true, // Ensures text wraps if necessary
                               overflow: TextOverflow
                                   .visible, // Makes sure text doesn't get cut off
@@ -731,15 +588,15 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                 ),
               ),
 
-              //SizedBox(height: 20,),
-              Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 10, left: 20),
+
+              const Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 10, left: 20),
                 child: Text(
                   "Better Options",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 14, 86, 62),
+                    color: Color(0xFF333333),
                   ),
                 ),
               ),
@@ -774,6 +631,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                   ),
                 ),
               ),
+
+              SizedBox(height: 40,)
             ],
           ),
         ),
@@ -782,109 +641,71 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   }
 }
 
-Card buildHealthRatingWidget(int rating) {
-  return Card(
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-    elevation: 4,
-    color: Colors.white, // Keep the background light for contrast
-    child: Container(
-      width: 90, // Square-like dimensions
-      height: 100,
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '$rating',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black, // Dark color for clear visibility
-                ),
-              ),
-              Icon(
-                Icons.star, // Adding an icon to make it more visually appealing
-                color: Colors.orangeAccent,
-                size: 24,
-              ),
-            ],
-          ),
-          Text(
-            'out of 10',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[700], // Subtle text color for 'out of 10'
-            ),
-          ),
-        ],
-      ),
-    ),
+Widget buildHealthRatingWidget(double rating) {
+  int fullStars = rating.floor();
+  bool hasHalfStar = rating - fullStars >= 0.5;
+
+  return Row(
+    children: List.generate(5, (index) {
+      if (index < fullStars) {
+        return const Icon(Icons.star, color: Color(0xFF86b649), size: 30);
+      } else if (index == fullStars && hasHalfStar) {
+        return const Icon(Icons.star_half, color: Color(0xFF86b649), size: 30);
+      } else {
+        return const Icon(Icons.star_border, color: Color(0xFF86b649), size: 30);
+      }
+    }),
   );
 }
 
-ExpansionPanel _buildPanel(
+ExpansionPanel _buildMacronutrientPanel(
     int index,
-    String headerText,
-    List<Map<String, double>> items,
+    String title,
+    List<Map<String, dynamic>> nutrients,
     List<bool> isExpanded,
-    void Function(void Function()) setState) {
+    void Function(void Function()) setState,
+    ) {
   return ExpansionPanel(
+    backgroundColor: Colors.white,
     headerBuilder: (BuildContext context, bool isExpanded) {
-      return ListTile(
-        title: Text(
-          headerText,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 0.0), // Adjust padding as needed
+        child: Row(
+          children: [
+            Image.asset(
+              'assets/images/nutrient.png',  // Replace with your image asset
+              width: 30,  // Adjust the size as needed
+              height: 30,
+            ),
+            SizedBox(width: 15,),
+            Text(
+              title,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+          ],
         ),
       );
-    },
-    body: Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: items.expand((item) {
-          // Each 'item' is a Map<String, double>
-          return item.entries.map((entry) {
-            // Extract key and value from the Map
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ListTile(
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 4.0, horizontal: 10),
-                  title: Text(
-                    '${entry.key}', // Key as title
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  trailing: Text(
-                    '${entry.value}g', // Value as trailing
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
 
-                  // You can add other properties or widgets here in the future
-                ),
-                Divider(
-                  indent: 40,
-                  endIndent: 40,
-                  color: Colors.blueGrey,
-                ), // Add a divider between rows
-              ],
-            );
-          }).toList();
-        }).toList(),
-      ),
+    },
+    body: Column(
+      children: nutrients.map((nutrient) {
+        return ListTile(
+          leading: Image.asset(
+            nutrient['image'], // The image for the nutrient
+            width: 30,
+            height: 30,
+          ),
+          title: Text(
+            nutrient.keys.first,
+            style: TextStyle(fontSize: 16),
+          ),
+          trailing: Text(
+            '${nutrient.values.first} g', // The nutrient value
+            style: TextStyle(fontSize: 16),
+          ),
+        );
+      }).toList(),
     ),
     isExpanded: isExpanded[index],
   );

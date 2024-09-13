@@ -7,7 +7,7 @@ import 'home.dart';
 import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   _LoginState createState() => _LoginState();
@@ -53,7 +53,7 @@ class _LoginState extends State<LoginPage> {
         width: size.width,
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
               left: 20,
               right: 20,
             ),
@@ -63,7 +63,6 @@ class _LoginState extends State<LoginPage> {
                   "assets/images/logo.png",
                   height: 250,
                 ),
-
                 TextFormField(
                   decoration: const InputDecoration(
                     labelText: "Enter Email",
@@ -134,7 +133,7 @@ class _LoginState extends State<LoginPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text("Don't have an account? ",
-            style: TextStyle(color: const Color(0xFF055b49))),
+            style: TextStyle(color: Color(0xFF055b49))),
         GestureDetector(
           onTap: () {
             Navigator.push(context,
@@ -143,7 +142,7 @@ class _LoginState extends State<LoginPage> {
           child: const Text(
             "Sign Up",
             style: TextStyle(
-                color: const Color(0xFF055b49), fontWeight: FontWeight.bold),
+                color: Color(0xFF055b49), fontWeight: FontWeight.bold),
           ),
         )
       ],

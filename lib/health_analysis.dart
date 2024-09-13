@@ -1,10 +1,5 @@
-import 'dart:async';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:overlay/claim_checker.dart';
-import 'package:overlay/image_upload.dart';
 
 void main() {
   final product = {
@@ -157,7 +152,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
         elevation: 0,
       ),
       body: Container(
-        color: Color(0xFFFFF6E7),
+        color: const Color(0xFFFFF6E7),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,7 +179,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           // Heading: KIT-KAT
                           Text(
                             widget.product['name'].toString(),
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 35,
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 30, 30, 30),
@@ -194,7 +189,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           // Subtext: By Nestle
                           Text(
                             "By: ${widget.product['company'].toString()}",
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 63, 81, 90),
@@ -245,16 +240,16 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   .withOpacity(0.2), // Subtle shadow for depth
                               spreadRadius: 1,
                               blurRadius: 4,
-                              offset: Offset(0, 2), // Offset shadow
+                              offset: const Offset(0, 2), // Offset shadow
                             ),
                           ],
                         ),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                         child: Center(
                           child: Text(
                             positive[index],
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.white, // Text color
@@ -267,7 +262,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                 ),
               ),
 
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Container(
@@ -289,16 +284,16 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   .withOpacity(0.2), // Subtle shadow for depth
                               spreadRadius: 1,
                               blurRadius: 4,
-                              offset: Offset(0, 2), // Offset shadow
+                              offset: const Offset(0, 2), // Offset shadow
                             ),
                           ],
                         ),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                         child: Center(
                           child: Text(
                             negative[index],
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.white, // Text color
@@ -311,7 +306,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                 ),
               ),
 
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
 
@@ -384,7 +379,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                   child: Column(
                     children: [
                       // Nutritional Information Header
-                      Text(
+                      const Text(
                         "Nutritional Information",
                         style: TextStyle(
                           fontSize: 21,
@@ -392,7 +387,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           color: Color(0xFF2C2C2C),
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
                       // Calories Section (Non-Collapsible)
                       Container(
@@ -408,8 +403,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                               width: 30, // Adjust the size as needed
                               height: 30,
                             ),
-                            SizedBox(width: 15),
-                            Text(
+                            const SizedBox(width: 15),
+                            const Text(
                               'Calories:',
                               style: TextStyle(
                                 fontSize: 18,
@@ -417,10 +412,10 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                 color: Color(0xFF2C2C2C),
                               ),
                             ),
-                            SizedBox(width: 20),
+                            const SizedBox(width: 20),
                             Text(
                               widget.product['calories'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                                 color: Color(0xFF2C2C2C),
                               ),
@@ -429,7 +424,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                         ),
                       ),
 
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
 
                       // Sugar Section (Non-Collapsible)
                       Container(
@@ -445,8 +440,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                               width: 30, // Adjust the size as needed
                               height: 30,
                             ),
-                            SizedBox(width: 15),
-                            Text(
+                            const SizedBox(width: 15),
+                            const Text(
                               'Sugar:',
                               style: TextStyle(
                                 fontSize: 18,
@@ -454,10 +449,10 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                 color: Color(0xFF2C2C2C),
                               ),
                             ),
-                            SizedBox(width: 20),
+                            const SizedBox(width: 20),
                             Text(
                               widget.product['sugar'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                                 color: Color(0xFF2C2C2C),
                               ),
@@ -478,8 +473,9 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                               padding: const EdgeInsets.all(8.0),
                               child: ExpansionPanelList(
                                 elevation: 0,
-                                expandedHeaderPadding: EdgeInsets.all(5),
-                                animationDuration: Duration(milliseconds: 500),
+                                expandedHeaderPadding: const EdgeInsets.all(5),
+                                animationDuration:
+                                    const Duration(milliseconds: 500),
                                 materialGapSize: 5,
                                 expansionCallback:
                                     (int index, bool isExpanded) {
@@ -526,15 +522,16 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                   // Ingredients Section
                   Card(
                     color: Colors.white,
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 2,
                     child: ExpansionTile(
-                      leading: Icon(Icons.list,
+                      leading: const Icon(Icons.list,
                           color: Colors.deepPurple), // Ingredients Icon
-                      title: Text(
+                      title: const Text(
                         'Ingredients',
                         style: TextStyle(
                           fontSize: 18,
@@ -545,8 +542,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                       children: ingredients.map((ingredient) {
                         return ListTile(
                           title: Text(
-                            '${ingredient}',
-                            style: TextStyle(
+                            ingredient,
+                            style: const TextStyle(
                                 fontSize: 16, color: Color(0xFF555555)),
                           ),
                           // subtitle: Text(
@@ -562,15 +559,16 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                   // Diet Compliance Section
                   Card(
                     color: Colors.white,
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 2,
                     child: ExpansionTile(
-                      leading: Icon(Icons.check_circle,
+                      leading: const Icon(Icons.check_circle,
                           color: Colors.teal), // Diet Compliance Icon
-                      title: Text(
+                      title: const Text(
                         'Diet Compliance',
                         style: TextStyle(
                           fontSize: 18,
@@ -582,12 +580,12 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                         return ListTile(
                           title: Text(
                             '${item['name']}',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16, color: Color(0xFF555555)),
                           ),
                           subtitle: Text(
                             '${item['description']}',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 14, color: Color(0xFF888888)),
                           ),
                         );
@@ -714,7 +712,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                 ),
               ),
 
-              SizedBox(
+              const SizedBox(
                 height: 40,
               )
             ],
@@ -754,8 +752,8 @@ ExpansionPanel _buildMacronutrientPanel(
     backgroundColor: Colors.white,
     headerBuilder: (BuildContext context, bool isExpanded) {
       return Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: 0.0), // Adjust padding as needed
+        padding: const EdgeInsets.symmetric(
+            horizontal: 0.0), // Adjust padding as needed
         child: Row(
           children: [
             Image.asset(
@@ -763,12 +761,12 @@ ExpansionPanel _buildMacronutrientPanel(
               width: 30, // Adjust the size as needed
               height: 30,
             ),
-            SizedBox(
+            const SizedBox(
               width: 15,
             ),
             Text(
               title,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -784,11 +782,11 @@ ExpansionPanel _buildMacronutrientPanel(
           ),
           title: Text(
             nutrient.keys.first,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
           trailing: Text(
             '${nutrient.values.first} g', // The nutrient value
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
         );
       }).toList(),

@@ -3,10 +3,9 @@ import 'package:overlay/services/prompts.dart';
 
 import 'calorie_counter_result.dart';
 import 'loading_screen.dart';
-import 'user_datamodel.dart';
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: CalorieCounterPage(),
   ));
 }
@@ -176,7 +175,8 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                     // Show the loading screen
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoadingScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const LoadingScreen()),
                     );
 
                     // Call your API and wait for the response
@@ -193,10 +193,6 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                     );
                   }
                 },
-                child: const Text(
-                  'Submit',
-                  style: TextStyle(fontSize: 18),
-                ),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: const Color(0xFF86b649),
@@ -207,6 +203,10 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30), // Rounded button
                   ),
+                ),
+                child: const Text(
+                  'Submit',
+                  style: TextStyle(fontSize: 18),
                 ),
               ),
             ),

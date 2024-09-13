@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:overlay/services/gemini.dart';
 
 import 'loading_screen.dart';
 import 'services/prompts.dart';
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: ClaimCheckerPage(
-      product: const {
+      product: {
         'name': 'bornvita',
         'ingredients': [
           'Cereal extract (51%*)',
@@ -30,7 +29,7 @@ void main() {
 
 class ClaimCheckerPage extends StatefulWidget {
   final Map<String, dynamic> product;
-  ClaimCheckerPage({super.key, required this.product});
+  const ClaimCheckerPage({super.key, required this.product});
   @override
   _ClaimCheckerPageState createState() => _ClaimCheckerPageState();
 }
@@ -127,7 +126,7 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
       ),
       backgroundColor: const Color(0xFFFFF6E7),
       body: isLoading
-          ? LoadingScreen() // Show loading screen if isLoading is true
+          ? const LoadingScreen() // Show loading screen if isLoading is true
           : SingleChildScrollView(
               child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -182,8 +181,8 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 16.0, vertical: 12.0),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: const Color(0xFF055b49), width: 2.0),
+                          borderSide:
+                              BorderSide(color: Color(0xFF055b49), width: 2.0),
                         ),
                       ),
                       maxLines: 3,
@@ -195,23 +194,23 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                       onPressed: () {
                         helper();
                       },
-                      child: Text(
-                        'Check Claim',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF055b49),
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                             horizontal: 24.0, vertical: 12.0),
-                        textStyle: TextStyle(fontSize: 18),
+                        textStyle: const TextStyle(fontSize: 18),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
+                      child: const Text(
+                        'Check Claim',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
                     ),
                   ),
                   if (result != null) ...[
-                    SizedBox(height: 24.0),
+                    const SizedBox(height: 24.0),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 22.0),
                       child: Container(
@@ -224,7 +223,7 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                               color: Colors.grey.withOpacity(0.3),
                               spreadRadius: 2,
                               blurRadius: 8,
-                              offset: Offset(0, 4),
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
@@ -242,8 +241,8 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
-                            SizedBox(height: 12.0),
-                            Row(
+                            const SizedBox(height: 12.0),
+                            const Row(
                               children: [
                                 Icon(Icons.star,
                                     color: Colors.yellow, size: 24),
@@ -257,13 +256,13 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                                     color: Colors.yellow, size: 24),
                               ],
                             ),
-                            SizedBox(height: 8.0),
+                            const SizedBox(height: 8.0),
                             Text(
                               '${result!.confidence}% ${result!.verdict}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 24, fontWeight: FontWeight.bold),
                             ),
-                            SizedBox(height: 8.0),
+                            const SizedBox(height: 8.0),
                             Text(result!.why),
                             Text(result!.details),
                           ],

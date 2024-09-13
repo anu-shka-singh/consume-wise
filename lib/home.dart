@@ -338,7 +338,7 @@ class _MainScreenState extends State<MainScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          CalorieCounterPage()),
+                                          const CalorieCounterPage()),
                                 );
                               },
                               style: ElevatedButton.styleFrom(

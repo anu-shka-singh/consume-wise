@@ -4,7 +4,7 @@ import 'home.dart';
 import '../user_datamodel.dart';
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: ProfileSetupPage(
       email: 'abc@gmail.com',
     ),
@@ -13,7 +13,7 @@ void main() {
 
 class ProfileSetupPage extends StatefulWidget {
   final String email;
-  ProfileSetupPage({super.key, required this.email});
+  const ProfileSetupPage({super.key, required this.email});
   @override
   _ProfileSetupPageState createState() => _ProfileSetupPageState();
 }
@@ -26,7 +26,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _allergiesController = TextEditingController();
   final TextEditingController _dietController = TextEditingController();
-  final TextEditingController _medicalConditionsController = TextEditingController();
+  final TextEditingController _medicalConditionsController =
+      TextEditingController();
   String _selectedGender = "Male";
   String docId = '';
 
@@ -45,24 +46,25 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
           key: _formKey,
           child: ListView(
             children: <Widget>[
-              Center(
+              const Center(
                 child: Text(
                   'Please enter your details',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF055b49),
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               _buildSection(
                 title: 'Personal Information',
                 children: [
                   _buildTextFormField(
                     controller: _nameController,
                     labelText: 'Full Name*',
-                    validator: (value) => value!.isEmpty ? 'This field is required.' : null,
+                    validator: (value) =>
+                        value!.isEmpty ? 'This field is required.' : null,
                   ),
                   const SizedBox(height: 16),
                   _buildDropdownFormField(
@@ -79,7 +81,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                   _buildTextFormField(
                     controller: _ageController,
                     labelText: 'Age*',
-                    validator: (value) => value!.isEmpty ? 'This field is required.' : null,
+                    validator: (value) =>
+                        value!.isEmpty ? 'This field is required.' : null,
                     keyboardType: TextInputType.number,
                   ),
                   const SizedBox(height: 16),
@@ -129,7 +132,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                       weight: _weightController.text,
                       allergies: _allergiesController.text.split(','),
                       diet: _dietController.text.split(','),
-                      medicalConditions: _medicalConditionsController.text.split(','),
+                      medicalConditions:
+                          _medicalConditionsController.text.split(','),
                     );
                     await saveUserProfile(user);
 
@@ -143,7 +147,8 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                       'weight': _weightController.text,
                       'allergies': _allergiesController.text.split(','),
                       'diet': _dietController.text.split(','),
-                      'medicalConditions': _medicalConditionsController.text.split(','),
+                      'medicalConditions':
+                          _medicalConditionsController.text.split(','),
                     };
 
                     Navigator.push(
@@ -192,7 +197,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
             color: Colors.grey.withOpacity(0.2),
             spreadRadius: 2,
             blurRadius: 8,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -248,7 +253,6 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     );
   }
 
-
   Widget _buildTextFormField({
     required TextEditingController controller,
     required String labelText,
@@ -297,7 +301,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   Future<void> saveUserProfile(User userProfile) async {
     try {
       final DocumentReference docRef =
-      await FirebaseFirestore.instance.collection('userProfiles').add({
+          await FirebaseFirestore.instance.collection('userProfiles').add({
         'email': userProfile.email,
         'name': userProfile.name,
         'age': userProfile.age,

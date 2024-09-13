@@ -51,7 +51,7 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
-              color: const Color(0xFF055b49),
+              color: Color(0xFF055b49),
             ))
           : ListView.builder(
               itemCount: products.length,

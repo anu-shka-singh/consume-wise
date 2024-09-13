@@ -6,7 +6,7 @@ import '../set_profile_page.dart';
 import 'signin_page.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({Key? key}) : super(key: key);
+  const SignUp({super.key});
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -33,7 +33,7 @@ class _SignUpState extends State<SignUp> {
         width: size.width,
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
               left: 20,
               right: 20,
             ),
@@ -146,7 +146,7 @@ class _SignUpState extends State<SignUp> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text("Already have an account? ",
-            style: TextStyle(color: const Color(0xFF055b49))),
+            style: TextStyle(color: Color(0xFF055b49))),
         GestureDetector(
           onTap: () {
             Navigator.push(context,
@@ -155,7 +155,7 @@ class _SignUpState extends State<SignUp> {
           child: const Text(
             "Sign In",
             style: TextStyle(
-                color: const Color(0xFF055b49), fontWeight: FontWeight.bold),
+                color: Color(0xFF055b49), fontWeight: FontWeight.bold),
           ),
         )
       ],

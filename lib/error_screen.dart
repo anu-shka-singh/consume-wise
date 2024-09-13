@@ -5,7 +5,8 @@ class ErrorScreen extends StatelessWidget {
   final String errorMessage;
   final VoidCallback onRedirect;
 
-  ErrorScreen({required this.errorMessage, required this.onRedirect});
+  const ErrorScreen(
+      {super.key, required this.errorMessage, required this.onRedirect});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,8 @@ class ErrorScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset('assets/images/error.png', height: 150, width: 150), // Adjust size as needed
+                    Image.asset('assets/images/error.png',
+                        height: 150, width: 150), // Adjust size as needed
                     const SizedBox(height: 20),
                     const Text(
                       "Oops!",

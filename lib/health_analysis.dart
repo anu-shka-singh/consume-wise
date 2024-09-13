@@ -6,8 +6,82 @@ import 'package:flutter/widgets.dart';
 import 'package:overlay/claim_checker.dart';
 import 'package:overlay/image_upload.dart';
 
+void main() {
+  final product = {
+    'name': 'munch',
+    'company': 'Nestle',
+    'ingredients': [
+      "Wheat flour (atta) (85.3%)",
+      "Palm oil",
+      "Iodised salt",
+      "Thickeners (508, 412)",
+      "Humectants (451(1), 452(i))",
+      "Acidity regulators (501(i), 500(i))",
+      "Mixed spices (22.5%)",
+      "Roasted spice mix powder (6.6%) (Coriander, Turmeric, Cumin, Aniseed, Black pepper, Fenugreek, Ginger, Green cardamom, Cinnamon, Clove, Nutmeg, Bay leaf & Black cardamom)",
+      "Onion powder",
+      "Garlic powder",
+      "Red chilli powder",
+      "Red chilli bib",
+      "Coriander powder",
+      "Turmeric powder",
+      "Ginger powder",
+      "Aniseed powder",
+      "Black pepper powder",
+      "Cumin powder",
+      "Cumin",
+      "Fenugreek powder",
+      "Capsicum extract",
+      "Compounded asafoetida",
+      "Star anise powder",
+      "Coriander extract",
+      "Cumin extract",
+      "Dehydrated Vegetables (16.7%)",
+      "Carrot bits (8.5%)",
+      "Green peas (8.2%)",
+      "Toasted onion flakes (Onion (12.4%) & Corn oil)",
+      "Refined wheat flour (Maida)",
+      "Sugar",
+      "Iodised salt",
+      "Toasted onion powder (Onion (5.9%) & Corn oil)",
+      "Thickener (508)",
+      "Palm oil",
+      "Flavour enhancer (635)",
+      "Yeast extract powder",
+      "Dehydrated kasuri methi leaves",
+      "Starch",
+      "Acidity regulator (330)",
+      "Mineral",
+      "Wheat gluten",
+      "Contains Wheat",
+      "May contain Milk, Oats, and Soy"
+    ],
+    'calories': '15kcal',
+    'sugar': '20g',
+  };
+  final analysis = {
+    'rating': 2.5,
+    'positive': ['high protein', 'low fat'],
+    'negative': ['low fibre', 'high sugar', 'low minerals'],
+    'allergens': ['peanuts'],
+    'diet': [
+      {'name': 'good', 'description': 'Description of fact 1...'},
+      {'name': 'funny', 'description': 'Description of fact 2...'}
+    ]
+  };
+  runApp(MaterialApp(
+    home: HealthAnalysis(
+      product: product,
+      analysis: analysis,
+    ),
+  ));
+}
+
 class HealthAnalysis extends StatefulWidget {
-  const HealthAnalysis({super.key});
+  final Map<String, dynamic> product;
+  final Map<String, dynamic> analysis;
+  const HealthAnalysis(
+      {super.key, required this.product, required this.analysis});
 
   @override
   State<HealthAnalysis> createState() => _HealthAnalysisState();
@@ -15,31 +89,11 @@ class HealthAnalysis extends StatefulWidget {
 
 class _HealthAnalysisState extends State<HealthAnalysis> {
   final List<bool> _isExpanded = [false, false];
-
-  List<String> keywords = [
-    "Health",
-    "Fitness",
-    "Nutrition",
-    "Wellness",
-    "Diet",
-    "Energy",
-    "Mindfulness"
-  ];
-  List<Map<String, String>> ingredients = [
-    {'name': 'Ingredient 1', 'description': 'Description of ingredient 1...'},
-    {'name': 'Ingredient 2', 'description': 'Description of ingredient 2...'},
-    {'name': 'Ingredient 3', 'description': 'Description of ingredient 3...'},
-    {'name': 'Ingredient 4', 'description': 'Description of ingredient 4...'},
-    {'name': 'Ingredient 4', 'description': 'Description of ingredient 4...'},
-    {'name': 'Ingredient 4', 'description': 'Description of ingredient 4...'},
-  ];
+  late List<String> ingredients;
   late List<bool> _panelExpanded;
-  List<Map<String, String>> facts = [
-    {'name': 'fact 1', 'description': 'Description of fact 1...'},
-    {'name': 'fact 2', 'description': 'Description of fact 2...'},
-    {'name': 'fact 3', 'description': 'Description of fact 3...'},
-    {'name': 'fact 4', 'description': 'Description of fact 4...'},
-  ];
+  late List<Map<String, String>> diet;
+  late dynamic positive;
+  late dynamic negative;
 
   Map<String, String> allergyIcons = {
     "Peanuts": "assets/images/peanuts.png",
@@ -57,6 +111,10 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   @override
   void initState() {
     super.initState();
+    ingredients = widget.product['ingredients'];
+    diet = widget.analysis['diet'];
+    positive = widget.analysis['positive'];
+    negative = widget.analysis['positive'];
     // _scrollController = ScrollController();
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   startAutoScroll(); // Start auto-scrolling after the first frame
@@ -107,7 +165,6 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
               Container(
                 margin: const EdgeInsets.all(8.0),
                 padding: const EdgeInsets.all(16.0),
-
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -125,8 +182,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Heading: KIT-KAT
-                          const Text(
-                            "Kit-Kat",
+                          Text(
+                            widget.product['name'].toString(),
                             style: TextStyle(
                               fontSize: 35,
                               fontWeight: FontWeight.bold,
@@ -135,15 +192,16 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           ),
 
                           // Subtext: By Nestle
-                          const Text(
-                            "By: Nestle",
+                          Text(
+                            "By: ${widget.product['company'].toString()}",
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 63, 81, 90),
                             ),
                           ),
-                          const SizedBox(height: 16.0), // Spacing before health rating
+                          const SizedBox(
+                              height: 16.0), // Spacing before health rating
 
                           // Health Rating Text
                           const Text(
@@ -154,10 +212,12 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                               color: Color.fromARGB(255, 30, 30, 30),
                             ),
                           ),
-                          const SizedBox(height: 8.0), // Spacing before star rating
+                          const SizedBox(
+                              height: 8.0), // Spacing before star rating
 
                           // Health Rating: Star Bar (out of 5 stars)
-                          buildHealthRatingWidget(4.5), // Replace 4.5 with dynamic rating value
+                          buildHealthRatingWidget(widget.analysis[
+                              'rating']), // Replace 4.5 with dynamic rating value
                         ],
                       ),
                     ),
@@ -170,7 +230,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                 height: 40, // Adjust height as needed
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: keywords.length,
+                  itemCount: positive.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -178,7 +238,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                         decoration: BoxDecoration(
                           color: const Color(0xFF055b49),
                           borderRadius:
-                          BorderRadius.circular(12), // Rounded corners
+                              BorderRadius.circular(12), // Rounded corners
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black
@@ -190,15 +250,14 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           ],
                         ),
                         padding:
-                        EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         child: Center(
                           child: Text(
-                            keywords[index],
+                            positive[index],
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color:
-                              Colors.white, // Text color
+                              color: Colors.white, // Text color
                             ),
                           ),
                         ),
@@ -208,12 +267,14 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                 ),
               ),
 
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Container(
                 height: 40, // Adjust height as needed
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: keywords.length,
+                  itemCount: negative.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -221,7 +282,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                         decoration: BoxDecoration(
                           color: Colors.redAccent,
                           borderRadius:
-                          BorderRadius.circular(12), // Rounded corners
+                              BorderRadius.circular(12), // Rounded corners
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black
@@ -233,15 +294,14 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           ],
                         ),
                         padding:
-                        EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         child: Center(
                           child: Text(
-                            keywords[index],
+                            negative[index],
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color:
-                              Colors.white, // Text color
+                              color: Colors.white, // Text color
                             ),
                           ),
                         ),
@@ -251,14 +311,17 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                 ),
               ),
 
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
 
               //Allergy Info
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
                     child: Text(
                       'Allergy Warnings',
                       style: TextStyle(
@@ -268,7 +331,6 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                       ),
                     ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25.0),
                     child: Wrap(
@@ -287,7 +349,10 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                             // Display the allergy name
                             Text(
                               allergy,
-                              style: const TextStyle(fontSize: 14, color: Color(0xFF555555), fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFF555555),
+                                  fontWeight: FontWeight.bold),
                             ),
                           ],
                         );
@@ -354,7 +419,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                             ),
                             SizedBox(width: 20),
                             Text(
-                              '10 kcal',
+                              widget.product['calories'],
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Color(0xFF2C2C2C),
@@ -391,7 +456,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                             ),
                             SizedBox(width: 20),
                             Text(
-                              '10g',
+                              widget.product['sugar'],
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Color(0xFF2C2C2C),
@@ -416,9 +481,11 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                 expandedHeaderPadding: EdgeInsets.all(5),
                                 animationDuration: Duration(milliseconds: 500),
                                 materialGapSize: 5,
-                                expansionCallback: (int index, bool isExpanded) {
+                                expansionCallback:
+                                    (int index, bool isExpanded) {
                                   setState(() {
-                                    _isExpanded[index] = !_isExpanded[index]; // Toggle expansion state
+                                    _isExpanded[index] = !_isExpanded[
+                                        index]; // Toggle expansion state
                                   });
                                 },
                                 children: [
@@ -426,9 +493,18 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                     0, // Make sure index matches the _isExpanded list index
                                     "Macronutrients",
                                     [
-                                      {"Carbohydrates": 7.23, "image": 'assets/images/bread.png'},
-                                      {"Protein": 0.0, "image": 'assets/images/salad.png'},
-                                      {"Fats": 9.77, "image": 'assets/images/fats.png'}
+                                      {
+                                        "Carbohydrates": 7.23,
+                                        "image": 'assets/images/bread.png'
+                                      },
+                                      {
+                                        "Protein": 0.0,
+                                        "image": 'assets/images/salad.png'
+                                      },
+                                      {
+                                        "Fats": 9.77,
+                                        "image": 'assets/images/fats.png'
+                                      }
                                     ],
                                     _isExpanded,
                                     setState,
@@ -439,7 +515,6 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           );
                         },
                       ),
-
                     ],
                   ),
                 ),
@@ -457,7 +532,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                     ),
                     elevation: 2,
                     child: ExpansionTile(
-                      leading: Icon(Icons.list, color: Colors.deepPurple), // Ingredients Icon
+                      leading: Icon(Icons.list,
+                          color: Colors.deepPurple), // Ingredients Icon
                       title: Text(
                         'Ingredients',
                         style: TextStyle(
@@ -469,13 +545,15 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                       children: ingredients.map((ingredient) {
                         return ListTile(
                           title: Text(
-                            '${ingredient['name']}',
-                            style: TextStyle(fontSize: 16, color: Color(0xFF555555)),
+                            '${ingredient}',
+                            style: TextStyle(
+                                fontSize: 16, color: Color(0xFF555555)),
                           ),
-                          subtitle: Text(
-                            '${ingredient['description']}',
-                            style: TextStyle(fontSize: 14, color: Color(0xFF888888)),
-                          ),
+                          // subtitle: Text(
+                          //   '${ingredient['description']}',
+                          //   style: TextStyle(
+                          //       fontSize: 14, color: Color(0xFF888888)),
+                          // ),
                         );
                       }).toList(),
                     ),
@@ -490,7 +568,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                     ),
                     elevation: 2,
                     child: ExpansionTile(
-                      leading: Icon(Icons.check_circle, color: Colors.teal), // Diet Compliance Icon
+                      leading: Icon(Icons.check_circle,
+                          color: Colors.teal), // Diet Compliance Icon
                       title: Text(
                         'Diet Compliance',
                         style: TextStyle(
@@ -499,15 +578,17 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           color: Color(0xFF333333),
                         ),
                       ),
-                      children: ingredients.map((ingredient) {
+                      children: diet.map((item) {
                         return ListTile(
                           title: Text(
-                            '${ingredient['name']}',
-                            style: TextStyle(fontSize: 16, color: Color(0xFF555555)),
+                            '${item['name']}',
+                            style: TextStyle(
+                                fontSize: 16, color: Color(0xFF555555)),
                           ),
                           subtitle: Text(
-                            '${ingredient['description']}',
-                            style: TextStyle(fontSize: 14, color: Color(0xFF888888)),
+                            '${item['description']}',
+                            style: TextStyle(
+                                fontSize: 14, color: Color(0xFF888888)),
                           ),
                         );
                       }).toList(),
@@ -564,7 +645,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => ClaimCheckerPage(
-                                          product: {},
+                                          product: widget.product,
                                         ),
                                       ),
                                     );
@@ -575,7 +656,9 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                             const Text(
                               "Know the truth of product claims",
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white60),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white60),
                               softWrap: true, // Ensures text wraps if necessary
                               overflow: TextOverflow
                                   .visible, // Makes sure text doesn't get cut off
@@ -587,7 +670,6 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                   ),
                 ),
               ),
-
 
               const Padding(
                 padding: EdgeInsets.only(top: 10, bottom: 10, left: 20),
@@ -632,7 +714,9 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                 ),
               ),
 
-              SizedBox(height: 40,)
+              SizedBox(
+                height: 40,
+              )
             ],
           ),
         ),
@@ -652,41 +736,43 @@ Widget buildHealthRatingWidget(double rating) {
       } else if (index == fullStars && hasHalfStar) {
         return const Icon(Icons.star_half, color: Color(0xFF86b649), size: 30);
       } else {
-        return const Icon(Icons.star_border, color: Color(0xFF86b649), size: 30);
+        return const Icon(Icons.star_border,
+            color: Color(0xFF86b649), size: 30);
       }
     }),
   );
 }
 
 ExpansionPanel _buildMacronutrientPanel(
-    int index,
-    String title,
-    List<Map<String, dynamic>> nutrients,
-    List<bool> isExpanded,
-    void Function(void Function()) setState,
-    ) {
+  int index,
+  String title,
+  List<Map<String, dynamic>> nutrients,
+  List<bool> isExpanded,
+  void Function(void Function()) setState,
+) {
   return ExpansionPanel(
     backgroundColor: Colors.white,
     headerBuilder: (BuildContext context, bool isExpanded) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 0.0), // Adjust padding as needed
+        padding:
+            EdgeInsets.symmetric(horizontal: 0.0), // Adjust padding as needed
         child: Row(
           children: [
             Image.asset(
-              'assets/images/nutrient.png',  // Replace with your image asset
-              width: 30,  // Adjust the size as needed
+              'assets/images/nutrient.png', // Replace with your image asset
+              width: 30, // Adjust the size as needed
               height: 30,
             ),
-            SizedBox(width: 15,),
+            SizedBox(
+              width: 15,
+            ),
             Text(
               title,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-
           ],
         ),
       );
-
     },
     body: Column(
       children: nutrients.map((nutrient) {

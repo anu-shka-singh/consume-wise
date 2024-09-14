@@ -415,42 +415,43 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                             ),
                             const SizedBox(height: 10),
 
-                            // // Calories Section (Non-Collapsible)
-                            // Container(
-                            //   padding: const EdgeInsets.all(10),
-                            //   decoration: BoxDecoration(
-                            //     color: const Color.fromARGB(255, 255, 255, 255),
-                            //     borderRadius: BorderRadius.circular(16),
-                            //   ),
-                            //   child: Row(
-                            //     children: [
-                            //       Image.asset(
-                            //         'assets/images/calories.png', // Use your image asset
-                            //         width: 30, // Adjust the size as needed
-                            //         height: 30,
-                            //       ),
-                            //       const SizedBox(width: 15),
-                            //       const Text(
-                            //         'Calories:',
-                            //         style: TextStyle(
-                            //           fontSize: 18,
-                            //           fontWeight: FontWeight.bold,
-                            //           color: Color(0xFF2C2C2C),
-                            //         ),
-                            //       ),
-                            //       const SizedBox(width: 20),
-                            //       Text(
-                            //         widget.product['calories'],
-                            //         style: const TextStyle(
-                            //           fontSize: 18,
-                            //           color: Color(0xFF2C2C2C),
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
+                            // Calories Section (Non-Collapsible)
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/calories.png', // Use your image asset
+                                    width: 30, // Adjust the size as needed
+                                    height: 30,
+                                  ),
+                                  const SizedBox(width: 15),
+                                  const Text(
+                                    'Calories:',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF2C2C2C),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Text(
+                                    
+                                    '${nutriments['energy-kcal']?.toString() ?? '0'}kcal',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Color(0xFF2C2C2C),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
 
-                            // const SizedBox(height: 5),
+                            const SizedBox(height: 5),
 
                             // Cholestrol Section (Non-Collapsible)
                             Container(
@@ -477,7 +478,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   ),
                                   const SizedBox(width: 20),
                                   Text(
-                                    '${nutriments['cholesterol']}g',
+                                    '${nutriments['cholesterol']?.toString() ?? '0'}g',
                                     style: const TextStyle(
                                       fontSize: 18,
                                       color: Color(0xFF2C2C2C),
@@ -514,7 +515,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   ),
                                   const SizedBox(width: 20),
                                   Text(
-                                    '${nutriments['sugar']}',
+                                    '${nutriments['sugars']?.toString() ?? '0'}g',
                                     style: const TextStyle(
                                       fontSize: 18,
                                       color: Color(0xFF2C2C2C),
@@ -556,16 +557,20 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                           [
                                             {
                                               "Carbohydrates":
-                                                  nutriments['carbohydrates'],
+                                                  nutriments['carbohydrates'] ?? 0,
                                               "image": 'assets/images/bread.png'
                                             },
                                             {
-                                              "Protein": nutriments['protiens'],
+                                              "Protein": nutriments['proteins'] ?? 0,
                                               "image": 'assets/images/salad.png'
                                             },
                                             {
-                                              "Fats": nutriments['fat'],
+                                              "Fats": nutriments['fat'] ?? 0,
                                               "image": 'assets/images/fats.png'
+                                            },
+                                            {
+                                              "Fibres": nutriments['fiber'] ?? 0,
+                                              "image": 'assets/images/fiber.png'
                                             }
                                           ],
                                           _isExpanded,

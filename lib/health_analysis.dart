@@ -78,8 +78,8 @@ class HealthAnalysis extends StatefulWidget {
 
 class _HealthAnalysisState extends State<HealthAnalysis> {
   final List<bool> _isExpanded = [false, false];
-  late List<Map<String, dynamic>> ingredients;
-  late Map<String, dynamic> nutriments;
+  late List<Map<String, dynamic>> ingredients = [];
+   Map<String, dynamic> nutriments = {};
   late Map<String, dynamic> analysis;
   late double servingSize;
   bool isLoading = false;
@@ -108,11 +108,16 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     super.initState();
     isLoading = true;
     performHealthAnalysis();
-  //   List<dynamic> jsonList = json.decode(widget.product['ingredients']);
-  // List<Map<String, dynamic>> ingredients = jsonList.map((item) => item as Map<String, dynamic>).toList();
+  if (widget.product['ingredients'] != null){
     ingredients = List<Map<String, dynamic>>.from(widget.product['ingredients']);
-    nutriments = Map<String, dynamic>.from(widget.product['nutriments']);
-    allergies = List<String>.from(widget.product['allergens_hierarchy']);
+  }
+    if (widget.product['nutriments'] != null){
+      nutriments = Map<String, dynamic>.from(widget.product['nutriments']);
+    }
+    if (widget.product['allergens_hierarchy'] != null){
+      allergies = List<String>.from(widget.product['allergens_hierarchy']);
+    }
+    
 
     _scrollController1 = ScrollController();
     _scrollController2 = ScrollController();
@@ -137,18 +142,18 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
   void startAutoScroll(ScrollController? _scrollController) {
     _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
-      if (_scrollController != null && _scrollController!.hasClients) {
-        double maxScrollExtent = _scrollController!.position.maxScrollExtent;
-        double currentScroll = _scrollController!.position.pixels;
+      if (_scrollController != null && _scrollController.hasClients) {
+        double maxScrollExtent = _scrollController.position.maxScrollExtent;
+        double currentScroll = _scrollController.position.pixels;
   
         if (currentScroll < maxScrollExtent) {
-          _scrollController!.animateTo(
+          _scrollController.animateTo(
             currentScroll + 2.0, // Speed of the scroll
             duration: Duration(milliseconds: 50),
             curve: Curves.linear,
           );
         } else {
-          _scrollController!.jumpTo(0); // Restart scrolling
+          _scrollController.jumpTo(0); // Restart scrolling
         }
       }
     });

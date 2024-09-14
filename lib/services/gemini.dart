@@ -4,7 +4,7 @@ import 'dart:io';
 
 Future<String?> getResponse(String prompt) async {
   try {
-    final model = GenerativeModel(model: 'gemini-1.5-flash-latest', apiKey: 'AIzaSyCkHzUqDGhc9RYKZIa9X3X41_14ioye7HE');
+    final model = GenerativeModel(model: 'gemini-1.5-flash-latest', apiKey: '');
 
     final response = await model.generateContent([Content.text(prompt)]);
     return response.text;

@@ -66,9 +66,9 @@ Future<String> healthAnalysis(Map<String, dynamic> product) async {
     You are tasked with analyzing the health impact of a packaged food product based on the provided product details in JSON format. Your goal is to provide a thorough analysis covering both the positive and negative aspects of the product from a health perspective. The analysis must also check for allergens, compliance with certain diets, harmful ingredients, and provide recommendations for healthier alternatives. The final output should be in the following JSON format.
 
     Required Analysis:
-    1. Positive Impacts Tags: Identify and list the short prominent positive health benefits of the product, such as high protein, low sugar, presence of vitamins or minerals, etc.
+    1. Positive Impact Tags: Identify and list concise, fact-checked positive impact tags based on the provided product information. Focus on health and sustainability benefits such as high protein, low sugar, vitamins, or minerals. When mentioning fats, only include tags related to healthy fats if they come from beneficial sources like avocados, nuts, or olive oil. Avoid listing 'high fat' as a positive tag and instead list the source of the healthy fat. Ensure all tags are relevant and avoid unnecessary descriptions.
 
-    2. Negative Impacts Tags: Identify and list the short prominent negative health impacts of the product, such as high sugar, high sodium, low fiber, artificial additives, etc.
+    2. Negative Impact Tags: Identify and list concise, fact-checked negative impact tags based on the provided product information. Focus on health and environmental concerns such as high sugar, sodium, artificial additives, or unsustainable practices. When mentioning fats, include specific tags like 'High Saturated Fat' or 'High Trans Fat' if the product contains these. Ensure all tags are relevant and clearly indicate why they negatively affect the consumer, avoiding unnecessary descriptions.
 
     3. Allergens: Check for the presence of common allergens from these only [Peanuts, Eggs, Wheat, Soybeans, Milk, Fish, Tree Nuts, Sesame Seeds] and list any allergens found. Do not add any other allergen than these.
 
@@ -86,8 +86,8 @@ Future<String> healthAnalysis(Map<String, dynamic> product) async {
 
     {
       
-      "positive": [<list of positive impacts>],  // Example: ['high protein', 'low fat']
-      "negative": [<list of negative impacts>],  // Example: ['high sugar', 'low fiber']
+      "positive": [<list of positive impacts>],  // Example: ['High Protein', 'Low Fat']
+      "negative": [<list of negative impacts>],  // Example: ['High sugar', 'Low Fiber']
       "allergens": [<list of allergens found>],  // Example: ['peanuts', 'wheat']
       "diet": [
         {

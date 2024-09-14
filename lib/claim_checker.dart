@@ -39,7 +39,7 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
   ClaimResult? result;
   bool isLoading = false;
 
-  void helper() async {
+  Future<void> helper() async {
     // Mark helper function as async
     setState(() {
       isLoading = true;
@@ -191,8 +191,8 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                   const SizedBox(height: 30.0),
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {
-                        helper();
+                      onPressed: () async {
+                        await helper();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF055b49),

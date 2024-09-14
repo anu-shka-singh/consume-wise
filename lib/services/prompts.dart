@@ -32,7 +32,7 @@ Future<String?> calorieCalculator(String userMeal) async {
 // Function to fetch product information from OpenFoodFacts API
 Future<Map<String, dynamic>?> fetchProductInfo(int productId) async {
   final url = Uri.parse(
-      'https://world.openfoodfacts.org/api/v0/product/$productId.json');
+      'https://world.openfoodfacts.org/api/v2/product/$productId.json');
   final response = await http.get(url);
 
   if (response.statusCode == 200) {

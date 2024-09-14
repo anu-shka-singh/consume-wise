@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:overlay/health_analysis.dart';
+import 'package:http/http.dart' as http;
 
 class ImageUpload extends StatefulWidget {
   const ImageUpload({super.key});
@@ -14,6 +17,7 @@ class _ImageUploadState extends State<ImageUpload> {
   bool isScanned = false;
   MobileScannerController cameraController = MobileScannerController();
   BarcodeCapture? lastCapture; // Store the captured image for display
+  Map<String, dynamic> prodInfo = {};
 
   // Function to scan barcode
   void scanBarcode(BarcodeCapture capture) {
@@ -37,6 +41,21 @@ class _ImageUploadState extends State<ImageUpload> {
     }
   }
 
+  Future<void> fetchProdInfo(String productId) async {
+    //productId = "8901262010320";
+    print("product-id : $productId");
+    final url = Uri.parse(
+        'https://world.openfoodfacts.org/api/v2/product/$productId.json&fields=ingredients,nutriments,allergens_hierarchy,product_name,brands,image_url');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      prodInfo = data['product'];
+    } else {
+      print('Failed to fetch product information');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -49,20 +68,6 @@ class _ImageUploadState extends State<ImageUpload> {
           backgroundColor: const Color(0xFF055b49),
           foregroundColor: Colors.white,
           elevation: 0,
-          //automaticallyImplyLeading: false,
-          // actions: [
-          //   IconButton(
-          //     icon: const Icon(Icons.arrow_back_ios),
-          //     onPressed: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => MainScreen(),
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ],
         ),
         body: Container(
           color: const Color(0xFFFFF6E7),
@@ -214,13 +219,16 @@ class _ImageUploadState extends State<ImageUpload> {
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.arrow_forward),
-                                    onPressed: () {
+                                    onPressed: ()  async {
+                                      await fetchProdInfo("8901262010320");
+                                      print("got-the-info");
+
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const HealthAnalysis(
-                                            product: {},
+                                              HealthAnalysis(
+                                            product: prodInfo,
                                           ),
                                         ),
                                       );

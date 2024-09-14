@@ -68,7 +68,7 @@ void main() {
 
 class HealthAnalysis extends StatefulWidget {
   final Map<String, dynamic> product;
-  const HealthAnalysis({super.key, required this.product});
+  HealthAnalysis({super.key, required this.product});
 
   @override
   State<HealthAnalysis> createState() => _HealthAnalysisState();
@@ -76,21 +76,23 @@ class HealthAnalysis extends StatefulWidget {
 
 class _HealthAnalysisState extends State<HealthAnalysis> {
   final List<bool> _isExpanded = [false, false];
-  late List<String> ingredients;
+  late List<Map<String, dynamic>> ingredients;
+  late Map<String, dynamic> nutriments;
   late Map<String, dynamic> analysis;
   bool isLoading = false;
-  final allergies = ['Wheat', 'Milk'];
+  late List<String> allergies = [];
   //late List<bool> _panelExpanded;
 
   Map<String, String> allergyIcons = {
-    "Peanuts": "assets/images/peanuts.png",
-    "Eggs": "assets/images/egg.png",
-    "Wheat": "assets/images/wheat.png",
-    "Soybeans": "assets/images/soy.png",
-    "Milk": "assets/images/milk.png",
-    "Fish": "assets/images/fish.png",
-    "Tree Nuts": "assets/images/treenut.png",
-    "Sesame Seeds": "assets/images/sesame.png",
+    "en:peanuts": "assets/images/peanuts.png",
+    "en:eggs": "assets/images/egg.png",
+    "en:wheat": "assets/images/wheat.png",
+    "en:soybeans": "assets/images/soy.png",
+    "en:milk": "assets/images/milk.png",
+    "en:fish": "assets/images/fish.png",
+    "en:tree-nuts": "assets/images/treenut.png",
+    "en:sesame-seeds": "assets/images/sesame.png",
+    "Other": "assets/images/error.png"
   };
 
   @override
@@ -98,7 +100,12 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     super.initState();
     isLoading = true;
     performHealthAnalysis();
-    ingredients = widget.product['ingredients'];
+  //   List<dynamic> jsonList = json.decode(widget.product['ingredients']);
+  // List<Map<String, dynamic>> ingredients = jsonList.map((item) => item as Map<String, dynamic>).toList();
+    ingredients = List<Map<String, dynamic>>.from(widget.product['ingredients']);
+    nutriments = Map<String, dynamic>.from(widget.product['nutriments']);
+    allergies = List<String>.from(widget.product['allergens_hierarchy']);
+
     // _scrollController = ScrollController();
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   startAutoScroll(); // Start auto-scrolling after the first frame
@@ -166,8 +173,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Left: Product Image
-                          Image.asset(
-                            'assets/images/kit-kat.png',
+                          Image.network(
+                            widget.product["image_url"],
                             width: 120, // Adjust the width as needed
                             height: 100, // Adjust the height as needed
                           ),
@@ -180,7 +187,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                               children: [
                                 // Heading: KIT-KAT
                                 Text(
-                                  widget.product['name'].toString(),
+                                  widget.product['product_name'].toString(),
                                   style: const TextStyle(
                                     fontSize: 35,
                                     fontWeight: FontWeight.bold,
@@ -190,7 +197,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
                                 // Subtext: By Nestle
                                 Text(
-                                  "By: ${widget.product['company'].toString()}",
+                                  "By: ${widget.product['brands'].toString()}",
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -341,14 +348,16 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Image.asset(
-                                    allergyIcons[allergy]!,
+                                    allergyIcons.containsKey(allergy)
+                                        ? allergyIcons[allergy]!
+                                        : allergyIcons['Other']!,
                                     width: 50,
                                     height: 50,
                                   ),
                                   const SizedBox(height: 8.0),
                                   // Display the allergy name
                                   Text(
-                                    allergy,
+                                    allergy[3].toUpperCase() + allergy.substring(4),
                                     style: const TextStyle(
                                         fontSize: 14,
                                         color: Color(0xFF555555),
@@ -394,7 +403,44 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                             ),
                             const SizedBox(height: 10),
 
-                            // Calories Section (Non-Collapsible)
+                            // // Calories Section (Non-Collapsible)
+                            // Container(
+                            //   padding: const EdgeInsets.all(10),
+                            //   decoration: BoxDecoration(
+                            //     color: const Color.fromARGB(255, 255, 255, 255),
+                            //     borderRadius: BorderRadius.circular(16),
+                            //   ),
+                            //   child: Row(
+                            //     children: [
+                            //       Image.asset(
+                            //         'assets/images/calories.png', // Use your image asset
+                            //         width: 30, // Adjust the size as needed
+                            //         height: 30,
+                            //       ),
+                            //       const SizedBox(width: 15),
+                            //       const Text(
+                            //         'Calories:',
+                            //         style: TextStyle(
+                            //           fontSize: 18,
+                            //           fontWeight: FontWeight.bold,
+                            //           color: Color(0xFF2C2C2C),
+                            //         ),
+                            //       ),
+                            //       const SizedBox(width: 20),
+                            //       Text(
+                            //         widget.product['calories'],
+                            //         style: const TextStyle(
+                            //           fontSize: 18,
+                            //           color: Color(0xFF2C2C2C),
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+
+                            // const SizedBox(height: 5),
+
+                            // Cholestrol Section (Non-Collapsible)
                             Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
@@ -404,13 +450,13 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                               child: Row(
                                 children: [
                                   Image.asset(
-                                    'assets/images/calories.png', // Use your image asset
+                                    'assets/images/better-health.png', // Use your image asset
                                     width: 30, // Adjust the size as needed
                                     height: 30,
                                   ),
                                   const SizedBox(width: 15),
                                   const Text(
-                                    'Calories:',
+                                    'cholesterol:',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -419,7 +465,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   ),
                                   const SizedBox(width: 20),
                                   Text(
-                                    widget.product['calories'],
+                                    nutriments['cholesterol'].toString(),
                                     style: const TextStyle(
                                       fontSize: 18,
                                       color: Color(0xFF2C2C2C),
@@ -456,7 +502,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   ),
                                   const SizedBox(width: 20),
                                   Text(
-                                    widget.product['sugar'],
+                                    nutriments['sugar'].toString(),
                                     style: const TextStyle(
                                       fontSize: 18,
                                       color: Color(0xFF2C2C2C),
@@ -497,15 +543,16 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                           "Macronutrients",
                                           [
                                             {
-                                              "Carbohydrates": 7.23,
+                                              "Carbohydrates":
+                                                  nutriments['carbohydrates'],
                                               "image": 'assets/images/bread.png'
                                             },
                                             {
-                                              "Protein": 0.0,
+                                              "Protein": nutriments['protiens'],
                                               "image": 'assets/images/salad.png'
                                             },
                                             {
-                                              "Fats": 9.77,
+                                              "Fats": nutriments['fat'],
                                               "image": 'assets/images/fats.png'
                                             }
                                           ],
@@ -549,7 +596,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                             children: ingredients.map<Widget>((ingredient) {
                               return ListTile(
                                 title: Text(
-                                  ingredient,
+                                  ingredient["text"][0].toUpperCase() +
+                                      ingredient['text'].substring(1),
                                   style: const TextStyle(
                                       fontSize: 16, color: Color(0xFF555555)),
                                 ),

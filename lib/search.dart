@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:openfoodfacts/openfoodfacts.dart';
 
 class ProductSearchPage extends StatefulWidget {
   final String query;
@@ -13,32 +15,134 @@ class ProductSearchPage extends StatefulWidget {
 
 class _ProductSearchPageState extends State<ProductSearchPage> {
   List products = [];
+  List products2 = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    // OpenFoodAPIConfiguration.globalLanguages = <OpenFoodFactsLanguage>[
+    //   OpenFoodFactsLanguage.ENGLISH
+    // ];
+    // OpenFoodAPIConfiguration.globalCountry = OpenFoodFactsCountry.INDIA;
+    //searchProducts(widget.query);
+    // OpenFoodAPIConfiguration.globalUser = const User(
+    //   userId: 'overlay', // Set your app name or identifier
+    //   password: '', // Leave blank unless you're using authentication
+    //   comment: 'App with Firebase authentication',
+    // );
     searchProducts(widget.query);
   }
 
   void searchProducts(String query) async {
-    final url = Uri.parse(
-        'https://world.openfoodfacts.org/cgi/search.pl?search_terms=$query&json=true');
-    final response = await http.get(url);
+    int currentPage = 1;
+    int totalPages = 5; 
+    int productsPerPage = 20; 
+    int retryCount = 3; // Maximum number of retries in case of timeout
+    Duration timeoutDuration = Duration(seconds: 10); // Timeout duration
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        products = data['products'] ?? [];
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        products = [];
-        isLoading = false;
-      });
+    List<dynamic> allProducts = []; 
+
+    setState(() {
+      isLoading = true;
+    });
+
+    for (int page = currentPage; page <= totalPages; page++) {
+      bool success = false; // Flag to check if request was successful
+      for (int retry = 0; retry < retryCount; retry++) {
+        try {
+          final url = Uri.parse(
+              'https://world.openfoodfacts.org/cgi/search.pl?search_terms=$query&countries_tags_en=india&languages_tags_en=english&json=true&page=$page&page_size=$productsPerPage');
+
+          print("Fetching page $page, attempt ${retry + 1}");
+
+          final response = await http.get(url).timeout(timeoutDuration);
+
+          if (response.statusCode == 200) {
+            print("Page $page: status-code: ${response.statusCode}");
+            final data = json.decode(response.body);
+
+            if (data['products'] != null && data['products'].isNotEmpty) {
+              setState(() {
+                products2 = data['products'];
+
+                for (int i = 0; i < products2.length; i++) {
+                  String temp = "";
+
+                  if (products2[i]['product_name'] != null) {
+                    temp = products2[i]['product_name'];
+                  }
+
+                  // Compare the lowercase product name with the query
+                  if (temp.toLowerCase().contains(query.toLowerCase())) {
+                    allProducts.add(products2[i]); // Add to the combined list
+                  }
+                }
+              });
+              success = true; // Mark request as successful
+              break; // Exit retry loop if successful
+            } else {
+              print("No products found on page $page");
+              break;
+            }
+          } else {
+            print("Error fetching page $page: ${response.statusCode}");
+            break; // Stop further requests in case of non-200 status code
+          }
+        } on TimeoutException catch (e) {
+          print("Request timed out on page $page, attempt ${retry + 1}: $e");
+
+          if (retry == retryCount - 1) {
+            print("Max retries reached for page $page. Moving to next page.");
+          }
+        } catch (e) {
+          print("An error occurred: $e");
+          break; 
+        }
+      }
+
+      if (!success) {
+        break;
+      }
     }
+
+    setState(() {
+      products = allProducts; 
+      isLoading = false;
+    });
   }
+
+
+  // Future<void> searchProd(String prodname) async {
+  //   ProductSearchQueryConfiguration configuration =
+  //       ProductSearchQueryConfiguration(
+  //     fields: [ProductField.ALL], // You can specify the fields you need
+  //     parametersList: [
+  //       SearchTerms(terms: [prodname]),
+  //     ],
+  //     version: ProductQueryVersion.v3,
+  //   );
+
+  //   // final User myUser = User(
+  //   //   userId: 'overlay', // Your app's name or identifier
+  //   //   password: '', // Leave blank if you're not using authentication
+  //   //   comment: 'Internal test app', // Optional: Description or comment
+  //   // );
+
+  //   SearchResult result = await OpenFoodAPIClient.searchProducts(
+  //     OpenFoodAPIConfiguration.globalUser,
+  //     configuration,
+  //   );
+
+  //   setState(() {
+  //     products2 = result.products ?? [];
+  //     // if (products.isNotEmpty){
+
+  //     // }
+  //     print("products-size : ${products2}");
+  //     isLoading = false;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

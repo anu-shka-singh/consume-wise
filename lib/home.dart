@@ -27,7 +27,7 @@ class _MainScreenState extends State<MainScreen> {
       });
 
       final url = Uri.parse(
-          'https://world.openfoodfacts.org/cgi/search.pl?search_terms=$query&json=true');
+          'https://world.openfoodfacts.org/cgi/search.pl?search_terms=$query&countries_tags_en=india&languages_tags_en=english&json=true');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -39,6 +39,9 @@ class _MainScreenState extends State<MainScreen> {
               .map<String>(
                   (product) => product['product_name'] ?? 'Unknown Product')
               .toList();
+
+          searchSuggestions = searchSuggestions.sublist(0, 5);
+          
           isLoading = false;
         });
       } else {

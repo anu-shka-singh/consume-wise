@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -81,6 +82,12 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   late Map<String, dynamic> analysis;
   bool isLoading = false;
   late List<String> allergies = [];
+  late ScrollController? _scrollController1;
+  late ScrollController? _scrollController2;
+  late Timer? _timer;
+
+
+
   //late List<bool> _panelExpanded;
 
   Map<String, String> allergyIcons = {
@@ -106,10 +113,12 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     nutriments = Map<String, dynamic>.from(widget.product['nutriments']);
     allergies = List<String>.from(widget.product['allergens_hierarchy']);
 
-    // _scrollController = ScrollController();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   startAutoScroll(); // Start auto-scrolling after the first frame
-    // });
+    _scrollController1 = ScrollController();
+    _scrollController2 = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      startAutoScroll(_scrollController1);
+      startAutoScroll(_scrollController2);
+    });
     // _panelExpanded = List.generate(ingredients.length, (index) => false);
   }
 
@@ -124,31 +133,32 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     }
   }
 
-  // void startAutoScroll() {
-  //   _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
-  //     if (_scrollController != null && _scrollController!.hasClients) {
-  //       double maxScrollExtent = _scrollController!.position.maxScrollExtent;
-  //       double currentScroll = _scrollController!.position.pixels;
-  //
-  //       if (currentScroll < maxScrollExtent) {
-  //         _scrollController!.animateTo(
-  //           currentScroll + 2.0, // Speed of the scroll
-  //           duration: Duration(milliseconds: 50),
-  //           curve: Curves.linear,
-  //         );
-  //       } else {
-  //         _scrollController!.jumpTo(0); // Restart scrolling
-  //       }
-  //     }
-  //   });
-  // }
-  //
-  // @override
-  // void dispose() {
-  //   _scrollController?.dispose();
-  //   _timer?.cancel();
-  //   super.dispose();
-  // }
+  void startAutoScroll(ScrollController? _scrollController) {
+    _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
+      if (_scrollController != null && _scrollController!.hasClients) {
+        double maxScrollExtent = _scrollController!.position.maxScrollExtent;
+        double currentScroll = _scrollController!.position.pixels;
+  
+        if (currentScroll < maxScrollExtent) {
+          _scrollController!.animateTo(
+            currentScroll + 2.0, // Speed of the scroll
+            duration: Duration(milliseconds: 50),
+            curve: Curves.linear,
+          );
+        } else {
+          _scrollController!.jumpTo(0); // Restart scrolling
+        }
+      }
+    });
+  }
+  
+  @override
+  void dispose() {
+    _scrollController1?.dispose();
+    _scrollController2?.dispose();
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -234,6 +244,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                     Container(
                       height: 40, // Adjust height as needed
                       child: ListView.builder(
+                        controller: _scrollController1,
                         scrollDirection: Axis.horizontal,
                         itemCount: analysis['positive'].length,
                         itemBuilder: (context, index) {
@@ -279,6 +290,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                     Container(
                       height: 40, // Adjust height as needed
                       child: ListView.builder(
+                        controller: _scrollController2,
                         scrollDirection: Axis.horizontal,
                         itemCount: analysis['negative'].length,
                         itemBuilder: (context, index) {
@@ -465,7 +477,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   ),
                                   const SizedBox(width: 20),
                                   Text(
-                                    nutriments['cholesterol'].toString(),
+                                    '${nutriments['cholesterol']}g',
                                     style: const TextStyle(
                                       fontSize: 18,
                                       color: Color(0xFF2C2C2C),
@@ -502,7 +514,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   ),
                                   const SizedBox(width: 20),
                                   Text(
-                                    nutriments['sugar'].toString(),
+                                    '${nutriments['sugar']}',
                                     style: const TextStyle(
                                       fontSize: 18,
                                       color: Color(0xFF2C2C2C),

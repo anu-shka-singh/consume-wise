@@ -7,65 +7,66 @@ import 'package:overlay/loading_screen.dart';
 import 'package:overlay/services/gemini.dart';
 import 'package:overlay/services/prompts.dart';
 
-void main() {
-  final product = {
-    'name': 'Maggi',
-    'company': 'Nestle',
-    'ingredients': [
-      "Wheat flour (atta) (85.3%)",
-      "Palm oil",
-      "Iodised salt",
-      "Thickeners (508, 412)",
-      "Humectants (451(1), 452(i))",
-      "Acidity regulators (501(i), 500(i))",
-      "Mixed spices (22.5%)",
-      "Roasted spice mix powder (6.6%) (Coriander, Turmeric, Cumin, Aniseed, Black pepper, Fenugreek, Ginger, Green cardamom, Cinnamon, Clove, Nutmeg, Bay leaf & Black cardamom)",
-      "Onion powder",
-      "Garlic powder",
-      "Red chilli powder",
-      "Red chilli bib",
-      "Coriander powder",
-      "Turmeric powder",
-      "Ginger powder",
-      "Aniseed powder",
-      "Black pepper powder",
-      "Cumin powder",
-      "Cumin",
-      "Fenugreek powder",
-      "Capsicum extract",
-      "Compounded asafoetida",
-      "Star anise powder",
-      "Coriander extract",
-      "Cumin extract",
-      "Dehydrated Vegetables (16.7%)",
-      "Carrot bits (8.5%)",
-      "Green peas (8.2%)",
-      "Toasted onion flakes (Onion (12.4%) & Corn oil)",
-      "Refined wheat flour (Maida)",
-      "Sugar",
-      "Iodised salt",
-      "Toasted onion powder (Onion (5.9%) & Corn oil)",
-      "Thickener (508)",
-      "Palm oil",
-      "Flavour enhancer (635)",
-      "Yeast extract powder",
-      "Dehydrated kasuri methi leaves",
-      "Starch",
-      "Acidity regulator (330)",
-      "Mineral",
-      "Wheat gluten",
-      "Contains Wheat",
-      "May contain Milk, Oats, and Soy"
-    ],
-    'calories': '15kcal',
-    'sugar': '20g',
-  };
-  runApp(MaterialApp(
-    home: HealthAnalysis(
-      product: product,
-    ),
-  ));
-}
+//
+// void main() {
+//   final product = {
+//     'name': 'Maggi',
+//     'company': 'Nestle',
+//     'ingredients': [
+//       "Wheat flour (atta) (85.3%)",
+//       "Palm oil",
+//       "Iodised salt",
+//       "Thickeners (508, 412)",
+//       "Humectants (451(1), 452(i))",
+//       "Acidity regulators (501(i), 500(i))",
+//       "Mixed spices (22.5%)",
+//       "Roasted spice mix powder (6.6%) (Coriander, Turmeric, Cumin, Aniseed, Black pepper, Fenugreek, Ginger, Green cardamom, Cinnamon, Clove, Nutmeg, Bay leaf & Black cardamom)",
+//       "Onion powder",
+//       "Garlic powder",
+//       "Red chilli powder",
+//       "Red chilli bib",
+//       "Coriander powder",
+//       "Turmeric powder",
+//       "Ginger powder",
+//       "Aniseed powder",
+//       "Black pepper powder",
+//       "Cumin powder",
+//       "Cumin",
+//       "Fenugreek powder",
+//       "Capsicum extract",
+//       "Compounded asafoetida",
+//       "Star anise powder",
+//       "Coriander extract",
+//       "Cumin extract",
+//       "Dehydrated Vegetables (16.7%)",
+//       "Carrot bits (8.5%)",
+//       "Green peas (8.2%)",
+//       "Toasted onion flakes (Onion (12.4%) & Corn oil)",
+//       "Refined wheat flour (Maida)",
+//       "Sugar",
+//       "Iodised salt",
+//       "Toasted onion powder (Onion (5.9%) & Corn oil)",
+//       "Thickener (508)",
+//       "Palm oil",
+//       "Flavour enhancer (635)",
+//       "Yeast extract powder",
+//       "Dehydrated kasuri methi leaves",
+//       "Starch",
+//       "Acidity regulator (330)",
+//       "Mineral",
+//       "Wheat gluten",
+//       "Contains Wheat",
+//       "May contain Milk, Oats, and Soy"
+//     ],
+//     'calories': '15kcal',
+//     'sugar': '20g',
+//   };
+//   runApp(MaterialApp(
+//     home: HealthAnalysis(
+//       product: product,
+//     ),
+//   ));
+// }
 
 class HealthAnalysis extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -80,13 +81,12 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   late List<Map<String, dynamic>> ingredients;
   late Map<String, dynamic> nutriments;
   late Map<String, dynamic> analysis;
+  late double servingSize;
   bool isLoading = false;
   late List<String> allergies = [];
   late ScrollController? _scrollController1;
   late ScrollController? _scrollController2;
   late Timer? _timer;
-
-
 
   //late List<bool> _panelExpanded;
 
@@ -99,7 +99,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     "en:fish": "assets/images/fish.png",
     "en:tree-nuts": "assets/images/treenut.png",
     "en:sesame-seeds": "assets/images/sesame.png",
-    "Other": "assets/images/error.png"
+    "en:gluten": "assets/images/wheat.png",
+    "Other": "assets/images/others.png"
   };
 
   @override
@@ -129,6 +130,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
       setState(() {
         analysis = jsonDecode(cleanResponse);
         isLoading = false;
+        servingSize = analysis['portion_size_grams'];
       });
     }
   }
@@ -240,49 +242,50 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                       ),
                     ),
 
-                    // horizontally scrolling keywords
-                    Container(
-                      height: 40, // Adjust height as needed
-                      child: ListView.builder(
-                        controller: _scrollController1,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: analysis['positive'].length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF055b49),
-                                borderRadius: BorderRadius.circular(
-                                    12), // Rounded corners
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(
-                                        0.2), // Subtle shadow for depth
-                                    spreadRadius: 1,
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2), // Offset shadow
-                                  ),
-                                ],
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 8),
-                              child: Center(
-                                child: Text(
-                                  analysis['positive'][index],
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white, // Text color
+                    // Horizontally scrolling keywords, only show if there are positives
+                    if (analysis['positive'] != null && analysis['positive'].isNotEmpty)
+                      Container(
+                        height: 40, // Adjust height as needed
+                        child: ListView.builder(
+                          controller: _scrollController1,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: analysis['positive'].length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF055b49),
+                                  borderRadius: BorderRadius.circular(12), // Rounded corners
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2), // Subtle shadow for depth
+                                      spreadRadius: 1,
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2), // Offset shadow
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                child: Center(
+                                  child: Text(
+                                    analysis['positive'][index],
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white, // Text color
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      SizedBox.shrink(), // Return an empty widget if there are no positives
+
+
 
                     const SizedBox(
                       height: 10,
@@ -415,6 +418,21 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                             ),
                             const SizedBox(height: 10),
 
+                            Text(
+                              "per ${analysis['portion_size']}",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF2C2C2C),
+                              ),
+                            ),
+                            Divider(
+                              thickness: 1,
+                              color: Colors.grey[300],
+                              height: 20,
+                              indent: 16,
+                              endIndent: 16,
+                            ),
                             // Calories Section (Non-Collapsible)
                             Container(
                               padding: const EdgeInsets.all(10),
@@ -440,8 +458,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   ),
                                   const SizedBox(width: 20),
                                   Text(
-                                    
-                                    '${nutriments['energy-kcal']?.toString() ?? '0'}kcal',
+                                      '${calculateNutrientForPortion(nutriments['energy-kcal'] ?? 0, servingSize)} kcal',
                                     style: const TextStyle(
                                       fontSize: 18,
                                       color: Color(0xFF2C2C2C),
@@ -478,7 +495,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   ),
                                   const SizedBox(width: 20),
                                   Text(
-                                    '${nutriments['cholesterol']?.toString() ?? '0'}g',
+                                    '${calculateNutrientForPortion(nutriments['cholesterol'] ?? 0, servingSize)} g',
                                     style: const TextStyle(
                                       fontSize: 18,
                                       color: Color(0xFF2C2C2C),
@@ -515,7 +532,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   ),
                                   const SizedBox(width: 20),
                                   Text(
-                                    '${nutriments['sugars']?.toString() ?? '0'}g',
+                                    '${calculateNutrientForPortion(nutriments['sugars'] ?? 0, servingSize)} g',
                                     style: const TextStyle(
                                       fontSize: 18,
                                       color: Color(0xFF2C2C2C),
@@ -557,19 +574,20 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                           [
                                             {
                                               "Carbohydrates":
-                                                  nutriments['carbohydrates'] ?? 0,
+                                                  //nutriments['carbohydrates'] ?? 0,
+                                              calculateNutrientForPortion(nutriments['carbohydrates'] ?? 0, servingSize),
                                               "image": 'assets/images/bread.png'
                                             },
                                             {
-                                              "Protein": nutriments['proteins'] ?? 0,
+                                              "Protein": calculateNutrientForPortion(nutriments['proteins'] ?? 0, servingSize),
                                               "image": 'assets/images/salad.png'
                                             },
                                             {
-                                              "Fats": nutriments['fat'] ?? 0,
+                                              "Fats": calculateNutrientForPortion(nutriments['fat'] ?? 0, servingSize) ?? 0,
                                               "image": 'assets/images/fats.png'
                                             },
                                             {
-                                              "Fibres": nutriments['fiber'] ?? 0,
+                                              "Fibers": calculateNutrientForPortion(nutriments['fiber'] ?? 0, servingSize) ?? 0,
                                               "image": 'assets/images/fiber.png'
                                             }
                                           ],
@@ -922,3 +940,23 @@ Widget popularProductCard({
     ),
   );
 }
+
+String calculateNutrientForPortion(dynamic nutrientValuePer100g, double portionSize) {
+  //print(nutrientValuePer100g);
+  //print(nutrientValuePer100g.runtimeType);
+  double nutrient = parseDouble(nutrientValuePer100g);
+  return ((nutrient / 100) * portionSize).toStringAsFixed(1);
+}
+
+double parseDouble(dynamic value, {double fallback = 0.0}) {
+  if (value is String) {
+    double? x = double.tryParse(value);
+    return x ?? fallback;
+  } else if (value is double) {
+    return value;
+  } else if (value is int) {
+    return value.toDouble();
+  }
+  return fallback;
+}
+

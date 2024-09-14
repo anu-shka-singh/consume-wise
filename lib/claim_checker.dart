@@ -129,7 +129,7 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
           ? const LoadingScreen() // Show loading screen if isLoading is true
           : SingleChildScrollView(
               child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(0.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -241,33 +241,36 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
-                            const SizedBox(height: 12.0),
-                            const Row(
-                              children: [
-                                Icon(Icons.star,
-                                    color: Colors.yellow, size: 24),
-                                Icon(Icons.star,
-                                    color: Colors.yellow, size: 24),
-                                Icon(Icons.star,
-                                    color: Colors.yellow, size: 24),
-                                Icon(Icons.star_half,
-                                    color: Colors.yellow, size: 24),
-                                Icon(Icons.star_border,
-                                    color: Colors.yellow, size: 24),
-                              ],
+                            // Linear Progress Indicator
+                            const SizedBox(height: 20.0),
+                            LinearProgressIndicator(
+                              value: result!.confidence / 100, // Value should be between 0.0 and 1.0
+                              backgroundColor: Colors.grey[300],
+                              color: result!.confidence > 70
+                                  ? Colors.green
+                                  : result!.confidence > 40
+                                  ? Colors.yellow
+                                  : Colors.red,
+                              minHeight: 10, // Adjust the height of the progress bar
                             ),
-                            const SizedBox(height: 8.0),
+
+                            const SizedBox(height: 12.0),
+
                             Text(
                               'Confidence Score: ${result!.confidence.toString()}% \n${result!.verdict}',
                               style: const TextStyle(
                                   fontSize: 24, fontWeight: FontWeight.bold),
                             ),
-                            const SizedBox(height: 8.0),
+                            const SizedBox(height: 16.0),
                             Text(result!.why),
                             Text(result!.details),
+
                           ],
+
                         ),
+
                       ),
+
                     ),
                   ],
                 ],

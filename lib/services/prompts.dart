@@ -66,9 +66,9 @@ Future<String> healthAnalysis(Map<String, dynamic> product) async {
     You are tasked with analyzing the health impact of a packaged food product based on the provided product details in JSON format. Your goal is to provide a thorough analysis covering both the positive and negative aspects of the product from a health perspective. The analysis must also check for allergens, compliance with certain diets, harmful ingredients, and provide recommendations for healthier alternatives. The final output should be in the following JSON format.
 
     Required Analysis:
-    1. Positive Impacts: Identify and list the prominent positive health benefits of the product, such as high protein, low sugar, presence of vitamins or minerals, etc.
+    1. Positive Impacts Tags: Identify and list the short prominent positive health benefits of the product, such as high protein, low sugar, presence of vitamins or minerals, etc.
 
-    2. Negative Impacts: Identify and list the prominent negative health impacts of the product, such as high sugar, high sodium, low fiber, artificial additives, etc.
+    2. Negative Impacts Tags: Identify and list the short prominent negative health impacts of the product, such as high sugar, high sodium, low fiber, artificial additives, etc.
 
     3. Allergens: Check for the presence of common allergens from these only [Peanuts, Eggs, Wheat, Soybeans, Milk, Fish, Tree Nuts, Sesame Seeds] and list any allergens found. Do not add any other allergen than these.
 
@@ -76,10 +76,12 @@ Future<String> healthAnalysis(Map<String, dynamic> product) async {
 
     5. Harmful Ingredients: Identify and list any harmful or controversial ingredients present, such as trans fats, artificial sweeteners, artificial preservatives, etc.
 
-    6. Rating: Provide a rating for how healthy the product is based on all the analyzed factors (positive and negative impacts, allergens, harmful ingredients). The rating should be on a scale of 1 to 5 (1 being unhealthy, 5 being very healthy).
+    6. Rating: Provide a rating for how healthy the product is based on all the analyzed factors (positive and negative impacts, harmful ingredients). The rating should be on a scale of 1 to 5 (1 being unhealthy, 5 being very healthy).
 
     7. Recommendations for Healthier Alternatives: Suggest 3 healthier alternative products from the same category (e.g., healthier versions of the same type of snack, beverage, etc.) For alternatives, make sure you are recommending packaged food and not home made food alternatives. Also keep in mind to recommend only those alternatives which are available in Indian Markets.
 
+    8. Portion Size: Based on the product's QUANTITY and type, give a **common portion size** in grams along with a **reference in terms of portion** (e.g., for a 400g bread, the common portion size would be 50g, which means 2 slices of bread). The reference should be in easily understandable terms like "2 biscuits," "1 handful of namkeen," "1 slice of bread," etc.
+    
     The response should only contain the following JSON format:
 
     {
@@ -96,6 +98,8 @@ Future<String> healthAnalysis(Map<String, dynamic> product) async {
       "harmful_ingredients": [<list of harmful ingredients>],  // Example: ['trans fats', 'aspartame'],
       "rating": <rating>,  // A decimal number from 1 to 5
       "recommendations": [<alternative product 1>, <alternative product 2>, <alternative product 3>]  // Suggest 3 healthier alternative products
+      "portion_size_grams": <portion size in grams> // A decimal number, Example: 50.5, 20.0
+      "portion_size": <portion size> // Example: 2 slices of bread, 2 biscuits, 1 handful of namkeen, 
     }
 
     Instructions:

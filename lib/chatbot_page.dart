@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:overlay/profile.dart';
 
+import 'home.dart';
 import 'services/prompts.dart';
 
-void main() {
-  runApp(MaterialApp(home: ChatBotScreen()));
-}
-
 class ChatBotScreen extends StatefulWidget {
-  ChatBotScreen({super.key});
+  Map<String, dynamic> user;
+  final int currentIndex; // To keep track of active tab
+  ChatBotScreen({super.key, required this.user, required this.currentIndex});
 
   @override
   _ChatBotScreenState createState() => _ChatBotScreenState();
@@ -17,7 +17,6 @@ class ChatBotScreen extends StatefulWidget {
 
 class _ChatBotScreenState extends State<ChatBotScreen> {
   final List<Message> _messages = [];
-
   final TextEditingController _textEditingController = TextEditingController();
 
   @override
@@ -49,43 +48,43 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
 
   Widget _buildMessage(Message message) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        child: Column(
-          crossAxisAlignment:
-              message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              message.isMe ? 'You' : 'Bot',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black, // Text color for the sender label
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Column(
+        crossAxisAlignment:
+        message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 5),
+            child: Text(
+              message.isMe ? 'You' : 'EatWise Guide',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: message.isMe ? Colors.teal[800] : Colors.teal[400],
+                fontSize: 12,
               ),
             ),
-            const SizedBox(height: 5), // Adjust spacing as needed
-            Container(
-              constraints: const BoxConstraints(
-                maxWidth: 250,
-              ),
-              decoration: BoxDecoration(
-                color: message.isMe
-                    ? const Color(0xFF055b49)
-                    : const Color.fromARGB(
-                        255, 156, 194, 107), // Change colors as desired
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.all(10),
-              child: Text(
-                message.text,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: message.isMe ? Colors.white : const Color(0xFF21222D),
-                ),
+          ),
+          Container(
+            constraints: const BoxConstraints(
+              maxWidth: 280,
+            ),
+            decoration: BoxDecoration(
+              color: message.isMe
+                  ? const Color(0xFF004d40)
+                  : const  Color(0xFF86b649),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Text(
+              message.text,
+              style: TextStyle(
+                fontSize: 16,
+                color: message.isMe ? Colors.white : Colors.white,
+                fontFamily: 'Roboto', // Consistent font style
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -95,9 +94,17 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFF6E7),
       appBar: AppBar(
-        title: const Text('ChatBot'),
-        backgroundColor: const Color(0xFF055b49),
+        title: const Text(
+          'EatWise Guide',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Roboto', // Modern font
+          ),
+        ),
+        backgroundColor: const Color(0xFF004d40),
         foregroundColor: Colors.white,
+        elevation: 2,
       ),
       body: Column(
         children: <Widget>[
@@ -108,38 +115,105 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
               itemBuilder: (BuildContext context, int index) {
                 return _buildMessage(_messages[index]);
               },
+              physics: const BouncingScrollPhysics(), // Smooth scrolling effect
             ),
           ),
-          const Divider(
-            height: 1.0,
+          const Divider(height: 1.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+            child: _buildTextComposer(), // Custom text input field
           ),
-          Container(
-            decoration: BoxDecoration(color: Theme.of(context).cardColor),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    controller: _textEditingController,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.all(20.0),
-                      hintText: 'Type a Message...',
-                      border: InputBorder.none,
-                    ),
-                  ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: widget.currentIndex,
+        backgroundColor: const Color(0xFF004d40),
+        unselectedItemColor: Colors.grey[600],
+        selectedItemColor: Colors.white,
+        iconSize: 30,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_rounded),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Profile',
+          ),
+        ],
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+
+  Widget _buildTextComposer() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.grey,
+            offset: Offset(0.0, 2.0),
+            blurRadius: 5.0,
+          ),
+        ],
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15.0),
+              child: TextField(
+                controller: _textEditingController,
+                decoration: const InputDecoration(
+                  hintText: 'Type your message...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.grey),
                 ),
-                IconButton(
-                  onPressed: onSendMessage,
-                  icon: const Icon(
-                    Icons.send,
-                    size: 35, // Adjust the icon size as desired
-                  ),
-                )
-              ],
+                style: const TextStyle(fontSize: 16),
+              ),
             ),
-          )
+          ),
+          IconButton(
+            onPressed: onSendMessage,
+            icon: const Icon(
+              Icons.send,
+              color: Color(0xFF004d40),
+              size: 30,
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  void _onItemTapped(int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainScreen(user: widget.user, currentIndex: 0,),
+          ),
+        );
+        break;
+      case 1:
+      // Stay on current page (ChatBotScreen)
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfilePage(user: widget.user, currentIndex: 2,),
+          ),
+        );
+        break;
+    }
   }
 }
 

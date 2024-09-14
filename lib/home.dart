@@ -7,10 +7,12 @@ import 'package:overlay/calorie_counter_page.dart';
 import 'package:overlay/profile.dart';
 import 'package:overlay/search.dart';
 import 'package:http/http.dart' as http;
+import 'package:overlay/signin_page.dart';
 
 class MainScreen extends StatefulWidget {
   Map<String, dynamic> user;
-  MainScreen({super.key, required this.user});
+  final int currentIndex; // To keep track of active tab
+  MainScreen({super.key, required this.user, required this.currentIndex});
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -89,9 +91,7 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => MainScreen(
-                    user: widget.user,
-                  ),
+                  builder: (context) => LoginPage(),
                 ),
               );
             },
@@ -388,6 +388,7 @@ class _MainScreenState extends State<MainScreen> {
 
       // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: widget.currentIndex,
         backgroundColor: const Color(0xFFFFF6E7),
         //backgroundColor: Color(0xFF86b649) // light green
         unselectedItemColor: Colors.grey,
@@ -399,7 +400,7 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
+            icon: Icon(Icons.chat_rounded),
             label: 'Chat',
           ),
           BottomNavigationBarItem(
@@ -410,19 +411,12 @@ class _MainScreenState extends State<MainScreen> {
         onTap: (index) {
           switch (index) {
             case 0:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MainScreen(
-                          user: widget.user,
-                        )),
-              );
               break;
             case 1:
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChatBotScreen(),
+                  builder: (context) => ChatBotScreen(user : widget.user, currentIndex: 1,),
                 ),
               );
               break;
@@ -430,9 +424,7 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfilePage(
-                    user: widget.user,
-                  ),
+                  builder: (context) => ProfilePage(user: widget.user, currentIndex: 2,),
                 ),
               );
               break;

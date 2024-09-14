@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'chatbot_page.dart';
+import 'home.dart';
 import 'user_datamodel.dart';
 
 void main() {
@@ -14,13 +16,14 @@ void main() {
     'diet': ['Vegan', 'Low-fat']
   };
   runApp(MaterialApp(
-    home: ProfilePage(user: data),
+    home: ProfilePage(user: data, currentIndex: 2,),
   ));
 }
 
 class ProfilePage extends StatefulWidget {
   Map<String, dynamic> user;
-  ProfilePage({super.key, required this.user});
+  final int currentIndex; // To keep track of active tab
+  ProfilePage({super.key, required this.user, required this.currentIndex}); // Add currentIndex to constructor
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -167,6 +170,51 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ),
+      ),
+      // Bottom Navigation Bar
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: widget.currentIndex,
+        backgroundColor: const Color(0xFFFFF6E7),
+        //backgroundColor: Color(0xFF86b649) // light green
+        unselectedItemColor: Colors.grey,
+        selectedItemColor: const Color(0xFF055b49),
+        iconSize: 32,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_rounded),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Profile',
+          ),
+        ],
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MainScreen(user: widget.user, currentIndex: 0,),
+                ),
+              );
+              break;
+            case 1:
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatBotScreen(user : widget.user, currentIndex: 1,),
+                ),
+              );
+              break;
+            case 2:
+              break;
+          }
+        },
       ),
     );
   }

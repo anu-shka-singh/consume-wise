@@ -156,6 +156,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                       MaterialPageRoute(
                         builder: (context) => MainScreen(
                           user: data,
+                          currentIndex: 0,
                         ),
                       ),
                     );

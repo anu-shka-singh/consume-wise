@@ -199,7 +199,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                 Text(
                                   widget.product['product_name'].toString(),
                                   style: const TextStyle(
-                                    fontSize: 35,
+                                    fontSize: 30,
                                     fontWeight: FontWeight.bold,
                                     color: Color.fromARGB(255, 30, 30, 30),
                                   ),

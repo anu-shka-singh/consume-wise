@@ -98,6 +98,7 @@ class _LoginState extends State<LoginPage> {
                       MaterialPageRoute(
                         builder: (context) => MainScreen(
                           user: data,
+                          currentIndex: 0,
                         ),
                       ),
                     );

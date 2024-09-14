@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:overlay/chatbot_page.dart';
 import 'package:overlay/image_upload.dart';
 import 'package:overlay/calorie_counter_page.dart';
 import 'package:overlay/profile.dart';
@@ -41,7 +42,7 @@ class _MainScreenState extends State<MainScreen> {
               .toList();
 
           searchSuggestions = searchSuggestions.sublist(0, 5);
-          
+
           isLoading = false;
         });
       } else {
@@ -398,8 +399,8 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
+            icon: Icon(Icons.chat),
+            label: 'Chat',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
@@ -418,7 +419,12 @@ class _MainScreenState extends State<MainScreen> {
               );
               break;
             case 1:
-              // Navigate to Favorites (implement as needed)
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatBotScreen(),
+                ),
+              );
               break;
             case 2:
               Navigator.push(

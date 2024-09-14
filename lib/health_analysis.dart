@@ -290,8 +290,6 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                     else
                       SizedBox.shrink(), // Return an empty widget if there are no positives
 
-
-
                     const SizedBox(
                       height: 10,
                     ),
@@ -342,13 +340,12 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                       height: 20,
                     ),
 
-                    //Allergy Info
+                    // Allergy Info
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 20.0),
+                          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
                           child: Text(
                             'Allergy Warnings',
                             style: TextStyle(
@@ -360,7 +357,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                          child: Wrap(
+                          child: allergies.isNotEmpty
+                              ? Wrap(
                             spacing: 20.0,
                             runSpacing: 16.0,
                             children: allergies.map((allergy) {
@@ -386,10 +384,21 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                 ],
                               );
                             }).toList(),
+                          )
+                              : const Padding(
+                            padding: EdgeInsets.only(top: 0.0),
+                            child: Text(
+                              'No allergy warnings.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF555555),
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
+
                     //SizedBox(height: 20,),
 
                     Divider(
@@ -475,42 +484,42 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
                             const SizedBox(height: 5),
 
-                            // Cholestrol Section (Non-Collapsible)
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                    'assets/images/better-health.png', // Use your image asset
-                                    width: 30, // Adjust the size as needed
-                                    height: 30,
-                                  ),
-                                  const SizedBox(width: 15),
-                                  const Text(
-                                    'cholesterol:',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF2C2C2C),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Text(
-                                    '${calculateNutrientForPortion(nutriments['cholesterol'] ?? 0, servingSize)} g',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      color: Color(0xFF2C2C2C),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            const SizedBox(height: 5),
+                            // // Cholestrol Section (Non-Collapsible)
+                            // Container(
+                            //   padding: const EdgeInsets.all(10),
+                            //   decoration: BoxDecoration(
+                            //     color: const Color.fromARGB(255, 255, 255, 255),
+                            //     borderRadius: BorderRadius.circular(16),
+                            //   ),
+                            //   child: Row(
+                            //     children: [
+                            //       Image.asset(
+                            //         'assets/images/fat.png', // Use your image asset
+                            //         width: 30, // Adjust the size as needed
+                            //         height: 30,
+                            //       ),
+                            //       const SizedBox(width: 15),
+                            //       const Text(
+                            //         'Cholesterol:',
+                            //         style: TextStyle(
+                            //           fontSize: 18,
+                            //           fontWeight: FontWeight.bold,
+                            //           color: Color(0xFF2C2C2C),
+                            //         ),
+                            //       ),
+                            //       const SizedBox(width: 20),
+                            //       Text(
+                            //         '${calculateNutrientForPortion(nutriments['cholesterol'] ?? 0, servingSize)} g',
+                            //         style: const TextStyle(
+                            //           fontSize: 18,
+                            //           color: Color(0xFF2C2C2C),
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            //
+                            // const SizedBox(height: 5),
 
                             // Sugar Section (Non-Collapsible)
                             Container(
@@ -767,52 +776,51 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                       ),
                     ),
 
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10, bottom: 10, left: 20),
-                      child: Text(
-                        "Better Options",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF333333),
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          // Card Widget
+                          Card(
+                            color: Colors.white,
+                            elevation: 4,  // Shadow depth of the card
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),  // Rounded corners
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0), // Internal padding for content
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  const Text(
+                                    'Better Products',  // The heading
+                                    style: TextStyle(
+                                      fontSize: 24,  // Larger font size for the heading
+                                      fontWeight: FontWeight.bold,  // Make the heading bold
+                                    ),
+                                  ),
+                                  Divider(
+                                    thickness: 1,
+                                    color: Colors.grey[300],
+                                    height: 20,
+                                    indent: 5,
+                                    endIndent: 2,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: analysis['recommendations'].map<Widget>((product) {
+                                      return BulletPoint(text: product);
+                                    }).toList(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    // List for Popular Products
-                    SizedBox(
-                      height: 170,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                        ),
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            popularProductCard(
-                              productName: 'Maggi Noodles',
-                              barcode: 120,
-                              imagePath: 'assets/images/maggi.png',
-                            ),
-                            const SizedBox(width: 10),
-                            popularProductCard(
-                              productName: 'Harvest Bread',
-                              barcode: 120,
-                              imagePath: 'assets/images/bread.jpeg',
-                            ),
-                            const SizedBox(width: 10),
-                            popularProductCard(
-                              productName: 'Kissan Jam',
-                              barcode: 120,
-                              imagePath: 'assets/images/jam.jpeg',
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(
-                      height: 40,
-                    )
+                      const SizedBox(height: 40,)
                   ],
                 ),
               ),
@@ -893,59 +901,6 @@ ExpansionPanel _buildMacronutrientPanel(
   );
 }
 
-Widget popularProductCard({
-  required String productName,
-  required int barcode,
-  required String imagePath,
-}) {
-  return Card(
-    elevation: 4, // Controls the shadow of the card
-    color: const Color.fromARGB(255, 255, 255, 255),
-    margin: const EdgeInsets.all(10.0),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: SizedBox(
-      width: 140,
-      height: 280,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Product Image
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Container(
-              height: 100,
-              width: 90,
-              decoration: BoxDecoration(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(12)),
-                image: DecorationImage(
-                    image: AssetImage(imagePath), fit: BoxFit.fitHeight),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Column(
-              children: [
-                Text(
-                  productName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 String calculateNutrientForPortion(dynamic nutrientValuePer100g, double portionSize) {
   //print(nutrientValuePer100g);
   //print(nutrientValuePer100g.runtimeType);
@@ -965,3 +920,32 @@ double parseDouble(dynamic value, {double fallback = 0.0}) {
   return fallback;
 }
 
+class BulletPoint extends StatelessWidget {
+  final String text;
+
+  const BulletPoint({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),  // Add spacing between items
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,  // Align the icon and text properly
+        children: <Widget>[
+          Icon(
+            Icons.arrow_circle_right_outlined,
+            color: Colors.green,
+            size: 24,
+          ),
+          SizedBox(width: 8),  // Spacing between icon and text
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 18, color: Colors.black87),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

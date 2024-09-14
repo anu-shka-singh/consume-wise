@@ -186,7 +186,7 @@ class _ImageUploadState extends State<ImageUpload> {
                 ),
                 Card(
                   elevation: 4,
-                  color: const Color.fromARGB(255, 216, 255, 165),
+                  color: const Color(0xFF86b649),
                   margin: const EdgeInsets.all(14.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -197,7 +197,7 @@ class _ImageUploadState extends State<ImageUpload> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Image.asset(
-                          'assets/images/better-health.png',
+                          'assets/images/health.png',
                           width: 60, // Adjust the width as needed
                           height: 100, // Adjust the height as needed
                         ),
@@ -215,7 +215,7 @@ class _ImageUploadState extends State<ImageUpload> {
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF055b49)),
+                                        color: Colors.white),
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.arrow_forward),
@@ -239,7 +239,7 @@ class _ImageUploadState extends State<ImageUpload> {
                               const Text(
                                 "Know the implications of consuming this product",
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                    fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white70),
                                 softWrap:
                                     true, // Ensures text wraps if necessary
                                 overflow: TextOverflow

@@ -58,7 +58,7 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
         setState(() {
           result = ClaimResult(
             verdict: data['Verdict'],
-            confidence: data['Percentage Accuracy'],
+            confidence: data['Percentage Accuracy'].toDouble(),
             why: data['Reasons'],
             details: data['Detailed Analysis'],
           );
@@ -258,7 +258,7 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                             ),
                             const SizedBox(height: 8.0),
                             Text(
-                              '${result!.confidence}% ${result!.verdict}',
+                              'Confidence Score: ${result!.confidence.toString()}% \n${result!.verdict}',
                               style: const TextStyle(
                                   fontSize: 24, fontWeight: FontWeight.bold),
                             ),

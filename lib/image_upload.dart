@@ -220,7 +220,7 @@ class _ImageUploadState extends State<ImageUpload> {
                                   IconButton(
                                     icon: const Icon(Icons.arrow_forward),
                                     onPressed: ()  async {
-                                      await fetchProdInfo("8901262010320");
+                                      await fetchProdInfo(barcode!); //"8901262010320" -> for testing
                                       print("got-the-info");
 
                                       Navigator.push(

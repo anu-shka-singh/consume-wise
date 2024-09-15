@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:overlay/chatbot_page.dart';
 import 'package:overlay/image_upload.dart';
 import 'package:overlay/calorie_counter_page.dart';
+import 'package:overlay/popular_product_result.dart';
 import 'package:overlay/profile.dart';
 import 'package:overlay/search.dart';
 import 'package:http/http.dart' as http;
@@ -274,23 +277,49 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                   child: ListView(
                     scrollDirection: Axis.horizontal,
-                    children: [
-                      popularProductCard(
-                        productName: 'Maggi Noodles',
-                        barcode: 120,
-                        imagePath: 'assets/images/maggi.png',
+                    children: const [
+                      HorizontalCards(
+                        imageFilename: 'assets/images/dairy-products.png',
+                        title: 'Dairy Items',
+                        categoryTags: "dairies|milks",
                       ),
-                      const SizedBox(width: 10),
-                      popularProductCard(
-                        productName: 'Harvest Bread',
-                        barcode: 120,
-                        imagePath: 'assets/images/bread.jpeg',
+                      SizedBox(width: 16),
+                      HorizontalCards(
+                        imageFilename: 'assets/images/bread.png',
+                        title: 'Breads',
+                        categoryTags: "breads",
                       ),
-                      const SizedBox(width: 10),
-                      popularProductCard(
-                        productName: 'Kissan Jam',
-                        barcode: 120,
-                        imagePath: 'assets/images/jam.jpeg',
+                      SizedBox(
+                        width: 16,
+                      ),
+                      HorizontalCards(
+                        imageFilename: 'assets/images/cookies.png',
+                        title: 'Biscuits\n& Cakes',
+                        categoryTags: "biscuits-and-cakes",
+                      ),
+                      SizedBox(
+                        width: 16,
+                      ),
+                      HorizontalCards(
+                        imageFilename: 'assets/images/soda.png',
+                        title: 'Cold Drinks\n& Juices',
+                        categoryTags: "carbonated-drinks|juice",
+                      ),
+                      SizedBox(
+                        width: 16,
+                      ),
+                      HorizontalCards(
+                        imageFilename: 'assets/images/chocolate-bar.png',
+                        title: 'Chocolates',
+                        categoryTags: "chocolates",
+                      ),
+                      SizedBox(
+                        width: 16,
+                      ),
+                      HorizontalCards(
+                        imageFilename: 'assets/images/cereal.png',
+                        title: 'Breakfast Cereals',
+                        categoryTags: "breakfast-cereals",
                       ),
                     ],
                   ),
@@ -416,7 +445,10 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChatBotScreen(user : widget.user, currentIndex: 1,),
+                  builder: (context) => ChatBotScreen(
+                    user: widget.user,
+                    currentIndex: 1,
+                  ),
                 ),
               );
               break;
@@ -424,7 +456,10 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfilePage(user: widget.user, currentIndex: 2,),
+                  builder: (context) => ProfilePage(
+                    user: widget.user,
+                    currentIndex: 2,
+                  ),
                 ),
               );
               break;
@@ -434,56 +469,124 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget popularProductCard({
-    required String productName,
-    required int barcode,
-    required String imagePath,
-  }) {
-    return Card(
-      elevation: 4, // Controls the shadow of the card
-      color: const Color.fromARGB(255, 255, 255, 255),
-      margin: const EdgeInsets.all(10.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: SizedBox(
-        width: 140,
-        height: 280,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Product Image
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Container(
-                height: 100,
-                width: 90,
-                decoration: BoxDecoration(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(12)),
-                  image: DecorationImage(
-                      image: AssetImage(imagePath), fit: BoxFit.fitHeight),
+  // Widget popularProductCard({
+  //   required String productName,
+  //   required int barcode,
+  //   required String imagePath,
+  // }) {
+  //   return Card(
+  //     elevation: 4, // Controls the shadow of the card
+  //     color: const Color.fromARGB(255, 255, 255, 255),
+  //     margin: const EdgeInsets.all(10.0),
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(10),
+  //     ),
+  //     child: SizedBox(
+  //       width: 140,
+  //       height: 280,
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.center,
+  //         children: [
+  //           // Product Image
+  //           Padding(
+  //             padding: const EdgeInsets.all(5.0),
+  //             child: Container(
+  //               height: 100,
+  //               width: 90,
+  //               decoration: BoxDecoration(
+  //                 borderRadius:
+  //                     const BorderRadius.vertical(top: Radius.circular(12)),
+  //                 image: DecorationImage(
+  //                     image: AssetImage(imagePath), fit: BoxFit.fitHeight),
+  //               ),
+  //             ),
+  //           ),
+  //           Padding(
+  //             padding: const EdgeInsets.all(5.0),
+  //             child: Column(
+  //               children: [
+  //                 Text(
+  //                   productName,
+  //                   style: const TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     fontSize: 15,
+  //                   ),
+  //                   textAlign: TextAlign.center,
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+}
+
+class HorizontalCards extends StatelessWidget {
+  final String imageFilename;
+  final String title;
+  final String categoryTags;
+
+  const HorizontalCards({
+    Key? key,
+    required this.imageFilename,
+    required this.title,
+    required this.categoryTags,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // The card with just an image
+        Center(
+          child: GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CategoryResult(
+                  categories: categoryTags,
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Column(
-                children: [
-                  Text(
-                    productName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
+            child: Card(
+              color: Colors.white,
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: Container(
+                  width: 100.0,
+                  height: 100.0,
+                  color: Colors.white,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Image.asset(
+                      imageFilename,
+                      width: 80.0,
+                      height: 80.0,
+                      fit: BoxFit.contain,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                ],
+                ),
               ),
             ),
-          ],
+          ),
         ),
-      ),
+        const SizedBox(height: 5.0), 
+        // Text below the card
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }

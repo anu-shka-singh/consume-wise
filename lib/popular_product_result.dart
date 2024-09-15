@@ -1,46 +1,35 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:overlay/health_analysis.dart';
 import 'package:overlay/loading_screen.dart';
+import 'package:http/http.dart' as http;
 
-class ProductSearchPage extends StatefulWidget {
-  final String query;
-
-  const ProductSearchPage({super.key, required this.query});
+class CategoryResult extends StatefulWidget {
+  final String categories;
+  const CategoryResult({super.key, required this.categories});
 
   @override
-  _ProductSearchPageState createState() => _ProductSearchPageState();
+  State<CategoryResult> createState() => _CategoryResultState();
 }
 
-class _ProductSearchPageState extends State<ProductSearchPage> {
+class _CategoryResultState extends State<CategoryResult> {
+  bool isLoading = true;
   List products = [];
   List products2 = [];
-  bool isLoading = true;
 
-  @override
   void initState() {
     super.initState();
-    // OpenFoodAPIConfiguration.globalLanguages = <OpenFoodFactsLanguage>[
-    //   OpenFoodFactsLanguage.ENGLISH
-    // ];
-    // OpenFoodAPIConfiguration.globalCountry = OpenFoodFactsCountry.INDIA;
-    //searchProducts(widget.query);
-    // OpenFoodAPIConfiguration.globalUser = const User(
-    //   userId: 'overlay', // Set your app name or identifier
-    //   password: '', // Leave blank unless you're using authentication
-    //   comment: 'App with Firebase authentication',
-    // );
-    searchProducts(widget.query);
+    searchProductsWithCategory(widget.categories);
   }
 
-  void searchProducts(String query) async {
+  void searchProductsWithCategory(String categories) async {
     int currentPage = 1;
     int totalPages = 5;
     int productsPerPage = 20;
-    int retryCount = 3; // Maximum number of retries in case of timeout
-    Duration timeoutDuration = Duration(seconds: 10); // Timeout duration
+    int retryCount = 3;
+    Duration timeoutDuration = Duration(seconds: 10);
 
     List<dynamic> allProducts = [];
 
@@ -49,11 +38,11 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
     });
 
     for (int page = currentPage; page <= totalPages; page++) {
-      bool success = false; // Flag to check if request was successful
+      bool success = false;
       for (int retry = 0; retry < retryCount; retry++) {
         try {
           final url = Uri.parse(
-              'https://world.openfoodfacts.org/cgi/search.pl?search_terms=$query&countries_tags_en=india&languages_tags_en=english&json=true&page=$page&page_size=$productsPerPage');
+              'https://world.openfoodfacts.net/api/v2/search?categories_tags_en=$categories&countries_tags_en=india&languages_tags_en=english&page=$page&page_size=$productsPerPage');
 
           print("Fetching page $page, attempt ${retry + 1}");
 
@@ -68,27 +57,18 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
                 products2 = data['products'];
 
                 for (int i = 0; i < products2.length; i++) {
-                  String temp = "";
-
-                  if (products2[i]['product_name'] != null) {
-                    temp = products2[i]['product_name'];
-                  }
-
-                  // Compare the lowercase product name with the query
-                  if (temp.toLowerCase().contains(query.toLowerCase())) {
-                    allProducts.add(products2[i]); // Add to the combined list
-                  }
+                  allProducts.add(products2[i]); // Add to the combined list
                 }
               });
-              success = true; // Mark request as successful
-              break; // Exit retry loop if successful
+              success = true;
+              break;
             } else {
               print("No products found on page $page");
               break;
             }
           } else {
             print("Error fetching page $page: ${response.statusCode}");
-            break; // Stop further requests in case of non-200 status code
+            break;
           }
         } on TimeoutException catch (e) {
           print("Request timed out on page $page, attempt ${retry + 1}: $e");
@@ -113,43 +93,12 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
     });
   }
 
-  // Future<void> searchProd(String prodname) async {
-  //   ProductSearchQueryConfiguration configuration =
-  //       ProductSearchQueryConfiguration(
-  //     fields: [ProductField.ALL], // You can specify the fields you need
-  //     parametersList: [
-  //       SearchTerms(terms: [prodname]),
-  //     ],
-  //     version: ProductQueryVersion.v3,
-  //   );
-
-  //   // final User myUser = User(
-  //   //   userId: 'overlay', // Your app's name or identifier
-  //   //   password: '', // Leave blank if you're not using authentication
-  //   //   comment: 'Internal test app', // Optional: Description or comment
-  //   // );
-
-  //   SearchResult result = await OpenFoodAPIClient.searchProducts(
-  //     OpenFoodAPIConfiguration.globalUser,
-  //     configuration,
-  //   );
-
-  //   setState(() {
-  //     products2 = result.products ?? [];
-  //     // if (products.isNotEmpty){
-
-  //     // }
-  //     print("products-size : ${products2}");
-  //     isLoading = false;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF055b49),
-        title: const Text('Search Results'),
+        title: const Text('Results'),
         foregroundColor: Colors.white,
       ),
       backgroundColor: const Color(0xFFFFF6E7),
@@ -205,15 +154,10 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
                                         );
                                       },
                                     )
-                                  : Container(
-                                      height: 80,
-                                      width: 80,
-                                      color: Colors.grey[300],
-                                      child: const Icon(
-                                        Icons.image_not_supported,
-                                        size: 40,
-                                        color: Colors.grey,
-                                      ),
+                                  : const Icon(
+                                      Icons.image_not_supported,
+                                      size: 40,
+                                      color: Colors.grey,
                                     ),
                             ),
                             const SizedBox(width: 16),

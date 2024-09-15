@@ -80,7 +80,7 @@ Future<String> healthAnalysis(Map<String, dynamic> product) async {
 
     7. Recommendations for Healthier Alternatives: Suggest 3 healthier alternative products from the same category (e.g., healthier versions of the same type of snack, beverage, etc.) For alternatives, make sure you are recommending packaged food and not home made food alternatives. Also keep in mind to recommend only those alternatives which are available in Indian Markets.
 
-    8. Portion Size: Based on the product's QUANTITY and type, give a **common portion size** in grams along with a **reference in terms of portion** (e.g., for a 400g bread, the common portion size would be 50g, which means 2 slices of bread). The reference should be in easily understandable terms like "2 biscuits," "1 handful of namkeen," "1 slice of bread," etc.
+    8. Portion Size: Based on the product's QUANTITY and type, give a **common portion size** in grams along with a **reference in terms of portion** (e.g., for a 400g bread, the common portion size would be 50g, which means 2 slices of bread or for a 250g cereal, common portion size would be 30g, which means 1 bowl). The reference should be in easily understandable terms like "2 biscuits," "1 handful of namkeen," "1 slice of bread," etc.
     
     The response should only contain the following JSON format:
 

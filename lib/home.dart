@@ -270,7 +270,7 @@ class _MainScreenState extends State<MainScreen> {
 
               // List for Popular Products
               SizedBox(
-                height: 170,
+                height: 180,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16.0,
@@ -302,7 +302,7 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                       HorizontalCards(
                         imageFilename: 'assets/images/soda.png',
-                        title: 'Cold Drinks\n& Juices',
+                        title: 'Beverages',
                         categoryTags: "carbonated-drinks|juice",
                       ),
                       SizedBox(
@@ -522,7 +522,6 @@ class _MainScreenState extends State<MainScreen> {
   //   );
   // }
 }
-
 class HorizontalCards extends StatelessWidget {
   final String imageFilename;
   final String title;
@@ -557,19 +556,22 @@ class HorizontalCards extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30),
-                child: Container(
-                  width: 100.0,
-                  height: 100.0,
-                  color: Colors.white,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Image.asset(
-                      imageFilename,
-                      width: 80.0,
-                      height: 80.0,
-                      fit: BoxFit.contain,
+              child: Padding(  // Padding inside the card
+                padding: const EdgeInsets.all(12.0),  // You can adjust the padding here
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: Container(
+                    width: 100.0,
+                    height: 90.0,
+                    color: Colors.white,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Image.asset(
+                        imageFilename,
+                        width: 80.0,
+                        height: 80.0,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
@@ -577,7 +579,7 @@ class HorizontalCards extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 5.0), 
+        const SizedBox(height: 5.0),
         // Text below the card
         Text(
           title,

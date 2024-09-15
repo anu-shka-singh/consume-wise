@@ -5,6 +5,8 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:overlay/health_analysis.dart';
 import 'package:http/http.dart' as http;
 
+import 'error_screen.dart';
+
 class ImageUpload extends StatefulWidget {
   const ImageUpload({super.key});
 
@@ -53,6 +55,15 @@ class _ImageUploadState extends State<ImageUpload> {
       prodInfo = data['product'];
     } else {
       print('Failed to fetch product information');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ErrorScreen(
+            errorMessage: "Sorry, the product is not in our database currently.",
+            onRedirect: () => Navigator.pop(context),
+          ),
+        ),
+      );
     }
   }
 

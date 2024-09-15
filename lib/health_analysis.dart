@@ -463,7 +463,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   ),
                                   const SizedBox(width: 15),
                                   const Text(
-                                    'Calories:',
+                                    'Energy:',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,

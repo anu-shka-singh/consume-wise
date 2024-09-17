@@ -1,20 +1,21 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 
-class TrueCallerOverlay extends StatefulWidget {
-  const TrueCallerOverlay({super.key});
+class HealthOverlay extends StatefulWidget {
+  final String detectedText;
+
+  const HealthOverlay({Key? key, required this.detectedText}) : super(key: key);
 
   @override
-  State<TrueCallerOverlay> createState() => _TrueCallerOverlayState();
+  State<HealthOverlay> createState() => _HealthOverlayState();
 }
 
-class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
+class _HealthOverlayState extends State<HealthOverlay> {
   bool isGold = true;
 
   final _goldColors = const [
-    Color(0xFFa2790d),
+    Color(0xFF055b49),
     Color(0xFFebd197),
     Color(0xFFa2790d),
   ];
@@ -74,11 +75,11 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
                         ),
                       ),
                       title: const Text(
-                        "X-SLAYER",
+                        "Analysis",
                         style: TextStyle(
                             fontSize: 20.0, fontWeight: FontWeight.bold),
                       ),
-                      subtitle: const Text("Sousse , Tunisia"),
+                      subtitle: Text(widget.detectedText),
                     ),
                     const Spacer(),
                     const Divider(color: Colors.black54),
@@ -90,12 +91,12 @@ class _TrueCallerOverlayState extends State<TrueCallerOverlay> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("+216 21065826"),
-                              Text("Last call - 1 min ago"),
+                              Text("High Sugar, HIgh Saturated Fats"),
+                              Text("Rich in Vitamins"),
                             ],
                           ),
                           Text(
-                            "Flutter Overlay",
+                            "2.5/5",
                             style: TextStyle(
                                 fontSize: 15.0, fontWeight: FontWeight.bold),
                           ),

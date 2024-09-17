@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:overlay/overlays/true_caller_overlay.dart';
+import 'package:overlay/overlays/circular_overlay.dart';
 import 'package:overlay/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -18,7 +18,7 @@ void overlayMain() {
   runApp(
     const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: TrueCallerOverlay(),
+      home: LeafOverlay(),
     ),
   );
 }

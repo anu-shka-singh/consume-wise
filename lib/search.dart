@@ -40,7 +40,7 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
     int totalPages = 5;
     int productsPerPage = 20;
     int retryCount = 3; // Maximum number of retries in case of timeout
-    Duration timeoutDuration = Duration(seconds: 10); // Timeout duration
+    Duration timeoutDuration = const Duration(seconds: 10); // Timeout duration
 
     List<dynamic> allProducts = [];
 
@@ -154,7 +154,7 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
       ),
       backgroundColor: const Color(0xFFFFF6E7),
       body: isLoading
-          ? LoadingScreen()
+          ? const LoadingScreen()
           : ListView.builder(
               itemCount: products.length,
               itemBuilder: (context, index) {

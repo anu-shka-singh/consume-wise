@@ -19,6 +19,7 @@ class _CategoryResultState extends State<CategoryResult> {
   List products = [];
   List products2 = [];
 
+  @override
   void initState() {
     super.initState();
     searchProductsWithCategory(widget.categories);
@@ -29,7 +30,7 @@ class _CategoryResultState extends State<CategoryResult> {
     int totalPages = 5;
     int productsPerPage = 20;
     int retryCount = 3;
-    Duration timeoutDuration = Duration(seconds: 10);
+    Duration timeoutDuration = const Duration(seconds: 10);
 
     List<dynamic> allProducts = [];
 
@@ -103,7 +104,7 @@ class _CategoryResultState extends State<CategoryResult> {
       ),
       backgroundColor: const Color(0xFFFFF6E7),
       body: isLoading
-          ? LoadingScreen()
+          ? const LoadingScreen()
           : ListView.builder(
               itemCount: products.length,
               itemBuilder: (context, index) {

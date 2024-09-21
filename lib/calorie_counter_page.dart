@@ -230,16 +230,16 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                 color: const Color(0xFFeaf2e1), // Lighter complementary color
                 borderRadius: BorderRadius.circular(12.0),
               ),
-              child: Row(
+              child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.info_outline,
                     color: Colors.grey,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
-                    child: const Text(
+                    child: Text(
                       'Please note: The provided calorie count is an estimate. For more accurate results, include detailed descriptions of your meal along with portion sizes.',
                       style: TextStyle(
                         fontSize: 14.0,

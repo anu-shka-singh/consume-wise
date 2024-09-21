@@ -6,7 +6,7 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import '../services/ocr.dart';
 
 class LeafOverlay extends StatefulWidget {
-  const LeafOverlay({Key? key}) : super(key: key);
+  const LeafOverlay({super.key});
 
   @override
   State<LeafOverlay> createState() => _LeafOverlayState();
@@ -80,7 +80,7 @@ class _LeafOverlayState extends State<LeafOverlay> {
                 ),
               ],
             ),
-            child: Center(
+            child: const Center(
               child: Icon(
                 Icons.energy_savings_leaf,
                 color: Colors.white,

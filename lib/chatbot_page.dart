@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:overlay/profile.dart';
 
 import 'home.dart';
@@ -51,7 +49,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Column(
         crossAxisAlignment:
-        message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(bottom: 5),
@@ -71,7 +69,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
             decoration: BoxDecoration(
               color: message.isMe
                   ? const Color(0xFF004d40)
-                  : const  Color(0xFF86b649),
+                  : const Color(0xFF86b649),
               borderRadius: BorderRadius.circular(15),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -120,7 +118,8 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
           ),
           const Divider(height: 1.0),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
             child: _buildTextComposer(), // Custom text input field
           ),
         ],
@@ -198,18 +197,24 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => MainScreen(user: widget.user, currentIndex: 0,),
+            builder: (context) => MainScreen(
+              user: widget.user,
+              currentIndex: 0,
+            ),
           ),
         );
         break;
       case 1:
-      // Stay on current page (ChatBotScreen)
+        // Stay on current page (ChatBotScreen)
         break;
       case 2:
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProfilePage(user: widget.user, currentIndex: 2,),
+            builder: (context) => ProfilePage(
+              user: widget.user,
+              currentIndex: 2,
+            ),
           ),
         );
         break;

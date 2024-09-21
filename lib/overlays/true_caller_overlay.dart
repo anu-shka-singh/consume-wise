@@ -5,7 +5,7 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 class HealthOverlay extends StatefulWidget {
   final String detectedText;
 
-  const HealthOverlay({Key? key, required this.detectedText}) : super(key: key);
+  const HealthOverlay({super.key, required this.detectedText});
 
   @override
   State<HealthOverlay> createState() => _HealthOverlayState();

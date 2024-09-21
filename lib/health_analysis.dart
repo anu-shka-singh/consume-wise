@@ -70,7 +70,7 @@ import 'package:overlay/services/prompts.dart';
 
 class HealthAnalysis extends StatefulWidget {
   final Map<String, dynamic> product;
-  HealthAnalysis({super.key, required this.product});
+  const HealthAnalysis({super.key, required this.product});
 
   @override
   State<HealthAnalysis> createState() => _HealthAnalysisState();
@@ -79,7 +79,7 @@ class HealthAnalysis extends StatefulWidget {
 class _HealthAnalysisState extends State<HealthAnalysis> {
   final List<bool> _isExpanded = [false, false];
   late List<Map<String, dynamic>> ingredients = [];
-   Map<String, dynamic> nutriments = {};
+  Map<String, dynamic> nutriments = {};
   late Map<String, dynamic> analysis;
   late double servingSize;
   bool isLoading = false;
@@ -108,16 +108,16 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     super.initState();
     isLoading = true;
     performHealthAnalysis();
-  if (widget.product['ingredients'] != null){
-    ingredients = List<Map<String, dynamic>>.from(widget.product['ingredients']);
-  }
-    if (widget.product['nutriments'] != null){
+    if (widget.product['ingredients'] != null) {
+      ingredients =
+          List<Map<String, dynamic>>.from(widget.product['ingredients']);
+    }
+    if (widget.product['nutriments'] != null) {
       nutriments = Map<String, dynamic>.from(widget.product['nutriments']);
     }
-    if (widget.product['allergens_hierarchy'] != null){
+    if (widget.product['allergens_hierarchy'] != null) {
       allergies = List<String>.from(widget.product['allergens_hierarchy']);
     }
-    
 
     _scrollController1 = ScrollController();
     _scrollController2 = ScrollController();
@@ -140,25 +140,25 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     }
   }
 
-  void startAutoScroll(ScrollController? _scrollController) {
-    _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
-      if (_scrollController != null && _scrollController.hasClients) {
-        double maxScrollExtent = _scrollController.position.maxScrollExtent;
-        double currentScroll = _scrollController.position.pixels;
-  
+  void startAutoScroll(ScrollController? scrollController) {
+    _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
+      if (scrollController != null && scrollController.hasClients) {
+        double maxScrollExtent = scrollController.position.maxScrollExtent;
+        double currentScroll = scrollController.position.pixels;
+
         if (currentScroll < maxScrollExtent) {
-          _scrollController.animateTo(
+          scrollController.animateTo(
             currentScroll + 2.0, // Speed of the scroll
-            duration: Duration(milliseconds: 50),
+            duration: const Duration(milliseconds: 50),
             curve: Curves.linear,
           );
         } else {
-          _scrollController.jumpTo(0); // Restart scrolling
+          scrollController.jumpTo(0); // Restart scrolling
         }
       }
     });
   }
-  
+
   @override
   void dispose() {
     _scrollController1?.dispose();
@@ -176,7 +176,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
         elevation: 0,
       ),
       body: isLoading
-          ? LoadingScreen()
+          ? const LoadingScreen()
           : Container(
               color: const Color(0xFFFFF6E7),
               child: SingleChildScrollView(
@@ -248,7 +248,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                     ),
 
                     // Horizontally scrolling keywords, only show if there are positives
-                    if (analysis['positive'] != null && analysis['positive'].isNotEmpty)
+                    if (analysis['positive'] != null &&
+                        analysis['positive'].isNotEmpty)
                       Container(
                         height: 40, // Adjust height as needed
                         child: ListView.builder(
@@ -257,21 +258,26 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           itemCount: analysis['positive'].length,
                           itemBuilder: (context, index) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: const Color(0xFF055b49),
-                                  borderRadius: BorderRadius.circular(12), // Rounded corners
+                                  borderRadius: BorderRadius.circular(
+                                      12), // Rounded corners
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.2), // Subtle shadow for depth
+                                      color: Colors.black.withOpacity(
+                                          0.2), // Subtle shadow for depth
                                       spreadRadius: 1,
                                       blurRadius: 4,
-                                      offset: const Offset(0, 2), // Offset shadow
+                                      offset:
+                                          const Offset(0, 2), // Offset shadow
                                     ),
                                   ],
                                 ),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
                                 child: Center(
                                   child: Text(
                                     analysis['positive'][index],
@@ -288,7 +294,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                         ),
                       )
                     else
-                      SizedBox.shrink(), // Return an empty widget if there are no positives
+                      const SizedBox
+                          .shrink(), // Return an empty widget if there are no positives
 
                     const SizedBox(
                       height: 10,
@@ -345,7 +352,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 20.0),
                           child: Text(
                             'Allergy Warnings',
                             style: TextStyle(
@@ -359,42 +367,43 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: allergies.isNotEmpty
                               ? Wrap(
-                            spacing: 20.0,
-                            runSpacing: 16.0,
-                            children: allergies.map((allergy) {
-                              return Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Image.asset(
-                                    allergyIcons.containsKey(allergy)
-                                        ? allergyIcons[allergy]!
-                                        : allergyIcons['Other']!,
-                                    width: 50,
-                                    height: 50,
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  // Display the allergy name
-                                  Text(
-                                    allergy[3].toUpperCase() + allergy.substring(4),
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Color(0xFF555555),
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              );
-                            }).toList(),
-                          )
+                                  spacing: 20.0,
+                                  runSpacing: 16.0,
+                                  children: allergies.map((allergy) {
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Image.asset(
+                                          allergyIcons.containsKey(allergy)
+                                              ? allergyIcons[allergy]!
+                                              : allergyIcons['Other']!,
+                                          width: 50,
+                                          height: 50,
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        // Display the allergy name
+                                        Text(
+                                          allergy[3].toUpperCase() +
+                                              allergy.substring(4),
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Color(0xFF555555),
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    );
+                                  }).toList(),
+                                )
                               : const Padding(
-                            padding: EdgeInsets.only(top: 0.0),
-                            child: Text(
-                              'No allergy warnings.',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFF555555),
-                              ),
-                            ),
-                          ),
+                                  padding: EdgeInsets.only(top: 0.0),
+                                  child: Text(
+                                    'No allergy warnings.',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color(0xFF555555),
+                                    ),
+                                  ),
+                                ),
                         ),
                       ],
                     ),
@@ -472,7 +481,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                   ),
                                   const SizedBox(width: 20),
                                   Text(
-                                      '${calculateNutrientForPortion(nutriments['energy-kcal'] ?? 0, servingSize)} kcal',
+                                    '${calculateNutrientForPortion(nutriments['energy-kcal'] ?? 0, servingSize)} kcal',
                                     style: const TextStyle(
                                       fontSize: 18,
                                       color: Color(0xFF2C2C2C),
@@ -589,19 +598,33 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                             {
                                               "Carbohydrates":
                                                   //nutriments['carbohydrates'] ?? 0,
-                                              calculateNutrientForPortion(nutriments['carbohydrates'] ?? 0, servingSize),
+                                                  calculateNutrientForPortion(
+                                                      nutriments[
+                                                              'carbohydrates'] ??
+                                                          0,
+                                                      servingSize),
                                               "image": 'assets/images/bread.png'
                                             },
                                             {
-                                              "Protein": calculateNutrientForPortion(nutriments['proteins'] ?? 0, servingSize),
+                                              "Protein":
+                                                  calculateNutrientForPortion(
+                                                      nutriments['proteins'] ??
+                                                          0,
+                                                      servingSize),
                                               "image": 'assets/images/salad.png'
                                             },
                                             {
-                                              "Fats": calculateNutrientForPortion(nutriments['fat'] ?? 0, servingSize) ?? 0,
+                                              "Fats":
+                                                  calculateNutrientForPortion(
+                                                      nutriments['fat'] ?? 0,
+                                                      servingSize),
                                               "image": 'assets/images/fats.png'
                                             },
                                             {
-                                              "Fibers": calculateNutrientForPortion(nutriments['fiber'] ?? 0, servingSize) ?? 0,
+                                              "Fibers":
+                                                  calculateNutrientForPortion(
+                                                      nutriments['fiber'] ?? 0,
+                                                      servingSize),
                                               "image": 'assets/images/fiber.png'
                                             }
                                           ],
@@ -784,20 +807,24 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           // Card Widget
                           Card(
                             color: Colors.white,
-                            elevation: 4,  // Shadow depth of the card
+                            elevation: 4, // Shadow depth of the card
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),  // Rounded corners
+                              borderRadius:
+                                  BorderRadius.circular(8), // Rounded corners
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(16.0), // Internal padding for content
+                              padding: const EdgeInsets.all(
+                                  16.0), // Internal padding for content
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   const Text(
-                                    'Better Products',  // The heading
+                                    'Better Products', // The heading
                                     style: TextStyle(
-                                      fontSize: 24,  // Larger font size for the heading
-                                      fontWeight: FontWeight.bold,  // Make the heading bold
+                                      fontSize:
+                                          24, // Larger font size for the heading
+                                      fontWeight: FontWeight
+                                          .bold, // Make the heading bold
                                     ),
                                   ),
                                   Divider(
@@ -808,8 +835,10 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                     endIndent: 2,
                                   ),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: analysis['recommendations'].map<Widget>((product) {
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: analysis['recommendations']
+                                        .map<Widget>((product) {
                                       return BulletPoint(text: product);
                                     }).toList(),
                                   ),
@@ -820,7 +849,9 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                         ],
                       ),
                     ),
-                      const SizedBox(height: 40,)
+                    const SizedBox(
+                      height: 40,
+                    )
                   ],
                 ),
               ),
@@ -901,7 +932,8 @@ ExpansionPanel _buildMacronutrientPanel(
   );
 }
 
-String calculateNutrientForPortion(dynamic nutrientValuePer100g, double portionSize) {
+String calculateNutrientForPortion(
+    dynamic nutrientValuePer100g, double portionSize) {
   //print(nutrientValuePer100g);
   //print(nutrientValuePer100g.runtimeType);
   double nutrient = parseDouble(nutrientValuePer100g);
@@ -923,25 +955,26 @@ double parseDouble(dynamic value, {double fallback = 0.0}) {
 class BulletPoint extends StatelessWidget {
   final String text;
 
-  const BulletPoint({required this.text});
+  const BulletPoint({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),  // Add spacing between items
+      padding: const EdgeInsets.only(bottom: 12.0), // Add spacing between items
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,  // Align the icon and text properly
+        crossAxisAlignment:
+            CrossAxisAlignment.start, // Align the icon and text properly
         children: <Widget>[
-          Icon(
+          const Icon(
             Icons.arrow_circle_right_outlined,
             color: Colors.green,
             size: 24,
           ),
-          SizedBox(width: 8),  // Spacing between icon and text
+          const SizedBox(width: 8), // Spacing between icon and text
           Expanded(
             child: Text(
               text,
-              style: TextStyle(fontSize: 18, color: Colors.black87),
+              style: const TextStyle(fontSize: 18, color: Colors.black87),
             ),
           ),
         ],

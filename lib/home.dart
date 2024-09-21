@@ -1,8 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:overlay/chatbot_page.dart';
 import 'package:overlay/image_upload.dart';
 import 'package:overlay/calorie_counter_page.dart';
@@ -94,7 +92,7 @@ class _MainScreenState extends State<MainScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LoginPage(),
+                  builder: (context) => const LoginPage(),
                 ),
               );
             },
@@ -522,17 +520,18 @@ class _MainScreenState extends State<MainScreen> {
   //   );
   // }
 }
+
 class HorizontalCards extends StatelessWidget {
   final String imageFilename;
   final String title;
   final String categoryTags;
 
   const HorizontalCards({
-    Key? key,
+    super.key,
     required this.imageFilename,
     required this.title,
     required this.categoryTags,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -556,8 +555,10 @@ class HorizontalCards extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
-              child: Padding(  // Padding inside the card
-                padding: const EdgeInsets.all(12.0),  // You can adjust the padding here
+              child: Padding(
+                // Padding inside the card
+                padding: const EdgeInsets.all(
+                    12.0), // You can adjust the padding here
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(30),
                   child: Container(
@@ -583,7 +584,7 @@ class HorizontalCards extends StatelessWidget {
         // Text below the card
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),

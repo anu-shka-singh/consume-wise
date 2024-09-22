@@ -3,30 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 
 class HealthOverlay extends StatefulWidget {
-  final String detectedText;
+  final String rating;
+  final List<String> positive;
+  final List<String> negative;
 
-  const HealthOverlay({super.key, required this.detectedText});
+  const HealthOverlay(
+      {super.key,
+      required this.rating,
+      required this.positive,
+      required this.negative});
 
   @override
   State<HealthOverlay> createState() => _HealthOverlayState();
 }
 
 class _HealthOverlayState extends State<HealthOverlay> {
-  bool isGold = true;
-
-  final _goldColors = const [
-    Color(0xFF055b49),
-    Color(0xFFebd197),
-    Color(0xFFa2790d),
-  ];
-
-  final _silverColors = const [
-    Color(0xFFAEB2B8),
-    Color(0xFFC7C9CB),
-    Color(0xFFD7D7D8),
-    Color(0xFFAEB2B8),
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -39,20 +30,14 @@ class _HealthOverlayState extends State<HealthOverlay> {
       child: Center(
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12.0),
-          width: double.infinity,
+          width: 370,
+          height: 270,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isGold ? _goldColors : _silverColors,
-            ),
+            color: Color(0xFFFFF6E7),
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: GestureDetector(
             onTap: () {
-              setState(() {
-                isGold = !isGold;
-              });
               FlutterOverlayWindow.getOverlayPosition().then((value) {
                 log("Overlay Position: $value");
               });
@@ -77,13 +62,12 @@ class _HealthOverlayState extends State<HealthOverlay> {
                       title: const Text(
                         "Analysis",
                         style: TextStyle(
-                            fontSize: 20.0, fontWeight: FontWeight.bold),
+                            fontSize: 15.0, fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(widget.detectedText),
                     ),
                     const Spacer(),
                     const Divider(color: Colors.black54),
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.symmetric(horizontal: 12.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -91,14 +75,14 @@ class _HealthOverlayState extends State<HealthOverlay> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("High Sugar, HIgh Saturated Fats"),
-                              Text("Rich in Vitamins"),
+                              Text(widget.positive.join(",")),
+                              Text(widget.negative.join(",")),
                             ],
                           ),
                           Text(
-                            "2.5/5",
+                            "${widget.rating}/5",
                             style: TextStyle(
-                                fontSize: 15.0, fontWeight: FontWeight.bold),
+                                fontSize: 10.0, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),

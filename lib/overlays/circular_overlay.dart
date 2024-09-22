@@ -1,9 +1,13 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:overlay/overlays/error_overlay.dart';
+import 'package:overlay/services/prompts.dart';
+import '../services/gemini.dart';
 import '../services/ocr.dart';
+import 'health_overlay.dart';
 
 class LeafOverlay extends StatefulWidget {
   const LeafOverlay({super.key});
@@ -15,17 +19,17 @@ class LeafOverlay extends StatefulWidget {
 class _LeafOverlayState extends State<LeafOverlay> {
   static const String _kPortNameOverlay = 'OVERLAY'; // Define port name
   void show() async {
-  bool isPermissionGranted = await FlutterOverlayWindow.isPermissionGranted();
-  
-  if (!isPermissionGranted) {
-    await FlutterOverlayWindow.requestPermission();
-  }
+    bool isPermissionGranted = await FlutterOverlayWindow.isPermissionGranted();
 
-  await FlutterOverlayWindow.showOverlay(
-          enableDrag: true,
-          overlayContent: '',
-        );
-}
+    if (!isPermissionGranted) {
+      await FlutterOverlayWindow.requestPermission();
+    }
+
+    await FlutterOverlayWindow.showOverlay(
+      enableDrag: true,
+      overlayContent: '',
+    );
+  }
 
   @override
   void initState() {
@@ -33,39 +37,101 @@ class _LeafOverlayState extends State<LeafOverlay> {
     //show();
   }
 
-  Future<void> _performOcrAndShowOverlay() async {
-    try {
-      // Perform OCR
-      final detectedText = await readTextFromScreen();
+  Future<void> showReport() async {
+    // capture screen, Perform OCR and extract text
+    //final detectedText = await captureAndOcr();
+    String detectedText = '''
+11:27
+< chocolate
+X
+Off
+munch
+Nestle Nestle Munch Chocolate 38.5 g
+Get for ₹17
+₹18 ₹20
+Add to Cart
+2% Off
+Π
+Cadbury Dairy Milk, CHOCOLATE
+Cadbury Dairy Milk Chocolate Bar
+Z
+Add items worth 199 to get up to 20% off with pass
+Zepto
+00 Categories
+Cadbury
+Dairy Milk CHOCOLATE
+crackle
+Cadbury Dairy Milk Crackle Chocolate Bar 36 g
+Get for ₹44
+₹45
+Add to Cart
+Cadbury Dairy Milk
+CHOCOLATE
+3
+Pieces
+Cadbury Dairy Milk Chocolate Combo
+Cart
+''';
 
-      if (detectedText != null) {
-        // Close any existing overlay
-        final isActive = await FlutterOverlayWindow.isActive();
-        if (isActive) {
-          await FlutterOverlayWindow.closeOverlay();
-        }
+    if (detectedText != null) {
+      // send extracted text to gemini to get product name
+      Future<String> productName = identifyProductName(detectedText);
 
-        // Show the TrueCallerOverlay
-        await FlutterOverlayWindow.showOverlay(
-          enableDrag: true,
-          overlayTitle: 'TrueCaller Overlay',
-          overlayContent: '',
-          flag: OverlayFlag.defaultFlag,
-          visibility: NotificationVisibility.visibilityPublic,
-          positionGravity: PositionGravity.auto,
-          height: (MediaQuery.of(context).size.height * 0.6).toInt(),
-          width: (MediaQuery.of(context).size.width * 0.8).toInt(),
-          startPosition: const OverlayPosition(0, 0),
+      // if response is none or multiple then display overlay accordingly
+      if (productName == "None" || productName == "Multiple") {
+        // Show the error Overlay
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Dialog(
+              child: Container(
+                width: 370.0, // Set the width
+                height: 270.0, // Set the height
+                child: const ErrorOverlay(),
+              ),
+            );
+          },
         );
-
-        // Send detected text to overlay
-        IsolateNameServer.lookupPortByName(_kPortNameOverlay)
-            ?.send(detectedText);
       } else {
-        log("No text detected");
+        // else do search in api to fetch product info
+        Map<String, dynamic> productInfo = {}; //search(productName);
+
+        // get Health Analysis using gemini
+        final response = await healthAnalysis(productInfo);
+        final cleanResponse = getCleanResponse(response);
+        if (cleanResponse.isNotEmpty) {
+          final analysis = jsonDecode(cleanResponse);
+          List<String> positive = analysis['positive'];
+          List<String> negative = analysis['negative'];
+          String rating = analysis['rating'];
+
+          // Show the Health Analysis Overlay
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Dialog(
+                child: Container(
+                  width: 370.0, // Set the width
+                  height: 270.0, // Set the height
+                  child: HealthOverlay(
+                    rating: rating,
+                    positive: positive,
+                    negative: negative,
+                  ),
+                ),
+              );
+            },
+          );
+
+          // Close the existing overlay
+          // final isActive = await FlutterOverlayWindow.isActive();
+          // if (isActive) {
+          //   await FlutterOverlayWindow.closeOverlay();
+          // }
+        }
       }
-    } catch (e) {
-      log("Error performing OCR: $e");
+    } else {
+      log("No text detected");
     }
   }
 
@@ -77,14 +143,13 @@ class _LeafOverlayState extends State<LeafOverlay> {
         child: GestureDetector(
           onTap: () async {
             log('Leaf overlay tapped');
-            await FlutterOverlayWindow.closeOverlay();
-            //_performOcrAndShowOverlay();
+            showReport();
           },
           child: Container(
             width: 100.0,
             height: 100.0,
             decoration: BoxDecoration(
-              color: Colors.green,
+              color: const Color(0xFF055b49),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(

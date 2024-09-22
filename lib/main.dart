@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:overlay/database/database_service.dart';
 import 'package:overlay/monitoring_service/utils/flutter_background_service_utils.dart';
+import 'package:overlay/home_page.dart';
 import 'package:overlay/overlays/circular_overlay.dart';
+import 'package:overlay/overlays/error_overlay.dart';
 import 'package:overlay/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -21,7 +23,10 @@ void main() async {
   //   FlutterOverlayWindow.requestPermission();
   // }
   await requestPermissions();
-  runApp(MyApp(dbService: dbService,permissionsAvailable: permissionsAvailable,));
+  runApp(MyApp(
+    dbService: dbService,
+    permissionsAvailable: permissionsAvailable,
+  ));
 }
 
 onStart() async {
@@ -44,20 +49,16 @@ void overlayMain() {
   debugPrint("Starting Alerting Window Isolate!");
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LeafOverlay(),
-    ),
+    const MaterialApp(debugShowCheckedModeBanner: false, home: ErrorOverlay()),
   );
 }
-
-
 
 class MyApp extends StatefulWidget {
   final DatabaseService dbService;
   final bool permissionsAvailable;
 
-  const MyApp({super.key, required this.dbService, required this.permissionsAvailable});
+  const MyApp(
+      {super.key, required this.dbService, required this.permissionsAvailable});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -68,11 +69,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(
-        dbService: widget.dbService,
-        permissionsAvailable: widget.permissionsAvailable,
-
-      ),
+      // home: SplashScreen(
+      //   dbService: widget.dbService,
+      //   permissionsAvailable: widget.permissionsAvailable,
+      // ),
+      home: HomePage(),
     );
   }
 }

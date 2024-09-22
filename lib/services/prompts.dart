@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:overlay/services/gemini.dart';
 
 Future<String?> calorieCalculator(String userMeal) async {
@@ -29,39 +27,7 @@ Future<String?> calorieCalculator(String userMeal) async {
   return response;
 }
 
-// Function to fetch product information from OpenFoodFacts API
-Future<Map<String, dynamic>?> fetchProductInfo(int productId) async {
-  final url = Uri.parse(
-      'https://world.openfoodfacts.org/api/v2/product/$productId.json');
-  final response = await http.get(url);
-
-  if (response.statusCode == 200) {
-    final data = json.decode(response.body);
-    return data['product'];
-  } else {
-    print('Failed to fetch product information');
-    return null;
-  }
-}
-
 Future<String> healthAnalysis(Map<String, dynamic> product) async {
-  // Fetch the product information from OpenFoodFacts API
-  // final productInfo = await fetchProductInfo(productId);
-
-  // if (productInfo == null) {
-  //   return 'Product information could not be retrieved.';
-  // }
-
-  // // Extract relevant information from productInfo for the prompt
-  // final productName = productInfo['product_name'] ?? 'Unknown Product';
-  // final ingredients = productInfo['ingredients_text'] ?? 'No ingredients info';
-  // final nutritionInfo = productInfo['nutriments'] != null
-  //     ? productInfo['nutriments']
-  //         .map((key, value) => MapEntry(key, '$key: $value'))
-  //         .values
-  //         .join(', ')
-  //     : 'No nutritional info available';
-
   final prompt = '''
     You are tasked with analyzing the health impact of a packaged food product based on the provided product details in JSON format. Your goal is to provide a thorough analysis covering both the positive and negative aspects of the product from a health perspective. The analysis must also check for allergens, compliance with certain diets, harmful ingredients, and provide recommendations for healthier alternatives. The final output should be in the following JSON format.
 
@@ -175,7 +141,8 @@ Future<String> chatResponse(String userMessage) async {
   return response ?? "";
 }
 
-Future<String> dataPreprocessing(String barcode, String frontText, String ingredients, String nutritionalValue) async {
+Future<String> dataPreprocessing(String barcode, String frontText,
+    String ingredients, String nutritionalValue) async {
   final String prompt = '''
   You will be given information scanned from a packaged product. 
   This information will include:
@@ -208,4 +175,51 @@ Future<String> dataPreprocessing(String barcode, String frontText, String ingred
 
   final response = await getResponse(prompt);
   return response ?? "";
+}
+
+Future<String> identifyProductName(String extractedText) async {
+  final String prompt = '''
+    You are given text extracted through OCR. Your task is to identify the name of any packaged food product from the given text. Strictly return the name of a packaged food product only. Do not include clothing, electronics, or any non-food items in your response. If no food product is identified, return "None". Ensure the response contains only the name of the food product without additional words or irrelevant details. If more than one packaged food items are identified then return "Multiple".
+    
+    Extracted Text: $extractedText
+    ''';
+  final response = await getResponse(prompt);
+  return response ?? "";
+}
+
+void main() async {
+  String text = '''
+11:27
+< chocolate
+X
+Off
+munch
+Nestle Nestle Munch Chocolate 38.5 g
+Get for ₹17
+₹18 ₹20
+Add to Cart
+2% Off
+Π
+Cadbury Dairy Milk, CHOCOLATE
+Cadbury Dairy Milk Chocolate Bar
+Z
+Add items worth 199 to get up to 20% off with pass
+Zepto
+00 Categories
+Cadbury
+Dairy Milk CHOCOLATE
+crackle
+Cadbury Dairy Milk Crackle Chocolate Bar 36 g
+Get for ₹44
+₹45
+Add to Cart
+Cadbury Dairy Milk
+CHOCOLATE
+3
+Pieces
+Cadbury Dairy Milk Chocolate Combo
+Cart
+''';
+  String answer = await identifyProductName(text);
+  print(answer);
 }

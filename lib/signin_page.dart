@@ -3,11 +3,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay/database/database_service.dart';
 import 'home.dart';
 import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final DatabaseService dbService;
+  final bool permissionsAvailable;
+  const LoginPage({super.key, required this.dbService, required this.permissionsAvailable});
 
   @override
   _LoginState createState() => _LoginState();
@@ -99,6 +102,8 @@ class _LoginState extends State<LoginPage> {
                         builder: (context) => MainScreen(
                           user: data,
                           currentIndex: 0,
+                          dbService: widget.dbService,
+                          permissionsAvailable: widget.permissionsAvailable,
                         ),
                       ),
                     );
@@ -138,7 +143,10 @@ class _LoginState extends State<LoginPage> {
         GestureDetector(
           onTap: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const SignUp()));
+                MaterialPageRoute(builder: (context) => SignUp(
+                  dbService: widget.dbService,
+                  permissionsAvailable: widget.permissionsAvailable,
+                )));
           },
           child: const Text(
             "Sign Up",

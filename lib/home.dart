@@ -1,19 +1,31 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay/chatbot_page.dart';
+import 'package:overlay/database/database_service.dart';
 import 'package:overlay/image_upload.dart';
 import 'package:overlay/calorie_counter_page.dart';
+import 'package:overlay/overlay_permissions/permissions_granted.dart';
+import 'package:overlay/overlay_permissions/permissions_screen.dart';
 import 'package:overlay/popular_product_result.dart';
 import 'package:overlay/profile.dart';
 import 'package:overlay/search.dart';
 import 'package:http/http.dart' as http;
 import 'package:overlay/signin_page.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MainScreen extends StatefulWidget {
   Map<String, dynamic> user;
   final int currentIndex; // To keep track of active tab
-  MainScreen({super.key, required this.user, required this.currentIndex});
+  DatabaseService? dbService;
+  bool? permissionsAvailable;
+  MainScreen(
+      {super.key,
+      required this.user,
+      required this.currentIndex,
+      this.dbService,
+      this.permissionsAvailable});
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -88,11 +100,15 @@ class _MainScreenState extends State<MainScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const LoginPage(),
+                  builder: (context) => LoginPage(
+                    dbService: widget.dbService!,
+                    permissionsAvailable: widget.permissionsAvailable!,
+                  ),
                 ),
               );
             },
@@ -173,7 +189,63 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              Center(
+                child: GestureDetector(
+                  child: Card(
+                    elevation: 4,
+                    color: Colors.white,
+                    margin: const EdgeInsets.all(14.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        "Grant Access Permissions",
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF055b49)),
+                      ),
+                    ),
+                  ),
+                  onTap: () async {
+                    // if (await Permission.systemAlertWindow.isDenied) {
+                    //   // Request permission to draw over other apps
+                    //   PermissionStatus status = await Permission.systemAlertWindow.request();
+                    //   if (status.isGranted) {
+                    //     // Permission granted, show a message or perform the necessary action
+                    //     print("Overlay-permission-granted!");
+                    //   } else {
+                    //     // Permission denied, show a message or handle accordingly
+                    //     print("Overlay-permission-denied!");
+                    //   }
+                    // } else if (await Permission.systemAlertWindow.isGranted) {
+                    //   // Permission already granted
+                    //   print("Overlay-permission-already-granted.");
+                    // }
+                    if (widget.permissionsAvailable!) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PermissionsGranted(widget.dbService!),
+                        ),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PermissionsScreen(widget.dbService!),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+
+              //const SizedBox(height: 20),
               //Barcode scanner
               Card(
                 elevation: 4,

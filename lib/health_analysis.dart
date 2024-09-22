@@ -239,7 +239,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
 
                                 // Health Rating: Star Bar (out of 5 stars)
                                 buildHealthRatingWidget(analysis[
-                                    'rating']), // Replace 4.5 with dynamic rating value
+                                    'rating'].toDouble()), // Replace 4.5 with dynamic rating value
                               ],
                             ),
                           ),

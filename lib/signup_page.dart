@@ -2,11 +2,14 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay/database/database_service.dart';
 import '../set_profile_page.dart';
 import 'signin_page.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+  final DatabaseService dbService;
+  final bool permissionsAvailable;
+  const SignUp({super.key, required this.dbService, required this.permissionsAvailable});
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -150,7 +153,10 @@ class _SignUpState extends State<SignUp> {
         GestureDetector(
           onTap: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const LoginPage()));
+                MaterialPageRoute(builder: (context) => LoginPage(
+                  dbService: widget.dbService,
+                  permissionsAvailable: widget.permissionsAvailable,
+                )));
           },
           child: const Text(
             "Sign In",

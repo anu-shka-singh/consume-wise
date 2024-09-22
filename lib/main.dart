@@ -1,19 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:overlay/database/database_service.dart';
+import 'package:overlay/monitoring_service/utils/flutter_background_service_utils.dart';
 import 'package:overlay/overlays/circular_overlay.dart';
 import 'package:overlay/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:usage_stats/usage_stats.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  await onStart();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  DatabaseService dbService = await DatabaseService.instance();
+  bool permissionsAvailable = (await UsageStats.checkUsagePermission())! &&
+      await FlutterOverlayWindow.isPermissionGranted();
+  // if (!await FlutterOverlayWindow.isPermissionGranted()){
+  //   FlutterOverlayWindow.requestPermission();
+  // }
+  runApp(MyApp(dbService: dbService,permissionsAvailable: permissionsAvailable,));
+}
+
+onStart() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await startMonitoringService();
 }
 
 @pragma("vm:entry-point")
 void overlayMain() {
+  debugPrint("Starting Alerting Window Isolate!");
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     const MaterialApp(
@@ -23,8 +40,13 @@ void overlayMain() {
   );
 }
 
+
+
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final DatabaseService dbService;
+  final bool permissionsAvailable;
+
+  const MyApp({super.key, required this.dbService, required this.permissionsAvailable});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -33,9 +55,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: SplashScreen(
+        dbService: widget.dbService,
+        permissionsAvailable: widget.permissionsAvailable,
+
+      ),
     );
   }
 }

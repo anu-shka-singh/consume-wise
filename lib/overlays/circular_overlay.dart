@@ -14,10 +14,23 @@ class LeafOverlay extends StatefulWidget {
 
 class _LeafOverlayState extends State<LeafOverlay> {
   static const String _kPortNameOverlay = 'OVERLAY'; // Define port name
+  void show() async {
+  bool isPermissionGranted = await FlutterOverlayWindow.isPermissionGranted();
+  
+  if (!isPermissionGranted) {
+    await FlutterOverlayWindow.requestPermission();
+  }
+
+  await FlutterOverlayWindow.showOverlay(
+          enableDrag: true,
+          overlayContent: '',
+        );
+}
 
   @override
   void initState() {
     super.initState();
+    show();
   }
 
   Future<void> _performOcrAndShowOverlay() async {
@@ -62,9 +75,10 @@ class _LeafOverlayState extends State<LeafOverlay> {
       color: Colors.transparent,
       child: Center(
         child: GestureDetector(
-          onTap: () {
+          onTap: () async {
             log('Leaf overlay tapped');
-            _performOcrAndShowOverlay();
+            await FlutterOverlayWindow.closeOverlay();
+            //_performOcrAndShowOverlay();
           },
           child: Container(
             width: 100.0,

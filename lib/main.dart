@@ -10,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:usage_stats/usage_stats.dart';
 import 'firebase_options.dart';
+import 'overlays/health_overlay.dart';
 
 void main() async {
   await onStart();
@@ -49,7 +50,18 @@ void overlayMain() {
   debugPrint("Starting Alerting Window Isolate!");
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    const MaterialApp(debugShowCheckedModeBanner: false, home: ErrorOverlay()),
+    MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: HealthOverlay(
+          rating: "2.5",
+          positive: [
+            "High Protein",
+            "High Fibre",
+            "High Protein",
+            "High Fibre"
+          ],
+          negative: ["High Fats"],
+        )),
   );
 }
 
@@ -69,11 +81,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(
-        dbService: widget.dbService,
-        permissionsAvailable: widget.permissionsAvailable,
-      ),
-      //home: HomePage(),
+      // home: SplashScreen(
+      //   dbService: widget.dbService,
+      //   permissionsAvailable: widget.permissionsAvailable,
+      // ),
+      home: HomePage(),
     );
   }
 }

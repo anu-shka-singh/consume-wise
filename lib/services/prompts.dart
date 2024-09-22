@@ -174,3 +174,38 @@ Future<String> chatResponse(String userMessage) async {
   final response = await getResponse(prompt);
   return response ?? "";
 }
+
+Future<String> dataPreprocessing(String barcode, String frontText, String ingredients, String nutritionalValue) async {
+  final String prompt = '''
+  You will be given information scanned from a packaged product. 
+  This information will include:
+  1. Barcode: The barcode of the product
+  2. FrontText: The scanned text from the front of the product
+  3. Ingredients: The scanned text which includes ingredients
+  4. NutritionalValue: The scanned text which includes nutritional values
+  
+  Your task is to detect the product name, category, all ingredients, and nutritional values from the scanned text in a proper JSON format. The response should only contain the following JSON structure:
+  
+  {
+    "productName": <product name>,  // Example: "Kissan Tomato Ketchup"
+    "productBarcode": <barcode>,  // Example: "82893849"
+    "productCategory": <product category>,  // Example: "Beverage", "Dairy Product", "Chocolate"
+    "ingredients": [<list of all valid ingredients>],  // Example: ["Water", "Tomato", "Sugar", ...],
+    "nutritionalValue": [
+      {
+        "name": <nutrient name>,  // Example: "energy-kcal", "proteins", "carbohydrates", "sugars", "fat" (keep the mentioned keys the same and you can add other nutrients similarly)
+        "valuesPer100g": <decimal values of nutritional value per 100 g> // Example: 10.0, 2.2, 5.6 (do not include units) 
+      }
+    ]
+  }
+  
+  The product information is as follows:
+  Barcode: $barcode
+  FrontText: $frontText
+  Ingredients: $ingredients
+  NutritionalValue: $nutritionalValue
+  ''';
+
+  final response = await getResponse(prompt);
+  return response ?? "";
+}

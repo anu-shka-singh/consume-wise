@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:overlay/services/prompts.dart';
 import 'dart:io';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:image_cropper/image_cropper.dart'; // Image cropper package
+import 'services/image_processing.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
-void main() {
-  runApp(ProductContributionApp());
-}
 
 class ProductContributionApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(primaryColor: const Color(0xFF055b49)),
+      debugShowCheckedModeBanner: false, // Add this line to remove the debug banner
+      theme: ThemeData(
+        primaryColor: const Color(0xFF055b49),
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF055b49),
+          secondary: Color(0xFF86b649),
+        ),
+      ),
       home: ProductContributionPage(),
     );
   }
@@ -20,31 +25,36 @@ class ProductContributionApp extends StatelessWidget {
 
 class ProductContributionPage extends StatefulWidget {
   @override
-  _ProductContributionPageState createState() => _ProductContributionPageState();
+  _ProductContributionPageState createState() =>
+      _ProductContributionPageState();
 }
 
 class _ProductContributionPageState extends State<ProductContributionPage> {
-  final ImagePicker _imagePicker = ImagePicker();
+  final ImageProcessing _imageProcessing = ImageProcessing();
+  MobileScannerController cameraController = MobileScannerController();
   XFile? _frontImage;
   XFile? _ingredientsImage;
   XFile? _nutritionalFactsImage;
+  String? _barcode;
+  bool _isScanned = false;
 
   String _frontImageText = '';
   String _ingredientsText = '';
   String _nutritionalFactsText = '';
 
   int _currentStep = 0;
+  bool _error = false;
 
-  Future<void> _captureAndCropImage(bool isFrontImage, bool isIngredientsImage) async {
+  Future<void> _captureAndCropImage(
+      bool isFrontImage, bool isIngredientsImage) async {
     try {
-      final pickedFile = await _imagePicker.pickImage(source: ImageSource.camera);
+      final pickedFile = await _imageProcessing.captureImage();
       if (pickedFile != null) {
-        final croppedFile = await _cropImage(File(pickedFile.path));
+        final croppedFile = await _imageProcessing.cropImage(File(pickedFile.path));
         if (croppedFile != null) {
-          print("not null is cropped image");
-          final recognizedText = await _performOCR(croppedFile);
-          print("ocr hogyaaa!!!!!!");
+          final recognizedText = await _imageProcessing.performOCR(croppedFile);
           setState(() {
+            _error = false;
             if (isFrontImage) {
               _frontImage = XFile(croppedFile.path);
               _frontImageText = recognizedText;
@@ -59,94 +69,24 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
         }
       }
     } catch (e) {
-      print(e);
       _showErrorSnackbar('Failed to capture or crop image');
     }
   }
 
-  Future<CroppedFile?> _cropImage(File _pickedFile) async {
-    if (_pickedFile != null) {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: _pickedFile!.path,
-        compressFormat: ImageCompressFormat.jpg,
-        compressQuality: 100,
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: 'Crop Image',
-            toolbarColor: const Color(0xFF055b49),
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.square,
-            lockAspectRatio: false,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio4x3,
-            ],
-          ),
-          IOSUiSettings(
-            title: 'Crop Image',
-            aspectRatioPresets: [
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio4x3,
-            ],
-          ),
-          WebUiSettings(
-            context: context,
-            presentStyle: WebPresentStyle.dialog,
-            size: const CropperSize(
-              width: 520,
-              height: 520,
-            ),
-          ),
-        ],
-      );
+  // Modify the barcode scanning logic
+  void _scanBarcode(BarcodeCapture capture) {
+    if (!_isScanned) {
+      setState(() {
+        _barcode = capture.barcodes.isNotEmpty ? capture.barcodes.first.rawValue : null;
+        _isScanned = _barcode != null;
+      });
 
-      return croppedFile;
+      if (_isScanned) {
+        print("Scanned Barcode: $_barcode");
+        cameraController.stop();
+      }
     }
   }
-
-  // Future<CroppedFile?> _cropImage2(File imageFile) async {
-  //   return await ImageCropper().cropImage(
-  //     sourcePath: imageFile.path,
-  //     uiSettings: [
-  //       AndroidUiSettings(
-  //         toolbarTitle: 'Crop Image',
-  //         toolbarColor: Colors.blue,
-  //         toolbarWidgetColor: Colors.white,
-  //         lockAspectRatio: false,
-  //       ),
-  //       IOSUiSettings(
-  //         title: 'Crop Image',
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // Future<String> _performOCR(CroppedFile imageFile) async {
-  //   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-  //   final inputImage = InputImage.fromFile(imageFile);
-  //   try {
-  //     final recognizedText = await textRecognizer.processImage(inputImage);
-  //     return recognizedText.text;
-  //   } catch (e) {
-  //     _showErrorSnackbar('Failed to recognize text from image');
-  //     return '';
-  //   }
-  // }
-
-  Future<String> _performOCR(CroppedFile croppedFile) async {
-    final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-    final inputImage = InputImage.fromFilePath(croppedFile.path); // Use fromFilePath instead of fromFile
-    try {
-      final recognizedText = await textRecognizer.processImage(inputImage);
-      return recognizedText.text;
-    } catch (e) {
-      _showErrorSnackbar('Failed to recognize text from image: $e'); // Added error details
-      return '';
-    }
-  }
-
 
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -157,28 +97,83 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Contribute Product Data'), backgroundColor: const Color(0xFF055b49), foregroundColor: Colors.white,),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF055b49),
+        foregroundColor: Colors.white,
+      ),
+      backgroundColor: const Color(0xFFFFF6E7),
       body: Column(
         children: [
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              "Just follow these steps",
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF055b49),
+              ),
+            ),
+          ),
           Expanded(
             child: Stepper(
-              connectorColor: MaterialStateProperty.all(const Color(0xFF055b49)),
               steps: _getSteps(),
               currentStep: _currentStep,
               onStepContinue: _nextStep,
               onStepCancel: _previousStep,
-              onStepTapped: (step) => _goToStep(step),
+              controlsBuilder: (BuildContext context, ControlsDetails details) {
+                return Row(
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: details.onStepContinue,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF055b49),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      child: const Text(
+                        'Continue',
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    TextButton(
+                      onPressed: details.onStepCancel,
+                      style: TextButton.styleFrom(
+                        foregroundColor: const Color(0xFF055b49),
+                      ),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-
           ),
-          if (_currentStep == 2 && _frontImage != null && _ingredientsImage != null && _nutritionalFactsImage != null)
+          if (_currentStep == 3 && _barcode != null)
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(40.0),
               child: ElevatedButton(
-                onPressed: () {
+                style: ButtonStyle(
+                  elevation: MaterialStateProperty.all(10),
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                    EdgeInsets.symmetric(horizontal: 18, vertical: 15), // Adjust values as needed
+                  ),
+                ),
+                onPressed: () async {
                   // Submit the data to the backend or database here.
+                  print("Barcode" + _barcode!);
+                  print("Front Image" + _frontImageText);
+                  print("Ingredients" + _ingredientsText);
+                  print("Nutritional Value" + _nutritionalFactsText);
+                  String response = await dataPreprocessing(_barcode!, _frontImageText, _ingredientsText, _nutritionalFactsText);
+                  print(response);
                 },
-                child: Text('Submit Data'),
+                child: const Text('Submit Data', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
               ),
             ),
         ],
@@ -189,7 +184,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
   List<Step> _getSteps() {
     return [
       Step(
-        title: Text('Front Photo'),
+        title: const Text('Capture Front of the Product', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         content: _ImageStepContent(
           image: _frontImage,
           onCaptureImage: () => _captureAndCropImage(true, false),
@@ -200,7 +195,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
         state: _currentStep > 0 || (_frontImage != null) ? StepState.complete : StepState.indexed,
       ),
       Step(
-        title: Text('Ingredients Photo'),
+        title: const Text('Capture Ingredients of the Product', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         content: _ImageStepContent(
           image: _ingredientsImage,
           onCaptureImage: () => _captureAndCropImage(false, true),
@@ -211,7 +206,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
         state: _currentStep > 1 || (_ingredientsImage != null) ? StepState.complete : StepState.indexed,
       ),
       Step(
-        title: Text('Nutritional Facts Photo'),
+        title: const Text('Capture Nutritional Facts of the Product', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         content: _ImageStepContent(
           image: _nutritionalFactsImage,
           onCaptureImage: () => _captureAndCropImage(false, false),
@@ -223,46 +218,82 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
             ? StepState.complete
             : StepState.indexed,
       ),
+      Step(
+        title: const Text('Scan Product Barcode', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        content: _isScanned
+            ? Column(
+                children: [
+                  Text(
+                    'Barcode: $_barcode',
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF055b49)),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+            )
+            : SizedBox(
+              width: double.infinity,
+              height: 400,
+              child: MobileScanner(
+                controller: cameraController,
+                onDetect: (BarcodeCapture capture) {
+                  _scanBarcode(capture);
+                },
+              ),
+        ),
+        isActive: _currentStep >= 3,
+        state: _currentStep > 3 || _barcode != null ? StepState.complete : StepState.indexed,
+      ),
+
+
     ];
   }
 
   void _nextStep() {
-    if (_currentStep < _getSteps().length - 1) {
+    if (_isStepValid()) {
       setState(() => _currentStep += 1);
+      _error = false;
+    } else {
+      setState(() => _error = true);
+      _showErrorSnackbar('Please capture a photo before continuing.');
     }
   }
 
-  void _previousStep2() {
-    if (_currentStep > 0) {
-      setState(() => _currentStep -= 1);
+  bool _isStepValid() {
+    switch (_currentStep) {
+      case 0:
+        return _frontImage != null;
+      case 1:
+        return _ingredientsImage != null;
+      case 2:
+        return _nutritionalFactsImage != null;
+      case 3:
+        return _barcode != null; // Validate barcode step
+      default:
+        return true;
     }
   }
+
   void _previousStep() {
     if (_currentStep > 0) {
       setState(() {
         if (_currentStep == 1) {
-          // Reset ingredients image and text
           _ingredientsImage = null;
           _ingredientsText = '';
         } else if (_currentStep == 2) {
-          // Reset nutritional facts image and text
           _nutritionalFactsImage = null;
           _nutritionalFactsText = '';
+        } else if (_currentStep == 3) {
+          _barcode = null; // Clear barcode on going back
+          _isScanned = false; // Reset scanned status
         }
         _currentStep -= 1;
       });
-    }
-    else{
+    } else {
       setState(() {
-          _frontImage = null;
-          _frontImageText = '';
+        _frontImage = null;
+        _frontImageText = '';
       });
     }
-  }
-
-
-  void _goToStep(int step) {
-    setState(() => _currentStep = step);
   }
 }
 
@@ -283,25 +314,28 @@ class _ImageStepContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('Please take a clear photo of the $label of the product.'),
-        SizedBox(height: 10),
+        Text('Please take a clear photo of the $label of the product.', style: TextStyle(fontSize: 15),),
+        const SizedBox(height: 10),
         image == null
-            ? const Placeholder(fallbackHeight: 100)
+            ? Container()
             : Image.file(File(image!.path), height: 200),
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: onCaptureImage,
-          style: ButtonStyle(backgroundColor:  MaterialStateProperty.all(const Color(0xFF055b49)),),
-          child: Text('Capture $label Photo', style: TextStyle(color: Colors.white),),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.camera_alt_sharp, size: 22, color: Color(0xFF055b49)),
+              SizedBox(width: 8),
+              Text(
+                'Capture Photo',
+                style: TextStyle(color: Color(0xFF055b49), fontSize: 16),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 10),
-        detectedText.isNotEmpty
-            ? const Text(
-          'Detected Text:',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        )
-            : Container(),
-        detectedText.isNotEmpty ? Text(detectedText) : Container(),
       ],
     );
   }

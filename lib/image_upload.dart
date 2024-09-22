@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:overlay/health_analysis.dart';
 import 'package:http/http.dart' as http;
+import 'package:overlay/product_not_found.dart';
 
 import 'error_screen.dart';
 
@@ -55,15 +56,6 @@ class _ImageUploadState extends State<ImageUpload> {
       prodInfo = data['product'];
     } else {
       print('Failed to fetch product information');
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ErrorScreen(
-            errorMessage: "Sorry, the product is not in our database currently.",
-            onRedirect: () => Navigator.pop(context),
-          ),
-        ),
-      );
     }
   }
 
@@ -230,21 +222,30 @@ class _ImageUploadState extends State<ImageUpload> {
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.arrow_forward),
-                                    onPressed: ()  async {
+                                    onPressed: () async {
                                       await fetchProdInfo(barcode!); //"8901262010320" -> for testing
-                                      print("got-the-info");
 
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              HealthAnalysis(
-                                            product: prodInfo,
+                                      if (prodInfo.isNotEmpty) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => HealthAnalysis(
+                                              product: prodInfo,
+                                            ),
                                           ),
-                                        ),
-                                      );
+                                        );
+                                      } else {
+                                        print("Product information not founddd");
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ProductNotFoundPage(),
+                                          ),
+                                        );
+                                      }
                                     },
                                   ),
+
                                 ],
                               ),
                               const Text(

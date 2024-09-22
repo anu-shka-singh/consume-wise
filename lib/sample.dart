@@ -12,19 +12,19 @@ class HealthAnalysis2 extends StatelessWidget {
     String productBarcode = product['productBarcode'];
     String productCategory = product['productCategory'];
     List<dynamic> ingredients = product['ingredients'];
-    List<dynamic> nutritionalValue = product['nutritionalValue'];
+    Map<String, dynamic> nutritionalValue = product['nutritionalValue'][0]; // Adjusting to access the first element
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Health Analysis'),
-        backgroundColor: const Color(0xFF055b49), // Custom color for the AppBar
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            // Display Product Name
-            Text(
+        appBar: AppBar(
+          title: const Text('Health Analysis'),
+          backgroundColor: const Color(0xFF055b49),
+        ),
+        body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView(
+              children: [
+              // Display Product Name
+              Text(
               'Product Name: $productName',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -50,34 +50,26 @@ class HealthAnalysis2 extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             ...ingredients.map((ingredient) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2.0),
-              child: Text(
-                '- $ingredient',
-                style: const TextStyle(fontSize: 16),
-              ),
-            )),
-            const SizedBox(height: 20),
+    padding: const EdgeInsets.symmetric(vertical: 2.0),
+    child: Text(
+    '- $ingredient',
+    style: const TextStyle(fontSize: 16),
+    ),
+    )),
+    const SizedBox(height: 20),
 
-            // Display Nutritional Values
-            const Text(
-              'Nutritional Values (per 100g):',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            ...nutritionalValue.map((nutrient) {
-              String nutrientName = nutrient['name'];
-              double valuePer100g = nutrient['valuesPer100g'];
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2.0),
-                child: Text(
-                  '$nutrientName: $valuePer100g g',
-                  style: const TextStyle(fontSize: 16),
-                ),
-              );
-            }),
-          ],
-        ),
-      ),
+    // Display Nutritional Values
+    const Text(
+    'Nutritional Values (per 100g):',
+    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    ),
+    const SizedBox(height: 10),
+    // Display each nutritional value
+    Text('Energy (kcal): ${nutritionalValue['energy-kcal']} kcal', style: const TextStyle(fontSize: 16)),
+    Text('Protein: ${nutritionalValue['proteins']} g', style: const TextStyle(fontSize: 16)),
+    ],
+    ),
+    ),
     );
   }
 }

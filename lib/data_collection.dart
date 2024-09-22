@@ -6,11 +6,8 @@ import 'package:overlay/sample.dart';
 import 'package:overlay/services/gemini.dart';
 import 'package:overlay/services/prompts.dart';
 import 'dart:io';
-import 'health_analysis.dart';
 import 'services/image_processing.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-
-
 
 class ProductContributionApp extends StatelessWidget {
   @override
@@ -172,10 +169,10 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                 ),
                 onPressed: () async {
                   // Submit the data to the backend or database here.
-                  print("Barcode: $_barcode");
-                  print("Front Image: $_frontImageText");
-                  print("Ingredients: $_ingredientsText");
-                  print("Nutritional Value: $_nutritionalFactsText");
+                  // print("Barcode: $_barcode");
+                  // print("Front Image: $_frontImageText");
+                  // print("Ingredients: $_ingredientsText");
+                  // print("Nutritional Value: $_nutritionalFactsText");
 
                   try {
                     String response = await dataPreprocessing(_barcode!, _frontImageText, _ingredientsText, _nutritionalFactsText);
@@ -183,7 +180,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                     final cleanResponse = getCleanResponse(response);
 
                     final Map<String, dynamic> productData = jsonDecode(cleanResponse);
-
+                    print(productData);
                     final String productName = productData['productName'];
                     final String productBarcode = productData['productBarcode'];
                     final String productCategory = productData['productCategory'];
@@ -192,7 +189,6 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
 
                     print('Data to be saved successfully to Firestore');
 
-                    // Try to add data to Firestore
                     try {
                       await FirebaseFirestore.instance.collection('products').add({
                         'product_name': productName,

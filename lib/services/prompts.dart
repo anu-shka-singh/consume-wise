@@ -160,8 +160,7 @@ Future<String> dataPreprocessing(String barcode, String frontText,
     "ingredients": [<list of all valid ingredients>],  // Example: ["Water", "Tomato", "Sugar", ...],
     "nutritionalValue": [
       {
-        "name": <nutrient name>,  // Example: "energy-kcal", "proteins", "carbohydrates", "sugars", "fat" (keep the mentioned keys the same and you can add other nutrients similarly)
-        "valuesPer100g": <decimal values of nutritional value per 100 g> // Example: 10.0, 2.2, 5.6 (do not include units) 
+        "nutrient_name": <valuesPer100g>,  // where name = "nutrient name" & valuesPer100g = "decimal value of nutrient per 100g"  Example: "energy-kcal" : 223, "proteins" : 2.3, "carbohydrates" : 2.2, "sugars" : 23, "fat" : 5.9 (keep the mentioned keys the same and you can add other nutrients similarly)
       }
     ]
   }

@@ -69,11 +69,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // home: SplashScreen(
-      //   dbService: widget.dbService,
-      //   permissionsAvailable: widget.permissionsAvailable,
-      // ),
-      home: HomePage(),
+      home: SplashScreen(
+        dbService: widget.dbService,
+        permissionsAvailable: widget.permissionsAvailable,
+      ),
+      //home: HomePage(),
     );
   }
 }

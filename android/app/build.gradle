@@ -27,7 +27,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.example.overlay"
-    compileSdk flutter.compileSdkVersion
+    compileSdkVersion 34 // Specify SDK 34 explicitly
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -44,27 +44,27 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.overlay"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 23
-        targetSdkVersion flutter.targetSdkVersion
+        targetSdkVersion 34 // Specify SDK 34 explicitly
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
         }
     }
 }
 
+
 flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation 'androidx.core:core:1.9.0'
+    implementation "androidx.work:work-runtime:2.8.1"
+    implementation "androidx.work:work-runtime-ktx:2.8.1"
+}

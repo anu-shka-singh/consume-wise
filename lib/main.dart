@@ -5,6 +5,7 @@ import 'package:overlay/monitoring_service/utils/flutter_background_service_util
 import 'package:overlay/overlays/circular_overlay.dart';
 import 'package:overlay/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:usage_stats/usage_stats.dart';
 import 'firebase_options.dart';
 
@@ -19,6 +20,7 @@ void main() async {
   // if (!await FlutterOverlayWindow.isPermissionGranted()){
   //   FlutterOverlayWindow.requestPermission();
   // }
+  await requestPermissions();
   runApp(MyApp(dbService: dbService,permissionsAvailable: permissionsAvailable,));
 }
 
@@ -26,6 +28,15 @@ onStart() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await startMonitoringService();
+}
+
+Future<void> requestPermissions() async {
+  var status = await Permission.mediaLibrary.request();
+  if (status.isGranted) {
+    print("Media Projection Permission Granted");
+  } else {
+    print("Media Projection Permission Denied");
+  }
 }
 
 @pragma("vm:entry-point")

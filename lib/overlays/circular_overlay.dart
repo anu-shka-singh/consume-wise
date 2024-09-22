@@ -30,7 +30,7 @@ class _LeafOverlayState extends State<LeafOverlay> {
   @override
   void initState() {
     super.initState();
-    show();
+    //show();
   }
 
   Future<void> _performOcrAndShowOverlay() async {

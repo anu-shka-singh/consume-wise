@@ -44,6 +44,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
   String _frontImageText = '';
   String _ingredientsText = '';
   String _nutritionalFactsText = '';
+  String image_url = '';
 
   int _currentStep = 0;
   bool _error = false;
@@ -56,11 +57,13 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
         final croppedFile = await _imageProcessing.cropImage(File(pickedFile.path));
         if (croppedFile != null) {
           final recognizedText = await _imageProcessing.performOCR(croppedFile);
+
           setState(() {
             _error = false;
             if (isFrontImage) {
               _frontImage = XFile(croppedFile.path);
               _frontImageText = recognizedText;
+              _uploadFrontImageToFirebase(File(croppedFile.path));
             } else if (isIngredientsImage) {
               _ingredientsImage = XFile(croppedFile.path);
               _ingredientsText = recognizedText;
@@ -73,6 +76,19 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
       }
     } catch (e) {
       _showErrorSnackbar('Failed to capture or crop image');
+    }
+  }
+
+  Future<void> _uploadFrontImageToFirebase(File imageFile) async {
+    try {
+      String downloadUrl = await _imageProcessing.uploadImageToStorage(imageFile);
+      setState(() {
+        image_url = downloadUrl; 
+      });
+      print('Front image uploaded: $downloadUrl');
+    } catch (e) {
+      print('Error uploading front image: $e');
+      _showErrorSnackbar('Failed to upload front image');
     }
   }
 
@@ -185,6 +201,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
 
                     try {
                       await FirebaseFirestore.instance.collection('products').add({
+                        'image_url': image_url,
                         'product_name': productName,
                         'product_barcode': productBarcode,
                         'product_category': productCategory,
@@ -194,7 +211,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
 
                       print('Data saved successfully to Firestore');
 
-                      final product = convertGPTResponseToProduct(productData);
+                      final product = convertGPTResponseToProduct(productData, image_url);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -385,7 +402,7 @@ class _ImageStepContent extends StatelessWidget {
   }
 }
 
-Map<String, dynamic> convertGPTResponseToProduct(Map<String, dynamic> gptResponse) {
+Map<String, dynamic> convertGPTResponseToProduct(Map<String, dynamic> gptResponse, String imageUrl) {
   // Convert ingredients list (assuming they are plain strings from GPT)
   List<Map<String, dynamic>> convertedIngredients = [];
   if (gptResponse['ingredients'] != null) {
@@ -406,7 +423,7 @@ Map<String, dynamic> convertGPTResponseToProduct(Map<String, dynamic> gptRespons
 
   // Assemble the final product map
   return {
-    'image_url': 'https://images.openfoodfacts.org/images/products/073/762/806/4502/front_en.6.400.jpg',
+    'image_url': imageUrl,
     'product_name': gptResponse['productName'] ?? '',
     'brands' : '',
     'productBarcode': gptResponse['productBarcode'] ?? '',

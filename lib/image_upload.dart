@@ -56,6 +56,12 @@ class _ImageUploadState extends State<ImageUpload> {
       prodInfo = data['product'];
     } else {
       print('Failed to fetch product information');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProductNotFoundPage(),
+        ),
+      );
     }
   }
 

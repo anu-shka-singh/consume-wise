@@ -127,11 +127,22 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Left: Product Image
-                          Image.network(
+                          widget.product["image_url"] != null
+                              ? Image.network(
                             widget.product["image_url"],
                             width: 120, // Adjust the width as needed
                             height: 100, // Adjust the height as needed
+                          )
+                              : Container(
+                            width: 120, // Adjust the width as needed
+                            height: 100, // Adjust the height as needed
+                            color: Colors.grey, // Placeholder color or style
+                            child: Icon(
+                              Icons.image_not_supported,
+                              color: Colors.white,
+                            ),
                           ),
+
                           const SizedBox(width: 40),
 
                           // Right: Heading, subtext, and health rating

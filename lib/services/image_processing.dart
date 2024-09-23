@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -55,4 +56,18 @@ class ImageProcessing {
       throw Exception('Failed to recognize text: $e');
     }
   }
+
+  Future<String> uploadImageToStorage(File imageFile) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref().child('product/${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final uploadTask = storageRef.putFile(imageFile);
+      final snapshot = await uploadTask.whenComplete(() => {});
+      return await snapshot.ref.getDownloadURL(); // Return the download URL
+    } catch (e) {
+      print('Error uploading image: $e');
+      throw e; // Re-throw the error if image upload fails
+    }
+  }
 }
+
+

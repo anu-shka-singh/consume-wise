@@ -91,15 +91,15 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
   //late List<bool> _panelExpanded;
 
   Map<String, String> allergyIcons = {
-    "en:peanuts": "assets/images/peanuts.png",
-    "en:eggs": "assets/images/egg.png",
-    "en:wheat": "assets/images/wheat.png",
-    "en:soybeans": "assets/images/soy.png",
-    "en:milk": "assets/images/milk.png",
-    "en:fish": "assets/images/fish.png",
-    "en:tree-nuts": "assets/images/treenut.png",
-    "en:sesame-seeds": "assets/images/sesame.png",
-    "en:gluten": "assets/images/wheat.png",
+    "peanuts": "assets/images/peanuts.png",
+    "eggs": "assets/images/egg.png",
+    "wheat": "assets/images/wheat.png",
+    "soybeans": "assets/images/soy.png",
+    "milk": "assets/images/milk.png",
+    "fish": "assets/images/fish.png",
+    "tree nuts": "assets/images/treenut.png",
+    "sesame seeds": "assets/images/sesame.png",
+    "gluten": "assets/images/wheat.png",
     "Other": "assets/images/others.png"
   };
 
@@ -114,9 +114,6 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
     }
     if (widget.product['nutriments'] != null) {
       nutriments = Map<String, dynamic>.from(widget.product['nutriments']);
-    }
-    if (widget.product['allergens_hierarchy'] != null) {
-      allergies = List<String>.from(widget.product['allergens_hierarchy']);
     }
 
     _scrollController1 = ScrollController();
@@ -136,6 +133,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
         analysis = jsonDecode(cleanResponse);
         isLoading = false;
         servingSize = analysis['portion_size_grams'];
+        allergies = List<String>.from(analysis['allergens']);
       });
     }
   }
@@ -238,8 +236,8 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                     height: 8.0), // Spacing before star rating
 
                                 // Health Rating: Star Bar (out of 5 stars)
-                                buildHealthRatingWidget(analysis[
-                                    'rating'].toDouble()), // Replace 4.5 with dynamic rating value
+                                buildHealthRatingWidget(analysis['rating']
+                                    .toDouble()), // Replace 4.5 with dynamic rating value
                               ],
                             ),
                           ),
@@ -374,8 +372,10 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Image.asset(
-                                          allergyIcons.containsKey(allergy)
-                                              ? allergyIcons[allergy]!
+                                          allergyIcons.containsKey(
+                                                  allergy.toLowerCase())
+                                              ? allergyIcons[
+                                                  allergy.toLowerCase()]!
                                               : allergyIcons['Other']!,
                                           width: 50,
                                           height: 50,
@@ -383,8 +383,7 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                                         const SizedBox(height: 8.0),
                                         // Display the allergy name
                                         Text(
-                                          allergy[3].toUpperCase() +
-                                              allergy.substring(4),
+                                          allergy,
                                           style: const TextStyle(
                                               fontSize: 14,
                                               color: Color(0xFF555555),

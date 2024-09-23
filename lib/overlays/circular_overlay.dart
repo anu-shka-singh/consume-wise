@@ -63,51 +63,47 @@ class _LeafOverlayState extends State<LeafOverlay> {
     });
   }
 
-  void handleEvent(AccessibilityEvent event){
+  void handleEvent(AccessibilityEvent event) {
     detectedText = event.text!;
   }
 
   Future<void> showReport() async {
-    // capture screen, Perform OCR and extract text
-    detectedText = await captureTextFromScreenshot();
-    log("function executed");
-    if (detectedText != null) {
-      log("detectedText: $detectedText");
-    }
-
+    // capture screen
+    // await takeScreenshot();
+    //Perform OCR and extract text
     //final detectedText = await captureAndOcr();
-//     String detectedText = '''
-// 11:27
-// < chocolate
-// X
-// Off
-// munch
-// Nestle Nestle Munch Chocolate 38.5 g
-// Get for ₹17
-// ₹18 ₹20
-// Add to Cart
-// 2% Off
-// Π
-// Cadbury Dairy Milk, CHOCOLATE
-// Cadbury Dairy Milk Chocolate Bar
-// Z
-// Add items worth 199 to get up to 20% off with pass
-// Zepto
-// 00 Categories
-// Cadbury
-// Dairy Milk CHOCOLATE
-// crackle
-// Cadbury Dairy Milk Crackle Chocolate Bar 36 g
-// Get for ₹44
-// ₹45
-// Add to Cart
-// Cadbury Dairy Milk
-// CHOCOLATE
-// 3
-// Pieces
-// Cadbury Dairy Milk Chocolate Combo
-// Cart
-// ''';
+    String detectedText = '''
+      11:27
+      < chocolate
+      X
+      Off
+      munch
+      Nestle Nestle Munch Chocolate 38.5 g
+      Get for ₹17
+      ₹18 ₹20
+      Add to Cart
+      2% Off
+      Π
+      Cadbury Dairy Milk, CHOCOLATE
+      Cadbury Dairy Milk Chocolate Bar
+      Z
+      Add items worth 199 to get up to 20% off with pass
+      Zepto
+      00 Categories
+      Cadbury
+      Dairy Milk CHOCOLATE
+      crackle
+      Cadbury Dairy Milk Crackle Chocolate Bar 36 g
+      Get for ₹44
+      ₹45
+      Add to Cart
+      Cadbury Dairy Milk
+      CHOCOLATE
+      3
+      Pieces
+      Cadbury Dairy Milk Chocolate Combo
+      Cart
+      ''';
 
     if (detectedText != null) {
       // send extracted text to gemini to get product name

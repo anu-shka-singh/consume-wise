@@ -151,7 +151,7 @@ Future<String> dataPreprocessing(String barcode, String frontText,
   3. Ingredients: The scanned text which includes ingredients
   4. NutritionalValue: The scanned text which includes nutritional values
   
-  Your task is to detect the product name, category, all ingredients, and nutritional values from the scanned text in a proper JSON format. The response should only contain the following JSON structure:
+  Your task is Extract the product's name, category, list of ingredients, and nutritional values, and format them in JSON. The structure must follow this format strictly:
   
   {
     "productName": <product name>,  // Example: "Kissan Tomato Ketchup"
@@ -160,11 +160,22 @@ Future<String> dataPreprocessing(String barcode, String frontText,
     "ingredients": [<list of all valid ingredients>],  // Example: ["Water", "Tomato", "Sugar", ...],
     "nutritionalValue": [
       {
-        "nutrient_name": <valuesPer100g>,  // where name = "nutrient name" & valuesPer100g = "decimal value of nutrient per 100g"  Example: "energy-kcal" : 223, "proteins" : 2.3, "carbohydrates" : 2.2, "sugars" : 23, "fat" : 5.9 (keep the mentioned keys the same and you can add other nutrients similarly)
+        "nutrient_name": <valuesPer100g>,  // where name = "nutrient name" & valuesPer100g = "decimal value of nutrient per 100g"  Example: "energy-kcal" : 223, 
       }
     ]
   }
   
+    Guidelines:
+    1. Product Name: Extract from FrontText. Remove promotional slogans or non-essential details.
+    2. Product Category: Classify the product based on the FrontText or ingredients list. For example, categories might include "Beverage," "Dairy Product," "Snack," etc.
+    3. Ingredients: Extract all valid ingredients from the Ingredients text, separating each item. Exclude non-ingredient text.
+    4. Nutritional Values: From NutritionalValue, extract nutrient names and their corresponding values per 100g. Map the data to specific nutrient names as follows:
+        - "Total Sugars" → "sugars"
+        - "Total Fat" → "fat"
+        - "Energy" → "energy-kcal"
+        - "Proteins" → "proteins"
+        - Add other nutrients similarly if listed.
+    
   The product information is as follows:
   Barcode: $barcode
   FrontText: $frontText

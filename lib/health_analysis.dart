@@ -7,67 +7,6 @@ import 'package:overlay/loading_screen.dart';
 import 'package:overlay/services/gemini.dart';
 import 'package:overlay/services/prompts.dart';
 
-//
-// void main() {
-//   final product = {
-//     'name': 'Maggi',
-//     'company': 'Nestle',
-//     'ingredients': [
-//       "Wheat flour (atta) (85.3%)",
-//       "Palm oil",
-//       "Iodised salt",
-//       "Thickeners (508, 412)",
-//       "Humectants (451(1), 452(i))",
-//       "Acidity regulators (501(i), 500(i))",
-//       "Mixed spices (22.5%)",
-//       "Roasted spice mix powder (6.6%) (Coriander, Turmeric, Cumin, Aniseed, Black pepper, Fenugreek, Ginger, Green cardamom, Cinnamon, Clove, Nutmeg, Bay leaf & Black cardamom)",
-//       "Onion powder",
-//       "Garlic powder",
-//       "Red chilli powder",
-//       "Red chilli bib",
-//       "Coriander powder",
-//       "Turmeric powder",
-//       "Ginger powder",
-//       "Aniseed powder",
-//       "Black pepper powder",
-//       "Cumin powder",
-//       "Cumin",
-//       "Fenugreek powder",
-//       "Capsicum extract",
-//       "Compounded asafoetida",
-//       "Star anise powder",
-//       "Coriander extract",
-//       "Cumin extract",
-//       "Dehydrated Vegetables (16.7%)",
-//       "Carrot bits (8.5%)",
-//       "Green peas (8.2%)",
-//       "Toasted onion flakes (Onion (12.4%) & Corn oil)",
-//       "Refined wheat flour (Maida)",
-//       "Sugar",
-//       "Iodised salt",
-//       "Toasted onion powder (Onion (5.9%) & Corn oil)",
-//       "Thickener (508)",
-//       "Palm oil",
-//       "Flavour enhancer (635)",
-//       "Yeast extract powder",
-//       "Dehydrated kasuri methi leaves",
-//       "Starch",
-//       "Acidity regulator (330)",
-//       "Mineral",
-//       "Wheat gluten",
-//       "Contains Wheat",
-//       "May contain Milk, Oats, and Soy"
-//     ],
-//     'calories': '15kcal',
-//     'sugar': '20g',
-//   };
-//   runApp(MaterialApp(
-//     home: HealthAnalysis(
-//       product: product,
-//     ),
-//   ));
-// }
-
 class HealthAnalysis extends StatefulWidget {
   final Map<String, dynamic> product;
   const HealthAnalysis({super.key, required this.product});
@@ -491,43 +430,6 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                             ),
 
                             const SizedBox(height: 5),
-
-                            // // Cholestrol Section (Non-Collapsible)
-                            // Container(
-                            //   padding: const EdgeInsets.all(10),
-                            //   decoration: BoxDecoration(
-                            //     color: const Color.fromARGB(255, 255, 255, 255),
-                            //     borderRadius: BorderRadius.circular(16),
-                            //   ),
-                            //   child: Row(
-                            //     children: [
-                            //       Image.asset(
-                            //         'assets/images/fat.png', // Use your image asset
-                            //         width: 30, // Adjust the size as needed
-                            //         height: 30,
-                            //       ),
-                            //       const SizedBox(width: 15),
-                            //       const Text(
-                            //         'Cholesterol:',
-                            //         style: TextStyle(
-                            //           fontSize: 18,
-                            //           fontWeight: FontWeight.bold,
-                            //           color: Color(0xFF2C2C2C),
-                            //         ),
-                            //       ),
-                            //       const SizedBox(width: 20),
-                            //       Text(
-                            //         '${calculateNutrientForPortion(nutriments['cholesterol'] ?? 0, servingSize)} g',
-                            //         style: const TextStyle(
-                            //           fontSize: 18,
-                            //           color: Color(0xFF2C2C2C),
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
-                            //
-                            // const SizedBox(height: 5),
 
                             // Sugar Section (Non-Collapsible)
                             Container(

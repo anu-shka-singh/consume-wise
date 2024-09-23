@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:overlay/sample.dart';
 import 'package:overlay/services/gemini.dart';
 import 'package:overlay/services/prompts.dart';
 import 'dart:io';
+import 'health_analysis.dart';
 import 'services/image_processing.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -168,19 +168,13 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                   ),
                 ),
                 onPressed: () async {
-                  // Submit the data to the backend or database here.
-                  // print("Barcode: $_barcode");
-                  // print("Front Image: $_frontImageText");
-                  // print("Ingredients: $_ingredientsText");
-                  // print("Nutritional Value: $_nutritionalFactsText");
-
                   try {
                     String response = await dataPreprocessing(_barcode!, _frontImageText, _ingredientsText, _nutritionalFactsText);
                     print(response);
                     final cleanResponse = getCleanResponse(response);
-
                     final Map<String, dynamic> productData = jsonDecode(cleanResponse);
                     print(productData);
+
                     final String productName = productData['productName'];
                     final String productBarcode = productData['productBarcode'];
                     final String productCategory = productData['productCategory'];
@@ -200,11 +194,12 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
 
                       print('Data saved successfully to Firestore');
 
+                      final product = convertGPTResponseToProduct(productData);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HealthAnalysis2(
-                            product: productData,
+                          builder: (context) => HealthAnalysis(
+                            product: product,
                           ),
                         ),
                       );
@@ -388,4 +383,36 @@ class _ImageStepContent extends StatelessWidget {
       ],
     );
   }
+}
+
+Map<String, dynamic> convertGPTResponseToProduct(Map<String, dynamic> gptResponse) {
+  // Convert ingredients list (assuming they are plain strings from GPT)
+  List<Map<String, dynamic>> convertedIngredients = [];
+  if (gptResponse['ingredients'] != null) {
+    convertedIngredients = List<String>.from(gptResponse['ingredients']).map((ingredient) {
+      return {"text": ingredient};  // Wrap each ingredient as {"text": "ingredient"}
+    }).toList();
+  }
+
+  // Convert nutritional values list to nutriments map
+  Map<String, dynamic> convertedNutriments = {};
+  if (gptResponse['nutritionalValue'] != null) {
+    for (var nutrient in gptResponse['nutritionalValue']) {
+      nutrient.forEach((key, value) {
+        convertedNutriments[key] = value;  // Assuming GPT returns a nutrient_name: value structure
+      });
+    }
+  }
+
+  // Assemble the final product map
+  return {
+    'image_url': 'https://images.openfoodfacts.org/images/products/073/762/806/4502/front_en.6.400.jpg',
+    'product_name': gptResponse['productName'] ?? '',
+    'brands' : '',
+    'productBarcode': gptResponse['productBarcode'] ?? '',
+    'productCategory': gptResponse['productCategory'] ?? '',
+    'ingredients': convertedIngredients,  // Converted ingredient list with "text" key
+    'nutriments': convertedNutriments,    // Converted nutriments map
+    'allergens_hierarchy': []  // If you have allergens, add them here or leave empty
+  };
 }

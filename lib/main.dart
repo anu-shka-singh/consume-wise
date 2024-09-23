@@ -50,18 +50,7 @@ void overlayMain() {
   debugPrint("Starting Alerting Window Isolate!");
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: HealthOverlay(
-          rating: "2.5",
-          positive: [
-            "High Protein",
-            "High Fibre",
-            "High Protein",
-            "High Fibre"
-          ],
-          negative: ["High Fats"],
-        )),
+    const MaterialApp(debugShowCheckedModeBanner: false, home: LeafOverlay()),
   );
 }
 
@@ -81,11 +70,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // home: SplashScreen(
-      //   dbService: widget.dbService,
-      //   permissionsAvailable: widget.permissionsAvailable,
-      // ),
-      home: HomePage(),
+      home: SplashScreen(
+        dbService: widget.dbService,
+        permissionsAvailable: widget.permissionsAvailable,
+      ),
+      // home: HomePage(),
     );
   }
 }

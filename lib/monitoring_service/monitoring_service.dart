@@ -45,7 +45,11 @@ Future<void> _startTimer(DatabaseService databaseService, Map<String, Applicatio
 }
 
 _showDialog() async {
-    await FlutterOverlayWindow.showOverlay(overlayTitle: "", enableDrag: true,);
+    await FlutterOverlayWindow.showOverlay(
+      overlayTitle: "", 
+      enableDrag: true,
+      flag: OverlayFlag.flagNotTouchModal,
+      );
 }
 
 _setMonitoringApplicationsSet(DatabaseService databaseService, Map<String, ApplicationData> monitoredApplicationSet){

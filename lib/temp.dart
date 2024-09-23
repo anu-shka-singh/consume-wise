@@ -20,12 +20,13 @@ class _OCRButtonOverlayState extends State<OCRButtonOverlay> {
 
       // Convert the screenshot bytes into an InputImage for OCR
       final inputImage = InputImage.fromBytes(
-          bytes: screenshotBytes,
-          metadata: InputImageMetadata(
-              size: Size(1080, 1920),
-              rotation: InputImageRotation.rotation0deg,
-              format: InputImageFormat.nv21,
-              bytesPerRow: 1080));
+        bytes: screenshotBytes,
+        metadata: InputImageMetadata(
+            size: Size(1080, 1920),
+            rotation: InputImageRotation.rotation0deg,
+            format: InputImageFormat.nv21,
+            bytesPerRow: 1080),
+      );
 
       // Use Google ML Kit's text recognizer to process the image
       final textRecognizer = GoogleMlKit.vision.textRecognizer();

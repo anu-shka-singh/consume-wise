@@ -118,7 +118,7 @@ class _MainScreenState extends State<MainScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProductSearchPage(query: query),
+          builder: (context) => ProductSearchPage(query: query, searchType: searchType,),
         ),
       );
     }
@@ -176,7 +176,7 @@ class _MainScreenState extends State<MainScreen> {
                       onSubmitted: onSearchSubmitted,
                       decoration: InputDecoration(
                         hintText:
-                            'Search products by category or brand name...',
+                            'Search products by category or brands...',
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
@@ -234,8 +234,8 @@ class _MainScreenState extends State<MainScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                    child: const Padding(
+                      padding: EdgeInsets.all(16.0),
                       child: Text(
                         "Grant Access Permissions",
                         style: TextStyle(
@@ -246,20 +246,6 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ),
                   onTap: () async {
-                    // if (await Permission.systemAlertWindow.isDenied) {
-                    //   // Request permission to draw over other apps
-                    //   PermissionStatus status = await Permission.systemAlertWindow.request();
-                    //   if (status.isGranted) {
-                    //     // Permission granted, show a message or perform the necessary action
-                    //     print("Overlay-permission-granted!");
-                    //   } else {
-                    //     // Permission denied, show a message or handle accordingly
-                    //     print("Overlay-permission-denied!");
-                    //   }
-                    // } else if (await Permission.systemAlertWindow.isGranted) {
-                    //   // Permission already granted
-                    //   print("Overlay-permission-already-granted.");
-                    // }
                     if (widget.permissionsAvailable!) {
                       Navigator.push(
                         context,
@@ -280,8 +266,6 @@ class _MainScreenState extends State<MainScreen> {
                   },
                 ),
               ),
-
-              //const SizedBox(height: 20),
               //Barcode scanner
               Card(
                 elevation: 4,
@@ -297,8 +281,8 @@ class _MainScreenState extends State<MainScreen> {
                     children: [
                       Image.asset(
                         'assets/images/barcode-scan.png',
-                        width: 70, // Adjust the width as needed
-                        height: 100, // Adjust the height as needed
+                        width: 70, 
+                        height: 100, 
                       ),
                       const SizedBox(width: 20),
                       Expanded(

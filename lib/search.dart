@@ -7,8 +7,9 @@ import 'package:overlay/loading_screen.dart';
 
 class ProductSearchPage extends StatefulWidget {
   final String query;
+  final String searchType;
 
-  const ProductSearchPage({super.key, required this.query});
+  const ProductSearchPage({super.key, required this.query, required this.searchType});
 
   @override
   _ProductSearchPageState createState() => _ProductSearchPageState();
@@ -22,16 +23,6 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
   @override
   void initState() {
     super.initState();
-    // OpenFoodAPIConfiguration.globalLanguages = <OpenFoodFactsLanguage>[
-    //   OpenFoodFactsLanguage.ENGLISH
-    // ];
-    // OpenFoodAPIConfiguration.globalCountry = OpenFoodFactsCountry.INDIA;
-    //searchProducts(widget.query);
-    // OpenFoodAPIConfiguration.globalUser = const User(
-    //   userId: 'overlay', // Set your app name or identifier
-    //   password: '', // Leave blank unless you're using authentication
-    //   comment: 'App with Firebase authentication',
-    // );
     searchProducts(widget.query);
   }
 
@@ -112,37 +103,6 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
       isLoading = false;
     });
   }
-
-  // Future<void> searchProd(String prodname) async {
-  //   ProductSearchQueryConfiguration configuration =
-  //       ProductSearchQueryConfiguration(
-  //     fields: [ProductField.ALL], // You can specify the fields you need
-  //     parametersList: [
-  //       SearchTerms(terms: [prodname]),
-  //     ],
-  //     version: ProductQueryVersion.v3,
-  //   );
-
-  //   // final User myUser = User(
-  //   //   userId: 'overlay', // Your app's name or identifier
-  //   //   password: '', // Leave blank if you're not using authentication
-  //   //   comment: 'Internal test app', // Optional: Description or comment
-  //   // );
-
-  //   SearchResult result = await OpenFoodAPIClient.searchProducts(
-  //     OpenFoodAPIConfiguration.globalUser,
-  //     configuration,
-  //   );
-
-  //   setState(() {
-  //     products2 = result.products ?? [];
-  //     // if (products.isNotEmpty){
-
-  //     // }
-  //     print("products-size : ${products2}");
-  //     isLoading = false;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {

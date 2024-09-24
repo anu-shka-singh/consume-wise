@@ -41,13 +41,15 @@ class _PermissionsGranted extends State<PermissionsGranted> {
           backgroundColor: const Color(0xFF055b49),
         foregroundColor: Colors.white,
           elevation: 0,
-          title: Padding( padding: EdgeInsets.all(screenWidth*0.05), child: Text("app overlay permissions"),),
+          title: Padding( padding: EdgeInsets.all(screenWidth*0.05), child: Text("App Overlay Permissions"),),
         ),
+        backgroundColor: Color(0xFFFFF6E7),
         body: Column(
           children: [
+            // SizedBox(height: screenHeight*0.04,),
+            // Text("Enable feature on these Apps", style: Fonts.header2(color: Colors.white, underLine: true, isItalic: true),),
             SizedBox(height: screenHeight*0.04,),
-            Text("Enable feature on these Apps", style: Fonts.header2(color: Colors.white, underLine: true, isItalic: true),),
-            SizedBox(height: screenHeight*0.04,),
+
             _addAppsButton(context),
             SizedBox(height: screenHeight*0.03,),
             _listOfMonitoringApps(context)
@@ -147,9 +149,9 @@ class _PermissionsGranted extends State<PermissionsGranted> {
         },
         child: Column(
           children: [
-            Icon(Icons.add_circle_outline_outlined, size: screenWidth*0.15,),
+            Icon(Icons.add_card_rounded, size: screenWidth*0.15,),
             SizedBox(height: screenHeight*0.01,),
-            const Text("Add Application")
+            const Text("Add Application", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),)
           ],
         ),
       ),
@@ -162,6 +164,7 @@ class _PermissionsGranted extends State<PermissionsGranted> {
 
     return Center(
       child: Card(
+        color: Colors.white,
         clipBehavior: Clip.hardEdge,
         elevation: 5,
         shape: RoundedRectangleBorder(
@@ -284,13 +287,13 @@ class _PermissionsGranted extends State<PermissionsGranted> {
                         clipBehavior: Clip.hardEdge,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+                          side: BorderSide(color: const Color(0xFF055b49), width: 2),
                         ),
                         elevation: selectedApps.containsKey(appInfo.packageName) ? 1 : 0,
                         child: ListTile(
                           contentPadding: EdgeInsets.all(screenWidth*0.02),
-                          selectedColor: Colors.white,
-                          selectedTileColor: Theme.of(context).colorScheme.primary,
+                          selectedColor: Colors.black,
+                          selectedTileColor: const Color(0xFFeaf2e1),
                           selected: selectedApps.containsKey(appInfo.packageName),
                           onTap: selectedApps.containsKey(appInfo.packageName)
                               ? (){
@@ -344,7 +347,7 @@ class _PermissionsGranted extends State<PermissionsGranted> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          color: Colors.blue,
+          color: const Color.fromARGB(255, 180, 225, 129),
           child: const Text("Done"),
         ),
         const Spacer(),
@@ -380,7 +383,9 @@ class _PermissionsGranted extends State<PermissionsGranted> {
           width: screenWidth*0.4,
           child: Column(
             children: [
-              const CircularProgressIndicator(),
+              const CircularProgressIndicator(
+                color: const Color(0xFF055b49),
+              ),
               SizedBox(height: screenHeight*0.02,),
               const Text("Loading Installed Apps")
             ],

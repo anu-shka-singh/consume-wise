@@ -20,9 +20,6 @@ void main() async {
   DatabaseService dbService = await DatabaseService.instance();
   bool permissionsAvailable = (await UsageStats.checkUsagePermission())! &&
       await FlutterOverlayWindow.isPermissionGranted();
-  // if (!await FlutterOverlayWindow.isPermissionGranted()){
-  //   FlutterOverlayWindow.requestPermission();
-  // }
   await requestPermissions();
   runApp(MyApp(
     dbService: dbService,
@@ -74,7 +71,6 @@ class _MyAppState extends State<MyApp> {
         dbService: widget.dbService,
         permissionsAvailable: widget.permissionsAvailable,
       ),
-      // home: HomePage(),
     );
   }
 }

@@ -13,7 +13,6 @@ import 'package:overlay/profile.dart';
 import 'package:overlay/search.dart';
 import 'package:http/http.dart' as http;
 import 'package:overlay/signin_page.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class MainScreen extends StatefulWidget {
   Map<String, dynamic> user;
@@ -31,9 +30,22 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  String searchType = '';
   final TextEditingController _searchController = TextEditingController();
   List<String> searchSuggestions = [];
   bool isLoading = false;
+
+  String convertToHyphenatedLowercase(String input) {
+    String lowercased = input.toLowerCase();
+    String hyphenated = lowercased.replaceAll(RegExp(r'\s+'), '-');
+    return hyphenated;
+  }
+
+  Future<http.Response> fetchApiData(String convertedQuery, String URL) async {
+    final url = Uri.parse(URL);
+    final response = await http.get(url);
+    return response;
+  }
 
   // Function to fetch search suggestions from Open Food Facts API
   Future<void> fetchSearchSuggestions(String query) async {
@@ -42,12 +54,13 @@ class _MainScreenState extends State<MainScreen> {
         isLoading = true;
       });
 
-      final url = Uri.parse(
-          'https://world.openfoodfacts.org/cgi/search.pl?search_terms=$query&countries_tags_en=india&languages_tags_en=english&json=true');
-      final response = await http.get(url);
+      String convertedQuery = convertToHyphenatedLowercase(query);
 
+      String url =
+          'https://world.openfoodfacts.net/api/v2/search?categories_tags_en=$convertedQuery&countries_tags_en=india&languages_tags_en=english';
+      final response = await fetchApiData(convertedQuery, url);
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+         final data = json.decode(response.body);
         List<dynamic> products = data['products'] ?? [];
 
         setState(() {
@@ -56,22 +69,44 @@ class _MainScreenState extends State<MainScreen> {
                   (product) => product['product_name'] ?? 'Unknown Product')
               .toList();
 
-          searchSuggestions = searchSuggestions.sublist(0, 5);
-
-          isLoading = false;
+          if (searchSuggestions.length > 5) searchSuggestions = searchSuggestions.sublist(0, 5);
         });
+        searchType = 'category';
       } else {
         setState(() {
           searchSuggestions = [];
-          isLoading = false;
         });
+      }
+      // no product recieved in response
+      if (searchSuggestions.length == 0) {
+        url =
+            'https://world.openfoodfacts.net/api/v2/search?brands_tags=$convertedQuery&countries_tags_en=india&languages_tags_en=english';
+        final response2 = await fetchApiData(convertedQuery, url);
+        if (response2.statusCode == 200) {
+          final data = json.decode(response2.body);
+          List<dynamic> products = data['products'] ?? [];
+
+          setState(() {
+            searchSuggestions = products
+                .map<String>(
+                    (product) => product['product_name'] ?? 'Unknown Product')
+                .toList();
+
+            if (searchSuggestions.length > 5) searchSuggestions = searchSuggestions.sublist(0, 5);
+          });
+        } else {
+          setState(() {
+            searchSuggestions = [];
+          });
+        }
+        searchType = 'brand';
       }
     } else {
       setState(() {
         searchSuggestions = [];
-        isLoading = false;
       });
     }
+    isLoading = false;
   }
 
   void onSearchChanged(String query) {
@@ -140,7 +175,8 @@ class _MainScreenState extends State<MainScreen> {
                       onChanged: onSearchChanged,
                       onSubmitted: onSearchSubmitted,
                       decoration: InputDecoration(
-                        hintText: 'Search products...',
+                        hintText:
+                            'Search products by category or brand name...',
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
@@ -538,59 +574,6 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
-
-  // Widget popularProductCard({
-  //   required String productName,
-  //   required int barcode,
-  //   required String imagePath,
-  // }) {
-  //   return Card(
-  //     elevation: 4, // Controls the shadow of the card
-  //     color: const Color.fromARGB(255, 255, 255, 255),
-  //     margin: const EdgeInsets.all(10.0),
-  //     shape: RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.circular(10),
-  //     ),
-  //     child: SizedBox(
-  //       width: 140,
-  //       height: 280,
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.center,
-  //         children: [
-  //           // Product Image
-  //           Padding(
-  //             padding: const EdgeInsets.all(5.0),
-  //             child: Container(
-  //               height: 100,
-  //               width: 90,
-  //               decoration: BoxDecoration(
-  //                 borderRadius:
-  //                     const BorderRadius.vertical(top: Radius.circular(12)),
-  //                 image: DecorationImage(
-  //                     image: AssetImage(imagePath), fit: BoxFit.fitHeight),
-  //               ),
-  //             ),
-  //           ),
-  //           Padding(
-  //             padding: const EdgeInsets.all(5.0),
-  //             child: Column(
-  //               children: [
-  //                 Text(
-  //                   productName,
-  //                   style: const TextStyle(
-  //                     fontWeight: FontWeight.bold,
-  //                     fontSize: 15,
-  //                   ),
-  //                   textAlign: TextAlign.center,
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }
 
 class HorizontalCards extends StatelessWidget {

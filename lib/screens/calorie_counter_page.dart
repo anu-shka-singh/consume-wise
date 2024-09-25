@@ -95,7 +95,7 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                           onDeleted: () {
                             setState(() {
                               _textController.text =
-                              '2 Rotis with some Shahi Paneer';
+                                  '2 Rotis with some Shahi Paneer';
                             });
                           },
                         ),
@@ -110,7 +110,7 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                           onDeleted: () {
                             setState(() {
                               _textController.text =
-                              '1 Bowl of Rice with 1 Bowl of Moong Dal';
+                                  '1 Bowl of Rice with 1 Bowl of Moong Dal';
                             });
                           },
                         ),
@@ -128,7 +128,7 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                       color: const Color.fromARGB(255, 255, 255, 255),
                       shape: RoundedRectangleBorder(
                         borderRadius:
-                        BorderRadius.circular(12.0), // Rounded corners
+                            BorderRadius.circular(12.0), // Rounded corners
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(
@@ -151,8 +151,10 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                             ),
                           ),
                           style: const TextStyle(fontSize: 18.0),
-                          maxLines: null, // Allows the text to wrap and grow vertically
-                          keyboardType: TextInputType.multiline, // Allows multi-line input
+                          maxLines:
+                              null, // Allows the text to wrap and grow vertically
+                          keyboardType: TextInputType
+                              .multiline, // Allows multi-line input
                         ),
                       ),
                     ),
@@ -206,7 +208,8 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                           vertical: 14.0,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30), // Rounded button
+                          borderRadius:
+                              BorderRadius.circular(30), // Rounded button
                         ),
                       ),
                       child: const Text(

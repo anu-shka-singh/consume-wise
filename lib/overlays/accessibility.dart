@@ -45,7 +45,7 @@ Future<String?> captureTextFromScreenshot() async {
       GlobalAction.globalActionTakeScreenshot);
 
   // Add a slight delay to ensure UI is ready for image picker
-  await Future.delayed(Duration(milliseconds: 500));
+  await Future.delayed(const Duration(milliseconds: 500));
 
   PermissionStatus status = await Permission.storage.request();
 
@@ -53,8 +53,8 @@ Future<String?> captureTextFromScreenshot() async {
   // final XFile? image;
   if (status.isGranted) {
     log("storage permission granted");
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image == null) {
       log('No image selected.');
       return null;

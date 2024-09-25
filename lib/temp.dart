@@ -1,9 +1,10 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 class OCRButtonOverlay extends StatefulWidget {
+  const OCRButtonOverlay({super.key});
+
   @override
   _OCRButtonOverlayState createState() => _OCRButtonOverlayState();
 }
@@ -22,7 +23,7 @@ class _OCRButtonOverlayState extends State<OCRButtonOverlay> {
       final inputImage = InputImage.fromBytes(
         bytes: screenshotBytes,
         metadata: InputImageMetadata(
-            size: Size(1080, 1920),
+            size: const Size(1080, 1920),
             rotation: InputImageRotation.rotation0deg,
             format: InputImageFormat.nv21,
             bytesPerRow: 1080),
@@ -56,12 +57,12 @@ class _OCRButtonOverlayState extends State<OCRButtonOverlay> {
             child: GestureDetector(
               onTap: captureScreenshotAndOCR,
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.green,
                   shape: BoxShape.circle,
                 ),
-                padding: EdgeInsets.all(15),
-                child: Icon(
+                padding: const EdgeInsets.all(15),
+                child: const Icon(
                   Icons.camera_alt,
                   color: Colors.white,
                   size: 30,
@@ -75,11 +76,11 @@ class _OCRButtonOverlayState extends State<OCRButtonOverlay> {
               top: 50,
               left: 20,
               child: Container(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 color: Colors.black.withOpacity(0.7),
                 child: Text(
                   detectedText,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -90,10 +91,12 @@ class _OCRButtonOverlayState extends State<OCRButtonOverlay> {
 }
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -103,9 +106,9 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('OCR Button Overlay'),
+          title: const Text('OCR Button Overlay'),
         ),
-        body: OCRButtonOverlay(),
+        body: const OCRButtonOverlay(),
       ),
     );
   }

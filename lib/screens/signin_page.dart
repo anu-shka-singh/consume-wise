@@ -10,7 +10,8 @@ import 'signup_page.dart';
 class LoginPage extends StatefulWidget {
   final DatabaseService dbService;
   final bool permissionsAvailable;
-  const LoginPage({super.key, required this.dbService, required this.permissionsAvailable});
+  const LoginPage(
+      {super.key, required this.dbService, required this.permissionsAvailable});
 
   @override
   _LoginState createState() => _LoginState();
@@ -142,11 +143,13 @@ class _LoginState extends State<LoginPage> {
             style: TextStyle(color: Color(0xFF055b49))),
         GestureDetector(
           onTap: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SignUp(
-                  dbService: widget.dbService,
-                  permissionsAvailable: widget.permissionsAvailable,
-                )));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => SignUp(
+                          dbService: widget.dbService,
+                          permissionsAvailable: widget.permissionsAvailable,
+                        )));
           },
           child: const Text(
             "Sign Up",

@@ -6,10 +6,12 @@ import 'package:overlay/services/gemini.dart';
 import 'package:overlay/services/prompts.dart';
 import 'dart:io';
 import 'health_analysis.dart';
-import 'services/image_processing.dart';
+import '../services/image_processing.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class ProductContributionApp extends StatelessWidget {
+  const ProductContributionApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,12 +23,14 @@ class ProductContributionApp extends StatelessWidget {
           secondary: Color(0xFF86b649),
         ),
       ),
-      home: ProductContributionPage(),
+      home: const ProductContributionPage(),
     );
   }
 }
 
 class ProductContributionPage extends StatefulWidget {
+  const ProductContributionPage({super.key});
+
   @override
   _ProductContributionPageState createState() =>
       _ProductContributionPageState();
@@ -47,19 +51,18 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
   String image_url = '';
 
   int _currentStep = 0;
-  bool _error = false;
 
   Future<void> _captureAndCropImage(
       bool isFrontImage, bool isIngredientsImage) async {
     try {
       final pickedFile = await _imageProcessing.captureImage();
       if (pickedFile != null) {
-        final croppedFile = await _imageProcessing.cropImage(File(pickedFile.path));
+        final croppedFile =
+            await _imageProcessing.cropImage(File(pickedFile.path));
         if (croppedFile != null) {
           final recognizedText = await _imageProcessing.performOCR(croppedFile);
 
           setState(() {
-            _error = false;
             if (isFrontImage) {
               _frontImage = XFile(croppedFile.path);
               _frontImageText = recognizedText;
@@ -81,9 +84,10 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
 
   Future<void> _uploadFrontImageToFirebase(File imageFile) async {
     try {
-      String downloadUrl = await _imageProcessing.uploadImageToStorage(imageFile);
+      String downloadUrl =
+          await _imageProcessing.uploadImageToStorage(imageFile);
       setState(() {
-        image_url = downloadUrl; 
+        image_url = downloadUrl;
       });
       print('Front image uploaded: $downloadUrl');
     } catch (e) {
@@ -96,7 +100,9 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
   void _scanBarcode(BarcodeCapture capture) {
     if (!_isScanned) {
       setState(() {
-        _barcode = capture.barcodes.isNotEmpty ? capture.barcodes.first.rawValue : null;
+        _barcode = capture.barcodes.isNotEmpty
+            ? capture.barcodes.first.rawValue
+            : null;
         _isScanned = _barcode != null;
       });
 
@@ -150,7 +156,8 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
                       ),
                       child: const Text(
                         'Continue',
@@ -180,27 +187,39 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                 style: ButtonStyle(
                   elevation: MaterialStateProperty.all(10),
                   padding: MaterialStateProperty.all<EdgeInsets>(
-                    EdgeInsets.symmetric(horizontal: 18, vertical: 15), // Adjust values as needed
+                    const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 15), // Adjust values as needed
                   ),
                 ),
                 onPressed: () async {
                   try {
-                    String response = await dataPreprocessing(_barcode!, _frontImageText, _ingredientsText, _nutritionalFactsText);
+                    String response = await dataPreprocessing(
+                        _barcode!,
+                        _frontImageText,
+                        _ingredientsText,
+                        _nutritionalFactsText);
                     print(response);
                     final cleanResponse = getCleanResponse(response);
-                    final Map<String, dynamic> productData = jsonDecode(cleanResponse);
+                    final Map<String, dynamic> productData =
+                        jsonDecode(cleanResponse);
                     print(productData);
 
                     final String productName = productData['productName'];
                     final String productBarcode = productData['productBarcode'];
-                    final String productCategory = productData['productCategory'];
-                    final List<dynamic> ingredients = productData['ingredients'];
-                    final List<dynamic> nutritionalValue = productData['nutritionalValue'];
+                    final String productCategory =
+                        productData['productCategory'];
+                    final List<dynamic> ingredients =
+                        productData['ingredients'];
+                    final List<dynamic> nutritionalValue =
+                        productData['nutritionalValue'];
 
                     print('Data to be saved successfully to Firestore');
 
                     try {
-                      await FirebaseFirestore.instance.collection('products').add({
+                      await FirebaseFirestore.instance
+                          .collection('products')
+                          .add({
                         'image_url': image_url,
                         'product_name': productName,
                         'product_barcode': productBarcode,
@@ -211,7 +230,8 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
 
                       print('Data saved successfully to Firestore');
 
-                      final product = convertGPTResponseToProduct(productData, image_url);
+                      final product =
+                          convertGPTResponseToProduct(productData, image_url);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -223,7 +243,9 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                     } catch (firestoreError) {
                       print('Error saving data to Firestore: $firestoreError');
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to save data to Firestore: $firestoreError')),
+                        SnackBar(
+                            content: Text(
+                                'Failed to save data to Firestore: $firestoreError')),
                       );
                     }
                   } catch (error) {
@@ -233,8 +255,10 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                     );
                   }
                 },
-
-                child: const Text('Submit Data', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                child: const Text(
+                  'Submit Data',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
         ],
@@ -245,7 +269,8 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
   List<Step> _getSteps() {
     return [
       Step(
-        title: const Text('Capture Front of the Product', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: const Text('Capture Front of the Product',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         content: _ImageStepContent(
           image: _frontImage,
           onCaptureImage: () => _captureAndCropImage(true, false),
@@ -253,10 +278,13 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
           label: 'front',
         ),
         isActive: _currentStep >= 0,
-        state: _currentStep > 0 || (_frontImage != null) ? StepState.complete : StepState.indexed,
+        state: _currentStep > 0 || (_frontImage != null)
+            ? StepState.complete
+            : StepState.indexed,
       ),
       Step(
-        title: const Text('Capture Ingredients of the Product', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: const Text('Capture Ingredients of the Product',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         content: _ImageStepContent(
           image: _ingredientsImage,
           onCaptureImage: () => _captureAndCropImage(false, true),
@@ -264,10 +292,13 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
           label: 'ingredients',
         ),
         isActive: _currentStep >= 1,
-        state: _currentStep > 1 || (_ingredientsImage != null) ? StepState.complete : StepState.indexed,
+        state: _currentStep > 1 || (_ingredientsImage != null)
+            ? StepState.complete
+            : StepState.indexed,
       ),
       Step(
-        title: const Text('Capture Nutritional Facts of the Product', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: const Text('Capture Nutritional Facts of the Product',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         content: _ImageStepContent(
           image: _nutritionalFactsImage,
           onCaptureImage: () => _captureAndCropImage(false, false),
@@ -275,46 +306,50 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
           label: 'nutritional facts',
         ),
         isActive: _currentStep >= 2,
-        state: (_frontImage != null && _ingredientsImage != null && _nutritionalFactsImage != null)
+        state: (_frontImage != null &&
+                _ingredientsImage != null &&
+                _nutritionalFactsImage != null)
             ? StepState.complete
             : StepState.indexed,
       ),
       Step(
-        title: const Text('Scan Product Barcode', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: const Text('Scan Product Barcode',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         content: _isScanned
             ? Column(
                 children: [
                   Text(
                     'Barcode: $_barcode',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF055b49)),
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF055b49)),
                   ),
                   const SizedBox(height: 20),
                 ],
-            )
+              )
             : SizedBox(
-              width: double.infinity,
-              height: 400,
-              child: MobileScanner(
-                controller: cameraController,
-                onDetect: (BarcodeCapture capture) {
-                  _scanBarcode(capture);
-                },
+                width: double.infinity,
+                height: 400,
+                child: MobileScanner(
+                  controller: cameraController,
+                  onDetect: (BarcodeCapture capture) {
+                    _scanBarcode(capture);
+                  },
+                ),
               ),
-        ),
         isActive: _currentStep >= 3,
-        state: _currentStep > 3 || _barcode != null ? StepState.complete : StepState.indexed,
+        state: _currentStep > 3 || _barcode != null
+            ? StepState.complete
+            : StepState.indexed,
       ),
-
-
     ];
   }
 
   void _nextStep() {
     if (_isStepValid()) {
       setState(() => _currentStep += 1);
-      _error = false;
     } else {
-      setState(() => _error = true);
       _showErrorSnackbar('Please capture a photo before continuing.');
     }
   }
@@ -375,7 +410,10 @@ class _ImageStepContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text('Please take a clear photo of the $label of the product.', style: TextStyle(fontSize: 15),),
+        Text(
+          'Please take a clear photo of the $label of the product.',
+          style: const TextStyle(fontSize: 15),
+        ),
         const SizedBox(height: 10),
         image == null
             ? Container()
@@ -402,12 +440,16 @@ class _ImageStepContent extends StatelessWidget {
   }
 }
 
-Map<String, dynamic> convertGPTResponseToProduct(Map<String, dynamic> gptResponse, String imageUrl) {
+Map<String, dynamic> convertGPTResponseToProduct(
+    Map<String, dynamic> gptResponse, String imageUrl) {
   // Convert ingredients list (assuming they are plain strings from GPT)
   List<Map<String, dynamic>> convertedIngredients = [];
   if (gptResponse['ingredients'] != null) {
-    convertedIngredients = List<String>.from(gptResponse['ingredients']).map((ingredient) {
-      return {"text": ingredient};  // Wrap each ingredient as {"text": "ingredient"}
+    convertedIngredients =
+        List<String>.from(gptResponse['ingredients']).map((ingredient) {
+      return {
+        "text": ingredient
+      }; // Wrap each ingredient as {"text": "ingredient"}
     }).toList();
   }
 
@@ -416,7 +458,8 @@ Map<String, dynamic> convertGPTResponseToProduct(Map<String, dynamic> gptRespons
   if (gptResponse['nutritionalValue'] != null) {
     for (var nutrient in gptResponse['nutritionalValue']) {
       nutrient.forEach((key, value) {
-        convertedNutriments[key] = value;  // Assuming GPT returns a nutrient_name: value structure
+        convertedNutriments[key] =
+            value; // Assuming GPT returns a nutrient_name: value structure
       });
     }
   }
@@ -425,11 +468,13 @@ Map<String, dynamic> convertGPTResponseToProduct(Map<String, dynamic> gptRespons
   return {
     'image_url': imageUrl,
     'product_name': gptResponse['productName'] ?? '',
-    'brands' : '',
+    'brands': '',
     'productBarcode': gptResponse['productBarcode'] ?? '',
     'productCategory': gptResponse['productCategory'] ?? '',
-    'ingredients': convertedIngredients,  // Converted ingredient list with "text" key
-    'nutriments': convertedNutriments,    // Converted nutriments map
-    'allergens_hierarchy': []  // If you have allergens, add them here or leave empty
+    'ingredients':
+        convertedIngredients, // Converted ingredient list with "text" key
+    'nutriments': convertedNutriments, // Converted nutriments map
+    'allergens_hierarchy':
+        [] // If you have allergens, add them here or leave empty
   };
 }

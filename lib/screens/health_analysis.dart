@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:overlay/claim_checker.dart';
-import 'package:overlay/loading_screen.dart';
+import 'package:overlay/screens/claim_checker.dart';
+import 'package:overlay/screens/loading_screen.dart';
 import 'package:overlay/services/gemini.dart';
 import 'package:overlay/services/prompts.dart';
 
@@ -129,19 +129,20 @@ class _HealthAnalysisState extends State<HealthAnalysis> {
                           // Left: Product Image
                           widget.product["image_url"] != null
                               ? Image.network(
-                            widget.product["image_url"],
-                            width: 120, // Adjust the width as needed
-                            height: 100, // Adjust the height as needed
-                          )
+                                  widget.product["image_url"],
+                                  width: 120, // Adjust the width as needed
+                                  height: 100, // Adjust the height as needed
+                                )
                               : Container(
-                            width: 120, // Adjust the width as needed
-                            height: 100, // Adjust the height as needed
-                            color: Colors.grey, // Placeholder color or style
-                            child: Icon(
-                              Icons.image_not_supported,
-                              color: Colors.white,
-                            ),
-                          ),
+                                  width: 120, // Adjust the width as needed
+                                  height: 100, // Adjust the height as needed
+                                  color:
+                                      Colors.grey, // Placeholder color or style
+                                  child: const Icon(
+                                    Icons.image_not_supported,
+                                    color: Colors.white,
+                                  ),
+                                ),
 
                           const SizedBox(width: 40),
 

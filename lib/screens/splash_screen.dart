@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:overlay/database/database_service.dart';
-import 'package:overlay/signin_page.dart';
+import 'package:overlay/screens/signin_page.dart';
 
 class SplashScreen extends StatelessWidget {
   final DatabaseService dbService;
   final bool permissionsAvailable;
-  SplashScreen({super.key, required this.dbService, required this.permissionsAvailable});
+  const SplashScreen(
+      {super.key, required this.dbService, required this.permissionsAvailable});
 
   @override
   Widget build(BuildContext context) {
@@ -15,11 +16,10 @@ class SplashScreen extends StatelessWidget {
       () {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) =>
-                LoginPage(
-                  dbService: dbService,
-                  permissionsAvailable: permissionsAvailable,
-                ), // Replace with your main screen widget
+            builder: (context) => LoginPage(
+              dbService: dbService,
+              permissionsAvailable: permissionsAvailable,
+            ), // Replace with your main screen widget
           ),
         );
       },

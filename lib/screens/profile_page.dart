@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'chatbot_page.dart';
 import 'home.dart';
-import 'user_datamodel.dart';
+import '../user_datamodel.dart';
 
 void main() {
   final data = {
@@ -16,14 +16,20 @@ void main() {
     'diet': ['Vegan', 'Low-fat']
   };
   runApp(MaterialApp(
-    home: ProfilePage(user: data, currentIndex: 2,),
+    home: ProfilePage(
+      user: data,
+      currentIndex: 2,
+    ),
   ));
 }
 
 class ProfilePage extends StatefulWidget {
   Map<String, dynamic> user;
   final int currentIndex; // To keep track of active tab
-  ProfilePage({super.key, required this.user, required this.currentIndex}); // Add currentIndex to constructor
+  ProfilePage(
+      {super.key,
+      required this.user,
+      required this.currentIndex}); // Add currentIndex to constructor
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -199,7 +205,10 @@ class _ProfilePageState extends State<ProfilePage> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => MainScreen(user: widget.user, currentIndex: 0,),
+                  builder: (context) => MainScreen(
+                    user: widget.user,
+                    currentIndex: 0,
+                  ),
                 ),
               );
               break;
@@ -207,7 +216,10 @@ class _ProfilePageState extends State<ProfilePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChatBotScreen(user : widget.user, currentIndex: 1,),
+                  builder: (context) => ChatBotScreen(
+                    user: widget.user,
+                    currentIndex: 1,
+                  ),
                 ),
               );
               break;

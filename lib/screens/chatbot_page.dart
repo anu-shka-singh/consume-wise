@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:overlay/profile.dart';
+import 'package:overlay/screens/profile_page.dart';
 
 import 'home.dart';
-import 'services/prompts.dart';
+import '../services/prompts.dart';
 
 class ChatBotScreen extends StatefulWidget {
   Map<String, dynamic> user;

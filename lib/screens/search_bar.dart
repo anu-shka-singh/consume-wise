@@ -2,14 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:overlay/health_analysis.dart';
-import 'package:overlay/loading_screen.dart';
+import 'package:overlay/screens/health_analysis.dart';
+import 'package:overlay/screens/loading_screen.dart';
 
 class ProductSearchPage extends StatefulWidget {
   final String query;
   final String searchType;
 
-  const ProductSearchPage({super.key, required this.query, required this.searchType});
+  const ProductSearchPage(
+      {super.key, required this.query, required this.searchType});
 
   @override
   _ProductSearchPageState createState() => _ProductSearchPageState();

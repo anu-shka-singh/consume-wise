@@ -8,7 +8,7 @@ import 'package:usage_stats/usage_stats.dart';
 
 class PermissionsScreen extends StatefulWidget {
   DatabaseService dbService;
-  PermissionsScreen(this.dbService);
+  PermissionsScreen(this.dbService, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -194,7 +194,6 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   }
 
   Widget _continueToAppButton() {
-    final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return MaterialButton(
@@ -214,7 +213,10 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
       disabledColor: Colors.grey,
       child: Text(
         "Continue to App",
-        style: TextStyle(fontSize: screenWidth * 0.045, color: Colors.white, fontWeight: FontWeight.bold),
+        style: TextStyle(
+            fontSize: screenWidth * 0.045,
+            color: Colors.white,
+            fontWeight: FontWeight.bold),
       ),
     );
   }

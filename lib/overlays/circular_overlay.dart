@@ -3,15 +3,12 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_accessibility_service/accessibility_event.dart';
-import 'package:flutter_accessibility_service/constants.dart';
 import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:overlay/overlays/accessibility.dart';
 import 'package:overlay/overlays/error_overlay.dart';
 import 'package:overlay/services/prompts.dart';
 import '../services/gemini.dart';
 import 'health_overlay.dart';
-import 'accessibility.dart';
 
 class LeafOverlay extends StatefulWidget {
   const LeafOverlay({super.key});

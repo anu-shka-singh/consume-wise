@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:overlay/health_analysis.dart';
-import 'package:overlay/loading_screen.dart';
+import 'package:overlay/screens/health_analysis.dart';
+import 'package:overlay/screens/loading_screen.dart';
 import 'package:http/http.dart' as http;
 
 class CategoryResult extends StatefulWidget {

@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'calorie_counter_page.dart';
 import 'error_screen.dart';
-import 'services/gemini.dart';
+import '../services/gemini.dart';
 
 class ResultScreen extends StatelessWidget {
   final String? response;

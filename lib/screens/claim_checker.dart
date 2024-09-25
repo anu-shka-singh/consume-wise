@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:overlay/services/gemini.dart';
 
 import 'loading_screen.dart';
-import 'services/prompts.dart';
+import '../services/prompts.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -39,7 +39,7 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
   ClaimResult? result;
   bool isLoading = false;
 
-  Future<void> helper() async {
+  Future<void> claimResult() async {
     // Mark helper function as async
     setState(() {
       isLoading = true;
@@ -192,7 +192,7 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                   Center(
                     child: ElevatedButton(
                       onPressed: () async {
-                        await helper();
+                        await claimResult();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF055b49),
@@ -244,14 +244,16 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                             // Linear Progress Indicator
                             const SizedBox(height: 20.0),
                             LinearProgressIndicator(
-                              value: result!.confidence / 100, // Value should be between 0.0 and 1.0
+                              value: result!.confidence /
+                                  100, // Value should be between 0.0 and 1.0
                               backgroundColor: Colors.grey[300],
                               color: result!.confidence > 70
                                   ? Colors.green
                                   : result!.confidence > 40
-                                  ? Colors.yellow
-                                  : Colors.red,
-                              minHeight: 10, // Adjust the height of the progress bar
+                                      ? Colors.yellow
+                                      : Colors.red,
+                              minHeight:
+                                  10, // Adjust the height of the progress bar
                             ),
 
                             const SizedBox(height: 12.0),
@@ -264,13 +266,9 @@ class _ClaimCheckerPageState extends State<ClaimCheckerPage> {
                             const SizedBox(height: 16.0),
                             Text(result!.why),
                             Text(result!.details),
-
                           ],
-
                         ),
-
                       ),
-
                     ),
                   ],
                 ],

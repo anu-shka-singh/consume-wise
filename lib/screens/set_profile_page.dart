@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'home.dart';
-import '../user_datamodel.dart';
+import '../../user_datamodel.dart';
 
 void main() {
   runApp(const MaterialApp(

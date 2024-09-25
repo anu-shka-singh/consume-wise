@@ -4,14 +4,12 @@ import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:overlay/database/database_service.dart';
 import 'package:overlay/dtos/application_data.dart';
-import 'package:overlay/overlay_permissions/utils/fonts.dart';
 import 'package:overlay/overlay_permissions/widgets/loading_dialog.dart';
 import 'package:overlay/overlay_permissions/widgets/yes_no_dialog.dart';
 
 class PermissionsGranted extends StatefulWidget {
-
   DatabaseService dbService;
-  PermissionsGranted(this.dbService);
+  PermissionsGranted(this.dbService, {super.key});
 
   @override
   State<PermissionsGranted> createState() => _PermissionsGranted();
@@ -39,23 +37,29 @@ class _PermissionsGranted extends State<PermissionsGranted> {
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: const Color(0xFF055b49),
-        foregroundColor: Colors.white,
+          foregroundColor: Colors.white,
           elevation: 0,
-          title: Padding( padding: EdgeInsets.all(screenWidth*0.05), child: Text("App Overlay Permissions"),),
+          title: Padding(
+            padding: EdgeInsets.all(screenWidth * 0.05),
+            child: const Text("App Overlay Permissions"),
+          ),
         ),
-        backgroundColor: Color(0xFFFFF6E7),
+        backgroundColor: const Color(0xFFFFF6E7),
         body: Column(
           children: [
             // SizedBox(height: screenHeight*0.04,),
             // Text("Enable feature on these Apps", style: Fonts.header2(color: Colors.white, underLine: true, isItalic: true),),
-            SizedBox(height: screenHeight*0.04,),
+            SizedBox(
+              height: screenHeight * 0.04,
+            ),
 
             _addAppsButton(context),
-            SizedBox(height: screenHeight*0.03,),
+            SizedBox(
+              height: screenHeight * 0.03,
+            ),
             _listOfMonitoringApps(context)
           ],
-        )
-    );
+        ));
   }
 
   Future<void> restartMonitoringService() async {
@@ -63,7 +67,7 @@ class _PermissionsGranted extends State<PermissionsGranted> {
     status.clear();
     status = {0};
 
-    if(await service.isRunning()) {
+    if (await service.isRunning()) {
       debugPrint("Stopping monitoring service");
       // service.invoke(STOP_MONITORING_SERVICE_KEY);
     }
@@ -73,39 +77,38 @@ class _PermissionsGranted extends State<PermissionsGranted> {
     await _startMonitoringService();
 
     // Determine status of loading window
-    if(await service.isRunning()) {
+    if (await service.isRunning()) {
       status.clear();
       status = {1};
       return;
-    }
-    else{
+    } else {
       status.clear();
       status = {2};
     }
-
   }
 
-  Future<void> _waitForMonitoringServiceToStop() async{
+  Future<void> _waitForMonitoringServiceToStop() async {
     debugPrint("Waiting for monitoring service to stop, [Max 3 seconds]");
     int retry = 0;
-    while(retry++<3 && await service.isRunning()) {
-    await Future.delayed(const Duration(seconds: 1));
-    debugPrint("Waiting for monitoring service to stop...");
+    while (retry++ < 3 && await service.isRunning()) {
+      await Future.delayed(const Duration(seconds: 1));
+      debugPrint("Waiting for monitoring service to stop...");
     }
 
-    if(await service.isRunning()){
-    debugPrint("*********************MONITORING SERVICE HASN'T STOPPED YET!!!!*******************");
+    if (await service.isRunning()) {
+      debugPrint(
+          "*********************MONITORING SERVICE HASN'T STOPPED YET!!!!*******************");
     }
   }
 
-  Future<void> _startMonitoringService() async{
+  Future<void> _startMonitoringService() async {
     int retry = 0;
-    while(retry++<3 && !await service.startService()) {
+    while (retry++ < 3 && !await service.startService()) {
       await Future.delayed(const Duration(seconds: 1));
       debugPrint("Starting monitoring service");
     }
 
-    if(await service.isRunning()){
+    if (await service.isRunning()) {
       debugPrint("Monitoring Service Started!");
     }
   }
@@ -136,29 +139,35 @@ class _PermissionsGranted extends State<PermissionsGranted> {
     Navigator.pop(context);
   }
 
-
-
-  Widget _addAppsButton(BuildContext context){
+  Widget _addAppsButton(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Center(
       child: InkWell(
-        onTap: (){
+        onTap: () {
           showInstalledAppsListViewDialog(context);
         },
         child: Column(
           children: [
-            Icon(Icons.add_card_rounded, size: screenWidth*0.15,),
-            SizedBox(height: screenHeight*0.01,),
-            const Text("Add Application", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),)
+            Icon(
+              Icons.add_card_rounded,
+              size: screenWidth * 0.15,
+            ),
+            SizedBox(
+              height: screenHeight * 0.01,
+            ),
+            const Text(
+              "Add Application",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            )
           ],
         ),
       ),
     );
   }
 
-  Widget _listOfMonitoringApps(BuildContext context){
+  Widget _listOfMonitoringApps(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
@@ -172,52 +181,68 @@ class _PermissionsGranted extends State<PermissionsGranted> {
           //side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)
         ),
         child: Container(
-          height: screenHeight*0.5,
-          width: screenWidth*0.9,
-          padding: EdgeInsets.all(screenWidth*0.05),
-          child: widget.dbService.getAllAppData().isNotEmpty
-              ? ListView.separated(
-              separatorBuilder: (BuildContext context, int index){
-                return SizedBox(height: screenHeight*0.02,);
-              },
-              itemCount: widget.dbService.getAllAppData().length,
-              itemBuilder: (BuildContext context, int index){
-                  ApplicationData appInfo = widget.dbService.getAllAppData().elementAt(index);
-                  return ListTile(
-                    contentPadding: EdgeInsets.all(screenWidth*0.025),
-                    leading: appInfo.icon != null
-                        ? Image.memory(appInfo.icon!, width: screenWidth*0.1)
-                        : Icon(Icons.arrow_forward_ios, size: screenWidth*0.05),
-                    title: Text(appInfo.appName, style: const TextStyle(fontStyle: FontStyle.italic),),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
-                    ),
-                    //tileColor: Theme.of(context).colorScheme.primary,
-                    trailing: InkWell(
-                        onTap: () {
-                          YesNoDialog(
-                            displayText: 'Delete?',
-                            acceptText: 'Yes',
-                            acceptFunction: () => onDelete(appInfo.appId),
-                            rejectText: 'No',
-                            rejectFunction: onFailure,
-                          ).showBox(context);
-                        },
-                        child: Icon(Icons.delete, color: Colors.redAccent, size: screenWidth*0.07,)
-                    ),
-                  );
-                }
-              )
-              : Column(
-                children: [
-                  SizedBox(height: screenHeight*0.08,),
-                  Icon(Icons.filter_none, size: screenWidth*0.35, color: Colors.black54),
-                  SizedBox(height: screenHeight*0.03,),
-                  const Text("No Applications have been added!")
-                ],
-              )
-        ),
+            height: screenHeight * 0.5,
+            width: screenWidth * 0.9,
+            padding: EdgeInsets.all(screenWidth * 0.05),
+            child: widget.dbService.getAllAppData().isNotEmpty
+                ? ListView.separated(
+                    separatorBuilder: (BuildContext context, int index) {
+                      return SizedBox(
+                        height: screenHeight * 0.02,
+                      );
+                    },
+                    itemCount: widget.dbService.getAllAppData().length,
+                    itemBuilder: (BuildContext context, int index) {
+                      ApplicationData appInfo =
+                          widget.dbService.getAllAppData().elementAt(index);
+                      return ListTile(
+                        contentPadding: EdgeInsets.all(screenWidth * 0.025),
+                        leading: appInfo.icon != null
+                            ? Image.memory(appInfo.icon!,
+                                width: screenWidth * 0.1)
+                            : Icon(Icons.arrow_forward_ios,
+                                size: screenWidth * 0.05),
+                        title: Text(
+                          appInfo.appName,
+                          style: const TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 2),
+                        ),
+                        //tileColor: Theme.of(context).colorScheme.primary,
+                        trailing: InkWell(
+                            onTap: () {
+                              YesNoDialog(
+                                displayText: 'Delete?',
+                                acceptText: 'Yes',
+                                acceptFunction: () => onDelete(appInfo.appId),
+                                rejectText: 'No',
+                                rejectFunction: onFailure,
+                              ).showBox(context);
+                            },
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.redAccent,
+                              size: screenWidth * 0.07,
+                            )),
+                      );
+                    })
+                : Column(
+                    children: [
+                      SizedBox(
+                        height: screenHeight * 0.08,
+                      ),
+                      Icon(Icons.filter_none,
+                          size: screenWidth * 0.35, color: Colors.black54),
+                      SizedBox(
+                        height: screenHeight * 0.03,
+                      ),
+                      const Text("No Applications have been added!")
+                    ],
+                  )),
       ),
     );
   }
@@ -231,51 +256,61 @@ class _PermissionsGranted extends State<PermissionsGranted> {
     return showDialog(
         barrierDismissible: true,
         context: context,
-        builder: (BuildContext context){
+        builder: (BuildContext context) {
           return StatefulBuilder(
-            builder: (BuildContext context, Function(void Function()) setStateDialog){
+            builder: (BuildContext context,
+                Function(void Function()) setStateDialog) {
               return Dialog(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)
-                ),
+                    borderRadius: BorderRadius.circular(20)),
                 elevation: 5,
                 child: Container(
-                  padding: EdgeInsets.all(screenWidth*0.02),
-                  height: screenHeight*0.8,
-                  width: screenWidth*0.9,
+                  padding: EdgeInsets.all(screenWidth * 0.02),
+                  height: screenHeight * 0.8,
+                  width: screenWidth * 0.9,
                   child: FutureBuilder<List<AppInfo>>(
                       future: InstalledApps.getInstalledApps(true, true),
-                      builder: (context, AsyncSnapshot<List<AppInfo>> appsList) {
-                        if(appsList.data == null) {
+                      builder:
+                          (context, AsyncSnapshot<List<AppInfo>> appsList) {
+                        if (appsList.data == null) {
                           return _showCircularLoading(context);
-                        }
-                        else if(appsList.data!.isEmpty) {
+                        } else if (appsList.data!.isEmpty) {
                           return const Text("No App data found!");
                         }
 
                         List<AppInfo> apps = appsList.data!;
-                        return _listOfInstalledApps(context, apps, selectedApps, setStateDialog);
-                      }
-                  ),
+                        return _listOfInstalledApps(
+                            context, apps, selectedApps, setStateDialog);
+                      }),
                 ),
               );
             },
           );
-        }
-    );
+        });
   }
 
-  Widget _listOfInstalledApps(BuildContext context, List<AppInfo> apps, Map<dynamic, ApplicationData> selectedApps, Function(void Function()) setStateDialog){
+  Widget _listOfInstalledApps(
+      BuildContext context,
+      List<AppInfo> apps,
+      Map<dynamic, ApplicationData> selectedApps,
+      Function(void Function()) setStateDialog) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Column(
       children: [
-        SizedBox(height: screenHeight*0.02,),
-        Text("Select Applications [${selectedApps.keys.length}/$maxAppsAllowed]", style: TextStyle(fontSize: screenWidth*0.04),),
-        SizedBox(height: screenHeight*0.04,),
         SizedBox(
-          height: screenHeight*0.6,
+          height: screenHeight * 0.02,
+        ),
+        Text(
+          "Select Applications [${selectedApps.keys.length}/$maxAppsAllowed]",
+          style: TextStyle(fontSize: screenWidth * 0.04),
+        ),
+        SizedBox(
+          height: screenHeight * 0.04,
+        ),
+        SizedBox(
+          height: screenHeight * 0.6,
           child: Column(
             children: [
               Flexible(
@@ -287,36 +322,42 @@ class _PermissionsGranted extends State<PermissionsGranted> {
                         clipBehavior: Clip.hardEdge,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(color: const Color(0xFF055b49), width: 2),
+                          side: const BorderSide(
+                              color: Color(0xFF055b49), width: 2),
                         ),
-                        elevation: selectedApps.containsKey(appInfo.packageName) ? 1 : 0,
+                        elevation: selectedApps.containsKey(appInfo.packageName)
+                            ? 1
+                            : 0,
                         child: ListTile(
-                          contentPadding: EdgeInsets.all(screenWidth*0.02),
+                          contentPadding: EdgeInsets.all(screenWidth * 0.02),
                           selectedColor: Colors.black,
                           selectedTileColor: const Color(0xFFeaf2e1),
-                          selected: selectedApps.containsKey(appInfo.packageName),
+                          selected:
+                              selectedApps.containsKey(appInfo.packageName),
                           onTap: selectedApps.containsKey(appInfo.packageName)
-                              ? (){
-                            setStateDialog((){
-                              selectedApps.remove(appInfo.packageName!);
-                            });
-                          }
-                              :() {
-                            if(selectedApps.length < maxAppsAllowed) {
-                              setStateDialog(() {
-                                selectedApps.putIfAbsent(
-                                    appInfo.packageName!, () =>
-                                    ApplicationData(
-                                        appInfo.name!, appInfo.packageName!,
-                                        appInfo.icon));
-                              });
-                            } else {
-                              // Show Dialog
-                              _maxAppsReachedAlertDialog(context);
-                            }
-                          },
-                          leading: Image.memory(apps[index].icon!, width: screenWidth*0.1),
-                          title: Text(apps[index].name!),
+                              ? () {
+                                  setStateDialog(() {
+                                    selectedApps.remove(appInfo.packageName);
+                                  });
+                                }
+                              : () {
+                                  if (selectedApps.length < maxAppsAllowed) {
+                                    setStateDialog(() {
+                                      selectedApps.putIfAbsent(
+                                          appInfo.packageName,
+                                          () => ApplicationData(
+                                              appInfo.name,
+                                              appInfo.packageName,
+                                              appInfo.icon));
+                                    });
+                                  } else {
+                                    // Show Dialog
+                                    _maxAppsReachedAlertDialog(context);
+                                  }
+                                },
+                          leading: Image.memory(apps[index].icon!,
+                              width: screenWidth * 0.1),
+                          title: Text(apps[index].name),
                         ),
                       );
                     }),
@@ -327,10 +368,18 @@ class _PermissionsGranted extends State<PermissionsGranted> {
         const Spacer(),
         MaterialButton(
           onPressed: () async {
-            if(selectedApps.keys.toSet().difference(widget.dbService.getAllAppPackageNames().toSet()).isNotEmpty
-            || widget.dbService.getAllAppPackageNames().toSet().difference(selectedApps.keys.toSet()).isNotEmpty) {
-              await widget.dbService.updateAllAppData(
-                  selectedApps.values.toList());
+            if (selectedApps.keys
+                    .toSet()
+                    .difference(
+                        widget.dbService.getAllAppPackageNames().toSet())
+                    .isNotEmpty ||
+                widget.dbService
+                    .getAllAppPackageNames()
+                    .toSet()
+                    .difference(selectedApps.keys.toSet())
+                    .isNotEmpty) {
+              await widget.dbService
+                  .updateAllAppData(selectedApps.values.toList());
               restartMonitoringService();
               Navigator.of(context).pop();
               LoadingBar.showLoadingDialog(
@@ -357,41 +406,41 @@ class _PermissionsGranted extends State<PermissionsGranted> {
 
   _maxAppsReachedAlertDialog(BuildContext context) {
     return showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Text("Oops! Cannot add more apps."),
-        content: const Text("Please remove an app if you wish to add this app."),
-        actions: [
-          TextButton(
-              onPressed: () => {Navigator.pop(context)},
-              child: const Text("Ok"))
-        ],
-      )
-    );
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text("Oops! Cannot add more apps."),
+              content: const Text(
+                  "Please remove an app if you wish to add this app."),
+              actions: [
+                TextButton(
+                    onPressed: () => {Navigator.pop(context)},
+                    child: const Text("Ok"))
+              ],
+            ));
   }
 
-  Widget _showCircularLoading(BuildContext context){
+  Widget _showCircularLoading(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Align(
       child: SizedBox(
-          height: screenHeight*0.1,
-          width: screenWidth*0.4,
+          height: screenHeight * 0.1,
+          width: screenWidth * 0.4,
           child: Column(
             children: [
               const CircularProgressIndicator(
-                color: const Color(0xFF055b49),
+                color: Color(0xFF055b49),
               ),
-              SizedBox(height: screenHeight*0.02,),
+              SizedBox(
+                height: screenHeight * 0.02,
+              ),
               const Text("Loading Installed Apps")
             ],
-          )
-      ),
+          )),
     );
   }
-
 }

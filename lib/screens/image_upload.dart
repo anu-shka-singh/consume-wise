@@ -2,11 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:overlay/health_analysis.dart';
+import 'package:overlay/screens/health_analysis.dart';
 import 'package:http/http.dart' as http;
-import 'package:overlay/product_not_found.dart';
-
-import 'error_screen.dart';
+import 'package:overlay/screens/product_not_found.dart';
 
 class ImageUpload extends StatefulWidget {
   const ImageUpload({super.key});
@@ -59,7 +57,7 @@ class _ImageUploadState extends State<ImageUpload> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => ProductNotFoundPage(),
+          builder: (context) => const ProductNotFoundPage(),
         ),
       );
     }
@@ -229,35 +227,40 @@ class _ImageUploadState extends State<ImageUpload> {
                                   IconButton(
                                     icon: const Icon(Icons.arrow_forward),
                                     onPressed: () async {
-                                      await fetchProdInfo(barcode!); //"8901262010320" -> for testing
+                                      await fetchProdInfo(
+                                          barcode!); //"8901262010320" -> for testing
 
                                       if (prodInfo.isNotEmpty) {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => HealthAnalysis(
+                                            builder: (context) =>
+                                                HealthAnalysis(
                                               product: prodInfo,
                                             ),
                                           ),
                                         );
                                       } else {
-                                        print("Product information not founddd");
+                                        print(
+                                            "Product information not founddd");
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => ProductNotFoundPage(),
+                                            builder: (context) =>
+                                                const ProductNotFoundPage(),
                                           ),
                                         );
                                       }
                                     },
                                   ),
-
                                 ],
                               ),
                               const Text(
                                 "Know the implications of consuming this product",
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white70),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white70),
                                 softWrap:
                                     true, // Ensures text wraps if necessary
                                 overflow: TextOverflow

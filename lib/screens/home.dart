@@ -2,17 +2,17 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:overlay/chatbot_page.dart';
+import 'package:overlay/screens/chatbot_page.dart';
 import 'package:overlay/database/database_service.dart';
-import 'package:overlay/image_upload.dart';
-import 'package:overlay/calorie_counter_page.dart';
+import 'package:overlay/screens/image_upload.dart';
+import 'package:overlay/screens/calorie_counter_page.dart';
 import 'package:overlay/overlay_permissions/permissions_granted.dart';
 import 'package:overlay/overlay_permissions/permissions_screen.dart';
-import 'package:overlay/popular_product_result.dart';
-import 'package:overlay/profile.dart';
-import 'package:overlay/search.dart';
+import 'package:overlay/overlays/popular_product_result.dart';
+import 'package:overlay/screens/profile_page.dart';
+import 'package:overlay/screens/search_bar.dart';
 import 'package:http/http.dart' as http;
-import 'package:overlay/signin_page.dart';
+import 'package:overlay/screens/signin_page.dart';
 
 class MainScreen extends StatefulWidget {
   Map<String, dynamic> user;
@@ -60,7 +60,7 @@ class _MainScreenState extends State<MainScreen> {
           'https://world.openfoodfacts.net/api/v2/search?categories_tags_en=$convertedQuery&countries_tags_en=india&languages_tags_en=english';
       final response = await fetchApiData(convertedQuery, url);
       if (response.statusCode == 200) {
-         final data = json.decode(response.body);
+        final data = json.decode(response.body);
         List<dynamic> products = data['products'] ?? [];
 
         setState(() {
@@ -69,7 +69,9 @@ class _MainScreenState extends State<MainScreen> {
                   (product) => product['product_name'] ?? 'Unknown Product')
               .toList();
 
-          if (searchSuggestions.length > 5) searchSuggestions = searchSuggestions.sublist(0, 5);
+          if (searchSuggestions.length > 5) {
+            searchSuggestions = searchSuggestions.sublist(0, 5);
+          }
         });
         searchType = 'category';
       } else {
@@ -78,7 +80,7 @@ class _MainScreenState extends State<MainScreen> {
         });
       }
       // no product recieved in response
-      if (searchSuggestions.length == 0) {
+      if (searchSuggestions.isEmpty) {
         url =
             'https://world.openfoodfacts.net/api/v2/search?brands_tags=$convertedQuery&countries_tags_en=india&languages_tags_en=english';
         final response2 = await fetchApiData(convertedQuery, url);
@@ -92,7 +94,9 @@ class _MainScreenState extends State<MainScreen> {
                     (product) => product['product_name'] ?? 'Unknown Product')
                 .toList();
 
-            if (searchSuggestions.length > 5) searchSuggestions = searchSuggestions.sublist(0, 5);
+            if (searchSuggestions.length > 5) {
+              searchSuggestions = searchSuggestions.sublist(0, 5);
+            }
           });
         } else {
           setState(() {
@@ -118,7 +122,10 @@ class _MainScreenState extends State<MainScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProductSearchPage(query: query, searchType: searchType,),
+          builder: (context) => ProductSearchPage(
+            query: query,
+            searchType: searchType,
+          ),
         ),
       );
     }
@@ -175,8 +182,7 @@ class _MainScreenState extends State<MainScreen> {
                       onChanged: onSearchChanged,
                       onSubmitted: onSearchSubmitted,
                       decoration: InputDecoration(
-                        hintText:
-                            'Search products by category or brands...',
+                        hintText: 'Search products by category or brands...',
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
@@ -281,8 +287,8 @@ class _MainScreenState extends State<MainScreen> {
                     children: [
                       Image.asset(
                         'assets/images/barcode-scan.png',
-                        width: 70, 
-                        height: 100, 
+                        width: 70,
+                        height: 100,
                       ),
                       const SizedBox(width: 20),
                       Expanded(

@@ -3,9 +3,9 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class HealthOverlay extends StatefulWidget {
-  final String rating;
-  final List<String> positive;
-  final List<String> negative;
+  final double rating;
+  final List<dynamic> positive;
+  final List<dynamic> negative;
 
   const HealthOverlay(
       {super.key,
@@ -149,7 +149,7 @@ class _HealthOverlayState extends State<HealthOverlay> {
                   const Divider(color: Colors.black54),
                   // Rating Section (Stars and Number)
                   RatingBar.builder(
-                    initialRating: double.parse(widget.rating),
+                    initialRating: widget.rating,
                     minRating: 1,
                     direction: Axis.horizontal,
                     allowHalfRating: true,

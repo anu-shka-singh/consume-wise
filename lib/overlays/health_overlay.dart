@@ -87,7 +87,7 @@ class _HealthOverlayState extends State<HealthOverlay> {
                               Text(
                                 "QUALITY",
                                 style:  TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 17,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white
                                 ),
@@ -95,7 +95,7 @@ class _HealthOverlayState extends State<HealthOverlay> {
                               Text(
                                 "SCORE",
                                 style:TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 17,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white
                                 ),
@@ -104,14 +104,14 @@ class _HealthOverlayState extends State<HealthOverlay> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 15),
+                      const SizedBox(width: 10),
                       RatingBar.builder(
                         initialRating: widget.rating,
                         minRating: 1,
                         direction: Axis.horizontal,
                         allowHalfRating: true,
                         itemCount: 5,
-                        itemSize: 40.0,
+                        itemSize: 37.0,
                         itemBuilder: (context, _) => const Icon(
                           Icons.star,
                           color: Color.fromARGB(255, 252, 190, 3),

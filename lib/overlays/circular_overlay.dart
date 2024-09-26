@@ -160,7 +160,7 @@ class _LeafOverlayState extends State<LeafOverlay> {
                 return Dialog(
                   child: Container(
                     width: 370.0, // Set the width
-                    height: 200.0, // Set the height
+                    height: 295.0, // Set the height
                     child: HealthOverlay(
                       rating: rating,
                       positive: positive,

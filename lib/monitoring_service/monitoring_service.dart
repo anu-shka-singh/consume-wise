@@ -47,8 +47,9 @@ Future<void> _startTimer(DatabaseService databaseService, Map<String, Applicatio
 _showDialog() async {
     await FlutterOverlayWindow.showOverlay(
       overlayTitle: "", 
+      startPosition: OverlayPosition(50, 0),
+      flag: OverlayFlag.focusPointer,
       enableDrag: true,
-      flag: OverlayFlag.flagNotTouchModal,
       );
 }
 

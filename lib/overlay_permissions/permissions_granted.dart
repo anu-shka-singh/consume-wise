@@ -209,7 +209,7 @@ class _PermissionsGranted extends State<PermissionsGranted> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                           side: BorderSide(
-                              color: Theme.of(context).colorScheme.primary,
+                              color: const Color(0xFF055b49),
                               width: 2),
                         ),
                         //tileColor: Theme.of(context).colorScheme.primary,

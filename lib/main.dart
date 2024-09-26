@@ -3,6 +3,7 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:overlay/database/database_service.dart';
 import 'package:overlay/monitoring_service/utils/flutter_background_service_utils.dart';
 import 'package:overlay/overlays/circular_overlay.dart';
+import 'package:overlay/overlays/health_overlay.dart';
 import 'package:overlay/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -44,7 +45,14 @@ void overlayMain() {
   debugPrint("Starting Alerting Window Isolate!");
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    const MaterialApp(debugShowCheckedModeBanner: false, home: LeafOverlay()),
+    //const MaterialApp(debugShowCheckedModeBanner: false, home: LeafOverlay()),
+    const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: HealthOverlay(
+          negative: ["High Fat", "High sugar", "Low Protien", "Palm Oil"],
+          positive: ["High Vitamins", "Improves Gut", "No Preservatives"],
+          rating: 4,
+        )),
   );
 }
 

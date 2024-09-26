@@ -45,14 +45,14 @@ void overlayMain() {
   debugPrint("Starting Alerting Window Isolate!");
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    //const MaterialApp(debugShowCheckedModeBanner: false, home: LeafOverlay()),
-    const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: HealthOverlay(
-          negative: ["High Fat", "High sugar", "Low Protien", "Palm Oil"],
-          positive: ["High Vitamins", "Improves Gut", "No Preservatives"],
-          rating: 4,
-        )),
+    const MaterialApp(debugShowCheckedModeBanner: false, home: LeafOverlay()),
+    // const MaterialApp(
+    //     debugShowCheckedModeBanner: false,
+    //     home: HealthOverlay(
+    //       negative: ["High Fat", "High sugar", "Low Protien", "Palm Oil"],
+    //       positive: ["High Vitamins", "Improves Gut", "No Preservatives"],
+    //       rating: 4,
+    //     )),
   );
 }
 

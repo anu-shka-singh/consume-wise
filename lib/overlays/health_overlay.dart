@@ -2,14 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-void main() {
-  runApp(HealthOverlay(
-    negative: ["High Fat", "High sugar", "Low Protien"],
-    positive: ["High Vitamins", "Improves Gut", "No Preservatives"],
-    rating: 4,
-  ));
-}
-
 class HealthOverlay extends StatefulWidget {
   final double rating;
   final List<dynamic> positive;
@@ -65,111 +57,12 @@ class _HealthOverlayState extends State<HealthOverlay> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  // Expanded(
-                  //   // Wrapping SingleChildScrollView with Scrollbar for visibility
-                  //   child: Scrollbar(
-                  //     thumbVisibility: true, // Always show the scrollbar thumb
-                  //     child: SingleChildScrollView(
-                  //       child: Column(
-                  //         children: [
-                  //           // Positive and Negative Impacts
-                  //           Padding(
-                  //             padding:
-                  //                 const EdgeInsets.symmetric(horizontal: 12.0),
-                  //             child: Row(
-                  //               crossAxisAlignment: CrossAxisAlignment.start,
-                  //               children: [
-                  //                 // Positive Impacts
-                  //                 Expanded(
-                  //                   child: Column(
-                  //                     crossAxisAlignment:
-                  //                         CrossAxisAlignment.start,
-                  //                     children: widget.positive
-                  //                         .map(
-                  //                           (positiveImpact) => Padding(
-                  //                             padding:
-                  //                                 const EdgeInsets.symmetric(
-                  //                                     vertical: 4.0),
-                  //                             child: Row(
-                  //                               children: [
-                  //                                 const Icon(Icons.add_circle,
-                  //                                     color: Colors.green,
-                  //                                     size: 18),
-                  //                                 const SizedBox(width: 6),
-                  //                                 Expanded(
-                  //                                   child: Text(
-                  //                                     positiveImpact,
-                  //                                     style: const TextStyle(
-                  //                                       color: Colors.green,
-                  //                                       fontWeight:
-                  //                                           FontWeight.w600,
-                  //                                       fontSize: 18.0,
-                  //                                     ),
-                  //                                     overflow:
-                  //                                         TextOverflow.ellipsis,
-                  //                                   ),
-                  //                                 ),
-                  //                               ],
-                  //                             ),
-                  //                           ),
-                  //                         )
-                  //                         .toList(),
-                  //                   ),
-                  //                 ),
-                  //                 const SizedBox(width: 16),
-                  //                 // Negative Impacts
-                  //                 Expanded(
-                  //                   child: Column(
-                  //                     crossAxisAlignment:
-                  //                         CrossAxisAlignment.start,
-                  //                     children: widget.negative
-                  //                         .map(
-                  //                           (negativeImpact) => Padding(
-                  //                             padding:
-                  //                                 const EdgeInsets.symmetric(
-                  //                                     vertical: 4.0),
-                  //                             child: Row(
-                  //                               children: [
-                  //                                 const Icon(
-                  //                                     Icons.remove_circle,
-                  //                                     color: Colors.red,
-                  //                                     size: 18),
-                  //                                 const SizedBox(width: 6),
-                  //                                 Expanded(
-                  //                                   child: Text(
-                  //                                     negativeImpact,
-                  //                                     style: const TextStyle(
-                  //                                       color: Colors.red,
-                  //                                       fontWeight:
-                  //                                           FontWeight.w600,
-                  //                                       fontSize: 18.0,
-                  //                                     ),
-                  //                                     overflow:
-                  //                                         TextOverflow.ellipsis,
-                  //                                   ),
-                  //                                 ),
-                  //                               ],
-                  //                             ),
-                  //                           ),
-                  //                         )
-                  //                         .toList(),
-                  //                   ),
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //           ),
-                  //           const SizedBox(height: 10),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                   buildAutoScrollingImpacts(
                     positive: widget.positive,
                     negative: widget.negative,
-                    scrollSpeed: 50.0, // Adjust as needed
-                    height: 40.0, // Adjust height as needed
-                    spacing: 16.0, // Adjust spacing as needed
+                    scrollSpeed: 50.0,
+                    height: 40.0, 
+                    spacing: 16.0,
                   ),
                   const Divider(
                     color: Colors.black87,
@@ -199,7 +92,6 @@ class _HealthOverlayState extends State<HealthOverlay> {
                                   color: Colors.white
                                 ),
                               ),
-                              // SizedBox(height: 1),
                               Text(
                                 "SCORE",
                                 style:TextStyle(

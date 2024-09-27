@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay/screens/chatbot_page.dart';
@@ -79,7 +78,7 @@ class _MainScreenState extends State<MainScreen> {
           searchSuggestions = [];
         });
       }
-      // no product recieved in response
+      // no product received in response
       if (searchSuggestions.isEmpty) {
         url =
             'https://world.openfoodfacts.net/api/v2/search?brands_tags=$convertedQuery&countries_tags_en=india&languages_tags_en=english';
@@ -141,6 +140,26 @@ class _MainScreenState extends State<MainScreen> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
+            icon: const Icon(Icons.settings), // Your desired icon
+            onPressed: () async {
+              if (widget.permissionsAvailable!) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PermissionsGranted(widget.dbService!),
+                  ),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PermissionsScreen(widget.dbService!),
+                  ),
+                );
+              }
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
@@ -157,6 +176,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
+
       body: Container(
         color: const Color(0xFFFFF6E7),
         child: SingleChildScrollView(
@@ -231,47 +251,6 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
 
-              Center(
-                child: GestureDetector(
-                  child: Card(
-                    elevation: 4,
-                    color: Colors.white,
-                    margin: const EdgeInsets.all(14.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
-                        "Grant Access Permissions",
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF055b49)),
-                      ),
-                    ),
-                  ),
-                  onTap: () async {
-                    if (widget.permissionsAvailable!) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              PermissionsGranted(widget.dbService!),
-                        ),
-                      );
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              PermissionsScreen(widget.dbService!),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
               //Barcode scanner
               Card(
                 elevation: 4,

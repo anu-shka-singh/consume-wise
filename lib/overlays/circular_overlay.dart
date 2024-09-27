@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:google_mlkit_commons/src/input_image.dart';
 import 'package:overlay/overlays/error_overlay.dart';
 import 'package:overlay/services/prompts.dart';
@@ -100,33 +101,26 @@ class _LeafOverlayState extends State<LeafOverlay> {
   }
 
   Future<void> showReport() async {
-    // capture screen
-    // await takeScreenshot();
     final screenshot = await loadAssetImageForOCR();
-    //Perform OCR and extract text
     final detectedText = await ocr(screenshot as InputImage);
 
     if (detectedText != null) {
-      // send extracted text to gemini to get product name
       String productName = await identifyProductName(detectedText);
 
-      // if response is none or multiple then display overlay accordingly
       if (productName == "None" || productName == "Multiple") {
-        // Show the error Overlay
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return Dialog(
               child: Container(
-                width: 370.0, // Set the width
-                height: 70.0, // Set the height
+                width: 390.0,
+                height: 70.0,
                 child: const ErrorOverlay(),
               ),
             );
           },
         );
       } else {
-        // else do search in api to fetch product info
         await searchProduct(productName);
 
         if (productInfo.isEmpty) {
@@ -135,16 +129,14 @@ class _LeafOverlayState extends State<LeafOverlay> {
             builder: (BuildContext context) {
               return Dialog(
                 child: Container(
-                    width: 370.0, // Set the width
-                    height: 70.0, // Set the height
-                    child: const ErrorOverlay()),
+                  width: 390.0,
+                  height: 70.0,
+                  child: const ErrorOverlay(),
+                ),
               );
             },
           );
-        }
-
-        // get Health Analysis using gemini
-        else {
+        } else {
           final response = await healthAnalysis(productInfo);
           final cleanResponse = getCleanResponse(response);
           if (cleanResponse.isNotEmpty) {
@@ -153,30 +145,32 @@ class _LeafOverlayState extends State<LeafOverlay> {
             List<dynamic> negative = analysis['negative'];
             double rating = analysis['rating'];
 
-            // Show the Health Analysis Overlay
+            await FlutterOverlayWindow.moveOverlay(OverlayPosition(0, 0));
+
+            // Show the Health Analysis Overlay as a Dialog centered on the screen
             showDialog(
               context: context,
+              barrierDismissible: false, // Prevent dismissing by tapping outside
               builder: (BuildContext context) {
-                return Dialog(
-                  child: Container(
-                    width: 370.0, // Set the width
-                    height: 295.0, // Set the height
-                    child: HealthOverlay(
-                      rating: rating,
-                      positive: positive,
-                      negative: negative,
+                return Center( // Ensures it stays centered in the viewport
+                  child: Dialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    child: SizedBox(
+                      width: 400,
+                      height: 330,
+                      child: HealthOverlay(
+                        rating: rating,
+                        positive: positive,
+                        negative: negative,
+                      ),
                     ),
                   ),
                 );
               },
             );
           }
-
-          // Close the existing overlay
-          // final isActive = await FlutterOverlayWindow.isActive();
-          // if (isActive) {
-          //   await FlutterOverlayWindow.closeOverlay();
-          // }
         }
       }
     } else {

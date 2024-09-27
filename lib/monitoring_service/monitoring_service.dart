@@ -50,8 +50,6 @@ _showDialog() async {
       startPosition: OverlayPosition(0, 0),
       flag: OverlayFlag.focusPointer,
       enableDrag: true,
-      // height: 295,
-      // width: 370,
       );
 }
 

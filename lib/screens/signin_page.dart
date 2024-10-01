@@ -64,7 +64,7 @@ class _LoginState extends State<LoginPage> {
             child: Column(
               children: <Widget>[
                 Image.asset(
-                  "assets/images/logo.png",
+                  "assets/images/consume-wise.png",
                   height: 250,
                 ),
                 TextFormField(

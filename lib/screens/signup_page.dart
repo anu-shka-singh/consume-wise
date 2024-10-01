@@ -44,7 +44,7 @@ class _SignUpState extends State<SignUp> {
             child: Column(
               children: <Widget>[
                 Image.asset(
-                  "assets/images/logo.png",
+                  "assets/images/consume-wise.png",
                   height: 250,
                 ),
                 TextFormField(

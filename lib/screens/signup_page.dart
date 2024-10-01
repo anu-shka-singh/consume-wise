@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:overlay/database/database_service.dart';
 import 'set_profile_page.dart';
 import 'signin_page.dart';
@@ -137,6 +138,34 @@ class _SignUpState extends State<SignUp> {
                   height: 10,
                 ),
                 signInOption(),
+                const SizedBox(
+                  height: 10,
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    elevation: 0,
+                    minimumSize: const Size(150, 50),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        "assets/images/google.jpg",
+                        height: 30,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        "Sign up with Google",
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: Color(0xFF055b49),
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: () => signInWithGoogle(),
+                ),
               ],
             ),
           ),
@@ -169,6 +198,51 @@ class _SignUpState extends State<SignUp> {
         )
       ],
     );
+  }
+
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        final OAuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        // After successful sign in, navigate to Profile Setup Page
+        if (userCredential.user != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProfileSetupPage(
+                email: userCredential.user!.email!,
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text("Error: $e"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   Future<bool> doesUserExist(String email) async {

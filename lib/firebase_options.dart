@@ -66,6 +66,7 @@ class DefaultFirebaseOptions {
     projectId: 'consumewise',
     databaseURL: 'https://consumewise-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'consumewise.appspot.com',
+    iosClientId: '420047878605-9r44q7bg6kltrmn1nva9gt01if3j5qnh.apps.googleusercontent.com',
     iosBundleId: 'com.example.overlay',
   );
 
@@ -76,6 +77,7 @@ class DefaultFirebaseOptions {
     projectId: 'consumewise',
     databaseURL: 'https://consumewise-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'consumewise.appspot.com',
+    iosClientId: '420047878605-9r44q7bg6kltrmn1nva9gt01if3j5qnh.apps.googleusercontent.com',
     iosBundleId: 'com.example.overlay',
   );
 
@@ -88,4 +90,5 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://consumewise-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'consumewise.appspot.com',
   );
+
 }

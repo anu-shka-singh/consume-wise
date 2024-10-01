@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:overlay/database/database_service.dart';
 import 'home.dart';
 import 'signup_page.dart';
@@ -21,12 +22,12 @@ class _LoginState extends State<LoginPage> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
 
-  Future<Map<String, dynamic>> fetchData() async {
+  Future<Map<String, dynamic>> fetchData(String email) async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await FirebaseFirestore.instance
               .collection('userProfiles')
-              .where('email', isEqualTo: _emailTextController.text)
+              .where('email', isEqualTo: email)
               .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -96,7 +97,7 @@ class _LoginState extends State<LoginPage> {
                       email: _emailTextController.text,
                       password: _passwordTextController.text,
                     );
-                    final data = await fetchData();
+                    final data = await fetchData(_emailTextController.text);
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -127,12 +128,87 @@ class _LoginState extends State<LoginPage> {
                   height: 10,
                 ),
                 signUpOption(),
+                const SizedBox(
+                  height: 10,
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    elevation: 0,
+                    minimumSize: const Size(150, 50),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        "assets/images/google.jpg",
+                        height: 30,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        "Sign in with Google",
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: Color(0xFF055b49),
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: () => signInWithGoogle(),
+                ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        final OAuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        // After successful sign in, navigate to Main Screen
+        final data = await fetchData(userCredential.user!.email!);
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainScreen(
+              user: data,
+              currentIndex: 0,
+              dbService: widget.dbService,
+              permissionsAvailable: widget.permissionsAvailable,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text("Error: $e"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   Row signUpOption() {

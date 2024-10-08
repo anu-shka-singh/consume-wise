@@ -80,8 +80,9 @@ class _HealthOverlayState extends State<HealthOverlay> {
           ),
         ),
         InkWell(
-          onTap: () async {
-            await FlutterOverlayWindow.closeOverlay();
+          onTap: () {
+            //await FlutterOverlayWindow.closeOverlay();
+            Navigator.of(context).pop();
           },
           child: Container(
             padding: const EdgeInsets.all(4.0),
@@ -128,45 +129,48 @@ class _HealthOverlayState extends State<HealthOverlay> {
   }
 
   Widget _buildScrollablePositivesNegatives() {
-    return Expanded( // Use Expanded to take available space
+    return Expanded(
+      // Use Expanded to take available space
       child: Row(
         children: [
           // Positive Impacts
           Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Positives",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Positives",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
                   ),
-                  const SizedBox(height: 8.0),
-                  buildImpactList(widget.positive, Icons.add_circle, Colors.green),
-                ],
-              ),
+                ),
+                const SizedBox(height: 8.0),
+                buildImpactList(
+                    widget.positive, Icons.add_circle, Colors.green),
+              ],
+            ),
           ),
           const SizedBox(width: 10),
           // Negative Impacts
           Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Text(
-                    "Negatives",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  "Negatives",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
                   ),
-                  const SizedBox(height: 8.0),
-                  buildImpactList(widget.negative, Icons.remove_circle, Colors.red),
-                ],
-              ),
+                ),
+                const SizedBox(height: 8.0),
+                buildImpactList(
+                    widget.negative, Icons.remove_circle, Colors.red),
+              ],
+            ),
           ),
         ],
       ),
@@ -182,31 +186,31 @@ class _HealthOverlayState extends State<HealthOverlay> {
       children: limitedItems
           .map(
             (item) => Tooltip(
-          message: item, // Full text as tooltip
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                color: color,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  item,
-                  style: const TextStyle(
-                    fontSize: 16,
+              message: item, // Full text as tooltip
+              child: Row(
+                children: [
+                  Icon(
+                    icon,
+                    color: color,
+                    size: 20,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis, // Show ellipsis if overflow
-                ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      item,
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                      maxLines: 2,
+                      overflow:
+                          TextOverflow.ellipsis, // Show ellipsis if overflow
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      )
+            ),
+          )
           .toList(),
     );
   }
-
 }

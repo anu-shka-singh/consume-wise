@@ -60,8 +60,8 @@ class _ErrorOverlayState extends State<ErrorOverlay> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                    onPressed: () async {
-                      await FlutterOverlayWindow.closeOverlay();
+                    onPressed: () {
+                      Navigator.of(context).pop();
                     },
                     icon: const Icon(
                       Icons.close,

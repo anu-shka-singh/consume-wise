@@ -22,14 +22,45 @@ class LeafOverlay extends StatefulWidget {
 }
 
 class _LeafOverlayState extends State<LeafOverlay> {
-  //static const String _kPortNameOverlay = 'OVERLAY'; // Define port name
-  String? detectedText = '';
-  Map<String, dynamic> productInfo = {};
+  static const MethodChannel _channel = MethodChannel('com.example.overlay/screenshot');
+
+  Future<void> requestScreenCapture() async {
+    try {
+      final int result = await _channel.invokeMethod('requestProjection');
+      print('Request initiated with code: $result');
+    } on PlatformException catch (e) {
+      print("Failed to request projection: '${e.message}'.");
+    }
+  }
+  String detectedText = '';
 
   @override
   void initState() {
     super.initState();
+    platform.setMethodCallHandler(_handleMethodCalls);
   }
+
+  Future<void> _handleMethodCalls(MethodCall call) async {
+    if (call.method == 'onTextDetected') {
+      setState(() {
+        detectedText = call.arguments as String;
+      });
+    }
+  }
+  //
+  // Future<void> startScreenshot() async {
+  //   try {
+  //     final int resultCode = await platform.invokeMethod('requestProjection');
+  //     if (resultCode == null) {
+  //       print("Permission not granted");
+  //     }
+  //   } on PlatformException catch (e) {
+  //     print("Error starting screen capture: ${e.message}");
+  //   }
+  // }
+
+  //String? detectedText = '';
+  Map<String, dynamic> productInfo = {};
 
   Future<void> searchProduct(String productName) async {
     int retryCount = 3; // Maximum number of retries in case of timeout
@@ -101,13 +132,30 @@ class _LeafOverlayState extends State<LeafOverlay> {
   }
 
   Future<void> showReport() async {
-    final screenshot = await loadAssetImageForOCR();
-    final detectedText = await ocr(screenshot as InputImage);
+    //final screenshot = await loadAssetImageForOCR();
+    //final detectedText = await ocr(screenshot as InputImage);
 
-    if (detectedText != null) {
-      String productName = await identifyProductName(detectedText);
+    print(detectedText);
 
-      if (productName == "None" || productName == "Multiple") {
+    String productName = await identifyProductName(detectedText);
+
+    if (productName == "None" || productName == "Multiple") {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Container(
+              width: 390.0,
+              height: 70.0,
+              child: const ErrorOverlay(),
+            ),
+          );
+        },
+      );
+    } else {
+      await searchProduct(productName);
+
+      if (productInfo.isEmpty) {
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -121,62 +169,43 @@ class _LeafOverlayState extends State<LeafOverlay> {
           },
         );
       } else {
-        await searchProduct(productName);
+        final response = await healthAnalysis(productInfo);
+        final cleanResponse = getCleanResponse(response);
+        if (cleanResponse.isNotEmpty) {
+          final analysis = jsonDecode(cleanResponse);
+          List<dynamic> positive = analysis['positive'];
+          List<dynamic> negative = analysis['negative'];
+          double rating = analysis['rating'];
 
-        if (productInfo.isEmpty) {
+          await FlutterOverlayWindow.moveOverlay(const OverlayPosition(0, 0));
+
+          // Show the Health Analysis Overlay as a Dialog centered on the screen
           showDialog(
             context: context,
+            barrierDismissible: false, // Prevent dismissing by tapping outside
             builder: (BuildContext context) {
-              return Dialog(
-                child: Container(
-                  width: 390.0,
-                  height: 70.0,
-                  child: const ErrorOverlay(),
+              return Center( // Ensures it stays centered in the viewport
+                child: Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  child: SizedBox(
+                    width: 400,
+                    height: 330,
+                    child: HealthOverlay(
+                      rating: rating,
+                      positive: positive,
+                      negative: negative,
+                    ),
+                  ),
                 ),
               );
             },
           );
-        } else {
-          final response = await healthAnalysis(productInfo);
-          final cleanResponse = getCleanResponse(response);
-          if (cleanResponse.isNotEmpty) {
-            final analysis = jsonDecode(cleanResponse);
-            List<dynamic> positive = analysis['positive'];
-            List<dynamic> negative = analysis['negative'];
-            double rating = analysis['rating'];
-
-            await FlutterOverlayWindow.moveOverlay(OverlayPosition(0, 0));
-
-            // Show the Health Analysis Overlay as a Dialog centered on the screen
-            showDialog(
-              context: context,
-              barrierDismissible: false, // Prevent dismissing by tapping outside
-              builder: (BuildContext context) {
-                return Center( // Ensures it stays centered in the viewport
-                  child: Dialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    child: SizedBox(
-                      width: 400,
-                      height: 330,
-                      child: HealthOverlay(
-                        rating: rating,
-                        positive: positive,
-                        negative: negative,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
-          }
         }
       }
-    } else {
-      log("No text detected");
     }
-  }
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +215,7 @@ class _LeafOverlayState extends State<LeafOverlay> {
         child: GestureDetector(
           onTap: () async {
             log('Leaf overlay tapped');
+            await requestScreenCapture();  // Start the screenshot process
             showReport();
           },
           child: Container(

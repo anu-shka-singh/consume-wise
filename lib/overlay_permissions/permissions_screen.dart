@@ -55,16 +55,26 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
             SizedBox(
               height: screenHeight * 0.03,
             ),
-            CircleAvatar(
-                backgroundColor: const Color(0xFF055b49),
-                radius: screenWidth * 0.09,
-                child: Icon(
-                  Icons.approval_rounded,
-                  size: screenWidth * 0.13,
-                  color: Colors.white,
-                )),
+            // CircleAvatar(
+            //     backgroundColor: const Color(0xFF055b49),
+            //     radius: screenWidth * 0.09,
+            //     child: Icon(
+            //       Icons.approval_rounded,
+            //       size: screenWidth * 0.13,
+            //       color: Colors.white,
+            //     )),
+            Padding(
+              padding: const EdgeInsets.only(left: 15.0, right: 12),
+              child: Text(
+                          "For a seamless shopping experience across apps like Blinkit, Zepto and more...",
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.066,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+            ),
             SizedBox(
-              height: screenHeight * 0.04,
+              height: screenHeight * 0.025,
             ),
             _aboutPermissionsSection(),
             SizedBox(
@@ -99,7 +109,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
 
     return Center(
       child: SizedBox(
-        height: screenHeight * 0.26,
+        height: screenHeight * 0.32,
         width: screenWidth * 0.9,
         child: Card(
           color: Colors.white,
@@ -118,7 +128,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
                   ),
                   Icon(
                     Icons.query_stats,
-                    size: screenWidth * 0.2,
+                    size: screenWidth * 0.15,
                     color: Colors.black,
                   ),
                   SizedBox(
@@ -128,21 +138,27 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Usage Stats",
+                        "Usage Access",
                         style: TextStyle(
-                          fontSize: screenWidth * 0.06,
+                          fontSize: screenWidth * 0.055,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
-                        child: Text(
-                          "To determine Application \nstartup",
-                          style: TextStyle(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                              maxWidth: screenWidth * 0.6), // Limit the width
+                          child: Text(
+                            "Enables the app to activate overlay features based on your app usage.",
+                            style: TextStyle(
                               fontSize: screenWidth * 0.04,
-                              fontStyle: FontStyle.italic),
+                              fontStyle: FontStyle.italic,
+                            ),
+                            softWrap: true,
+                          ),
                         ),
-                      )
+                      ),
                     ],
                   )
                 ],
@@ -157,7 +173,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
                   ),
                   Icon(
                     Icons.timer,
-                    size: screenWidth * 0.2,
+                    size: screenWidth * 0.15,
                     color: Colors.black,
                   ),
                   SizedBox(
@@ -169,19 +185,25 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
                       Text(
                         "Display Over Apps",
                         style: TextStyle(
-                          fontSize: screenWidth * 0.06,
+                          fontSize: screenWidth * 0.055,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
-                        child: Text(
-                          "To popup a timer display",
-                          style: TextStyle(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                              maxWidth: screenWidth * 0.6), // Limit the width
+                          child: Text(
+                            "Allows us to display helpful overlays while you use other apps.",
+                            style: TextStyle(
                               fontSize: screenWidth * 0.04,
-                              fontStyle: FontStyle.italic),
+                              fontStyle: FontStyle.italic,
+                            ),
+                            softWrap: true,
+                          ),
                         ),
-                      )
+                      ),
                     ],
                   )
                 ],

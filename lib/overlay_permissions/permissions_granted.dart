@@ -149,6 +149,8 @@ class _PermissionsGranted extends State<PermissionsGranted> {
           showInstalledAppsListViewDialog(context);
         },
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(
               Icons.add_card_rounded,
@@ -158,7 +160,8 @@ class _PermissionsGranted extends State<PermissionsGranted> {
               height: screenHeight * 0.01,
             ),
             const Text(
-              "Add Application",
+              "Add Applications you want to use with ConsumeWise",
+              textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             )
           ],

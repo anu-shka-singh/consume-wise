@@ -76,6 +76,7 @@ class _ImageUploadState extends State<ImageUpload> {
           foregroundColor: Colors.white,
           elevation: 0,
         ),
+        backgroundColor: const Color(0xFFFFF6E7),
         body: Container(
           color: const Color(0xFFFFF6E7),
           child: SingleChildScrollView(

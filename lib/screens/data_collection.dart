@@ -346,11 +346,75 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
     ];
   }
 
-  void _nextStep() {
+  // void _nextStep() {
+  //   if (_isStepValid()) {
+  //     setState(() => _currentStep += 1);
+  //   } else {
+  //     _showErrorSnackbar('Please capture a photo before continuing.');
+  //   }
+  // }
+
+  void _nextStep() async {
     if (_isStepValid()) {
-      setState(() => _currentStep += 1);
+      if (_currentStep == 3 && _barcode != null) {
+        // This is the last step, so we submit the data
+        try {
+          String response = await dataPreprocessing(_barcode!, _frontImageText,
+              _ingredientsText, _nutritionalFactsText);
+          print(response);
+          final cleanResponse = getCleanResponse(response);
+          final Map<String, dynamic> productData = jsonDecode(cleanResponse);
+          print(productData);
+
+          final String productName = productData['productName'];
+          final String productBarcode = productData['productBarcode'];
+          final String productCategory = productData['productCategory'];
+          final List<dynamic> ingredients = productData['ingredients'];
+          final List<dynamic> nutritionalValue =
+              productData['nutritionalValue'];
+
+          print('Data to be saved successfully to Firestore');
+
+          try {
+            await FirebaseFirestore.instance.collection('products').add({
+              'image_url': image_url,
+              'product_name': productName,
+              'product_barcode': productBarcode,
+              'product_category': productCategory,
+              'ingredients': ingredients,
+              'nutriments': nutritionalValue,
+            });
+
+            print('Data saved successfully to Firestore');
+
+            final product = convertGPTResponseToProduct(productData, image_url);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HealthAnalysis(
+                  product: product,
+                ),
+              ),
+            );
+          } catch (firestoreError) {
+            print('Error saving data to Firestore: $firestoreError');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      'Failed to save data to Firestore: $firestoreError')),
+            );
+          }
+        } catch (error) {
+          print('Error during data processing: $error');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to process data: $error')),
+          );
+        }
+      } else {
+        setState(() => _currentStep += 1);
+      }
     } else {
-      _showErrorSnackbar('Please capture a photo before continuing.');
+      _showErrorSnackbar('Please complete the step before continuing.');
     }
   }
 

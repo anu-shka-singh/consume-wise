@@ -22,17 +22,17 @@ class LeafOverlay extends StatefulWidget {
 }
 
 class _LeafOverlayState extends State<LeafOverlay> {
-  static const MethodChannel _channel = MethodChannel('com.example.overlay/screenshot');
+  static const platform = MethodChannel('com.example.screenshot/capture');
 
   Future<void> requestScreenCapture() async {
     try {
-      final int result = await _channel.invokeMethod('requestProjection');
-      print('Request initiated with code: $result');
+      // Call the native method to take the screenshot
+      await platform.invokeMethod('captureScreenshot');
     } on PlatformException catch (e) {
-      print("Failed to request projection: '${e.message}'.");
+      print("Failed to take screenshot: '${e.message}'.");
     }
   }
-  String detectedText = '';
+  String detectedText2 = '';
 
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _LeafOverlayState extends State<LeafOverlay> {
   Future<void> _handleMethodCalls(MethodCall call) async {
     if (call.method == 'onTextDetected') {
       setState(() {
-        detectedText = call.arguments as String;
+        detectedText2 = call.arguments as String;
       });
     }
   }
@@ -59,7 +59,7 @@ class _LeafOverlayState extends State<LeafOverlay> {
   //   }
   // }
 
-  //String? detectedText = '';
+  String? detectedText = '';
   Map<String, dynamic> productInfo = {};
 
   Future<void> searchProduct(String productName) async {
@@ -132,12 +132,12 @@ class _LeafOverlayState extends State<LeafOverlay> {
   }
 
   Future<void> showReport() async {
-    //final screenshot = await loadAssetImageForOCR();
-    //final detectedText = await ocr(screenshot as InputImage);
+    final screenshot = await loadAssetImageForOCR();
+    final detectedText = await ocr(screenshot as InputImage);
 
-    print(detectedText);
+    print("THIS IS THE DETECTED TEXT"+ detectedText2);
 
-    String productName = await identifyProductName(detectedText);
+    String productName = await identifyProductName(detectedText!);
 
     if (productName == "None" || productName == "Multiple") {
       showDialog(

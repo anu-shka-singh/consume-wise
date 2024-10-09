@@ -7,25 +7,40 @@ import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     private val SCREEN_CAPTURE_REQUEST_CODE = 1001
     private lateinit var mediaProjectionManager: MediaProjectionManager
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    // Define the channel name as a constant
+    companion object {
+        const val CHANNEL = "com.example.screenshot/capture"
+    }
 
-        // Make sure this matches the channel string in your Flutter code
-        MethodChannel(flutterEngine?.dartExecutor?.binaryMessenger ?: return, "com.example.screenshot/capture")
-            .setMethodCallHandler { call, result ->
-                if (call.method == "captureScreenshot") {
-                    startScreenCapture()
-                    result.success(null)
-                } else {
-                    result.notImplemented()
+    // This method is called when the FlutterEngine is created.
+    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+
+        // Create the MethodChannel with the provided name
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+                .setMethodCallHandler { call, result ->
+                    when (call.method) {
+                        "captureScreenshot" -> {
+                            startScreenCapture()
+                            result.success(null)
+                        }
+                        "onTextDetected" -> {
+                            // Handle detected text here
+                            val detectedText = call.arguments as String
+                            // You can use detectedText as needed, for example, print it or store it
+                            println("Detected text from service: $detectedText")
+                            result.success(null)
+                        }
+                        else -> result.notImplemented()
+                    }
                 }
-            }
     }
 
     private fun startScreenCapture() {

@@ -29,15 +29,34 @@ class ScreenshotScreen extends StatefulWidget {
 
 class _ScreenshotScreenState extends State<ScreenshotScreen> {
   static const platform = MethodChannel('com.example.screenshot/capture');
-
+  String detectedText = '';
   Future<void> _takeScreenshot() async {
     try {
-      // Call the native method to take the screenshot
       await platform.invokeMethod('captureScreenshot');
     } on PlatformException catch (e) {
       print("Failed to take screenshot: '${e.message}'.");
     }
   }
+
+  // Function to handle the detected text from the platform
+  void _handleDetectedText(String text) {
+    setState(() {
+      detectedText = text; // Update the state with the detected text
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen for method calls from the native side
+    platform.setMethodCallHandler((call) async {
+      if (call.method == "onTextDetected") {
+        _handleDetectedText(call.arguments); // Call to handle detected text
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +65,19 @@ class _ScreenshotScreenState extends State<ScreenshotScreen> {
         title: const Text('Global Screenshot'),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: _takeScreenshot,
-          child: const Text('Take Screenshot'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _takeScreenshot,
+              child: const Text('Take Screenshot'),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              detectedText.isEmpty ? 'No text detected yet.' : 'Detected Text:\n$detectedText',
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );

@@ -1,152 +1,123 @@
 package com.example.overlay
 
-import android.app.Service
 import android.app.Activity
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.PixelFormat
+import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.WindowManager
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.embedding.engine.FlutterEngineCache
-import java.io.File
-import java.io.FileOutputStream
-import java.nio.ByteBuffer
-import android.net.Uri
-import android.hardware.display.DisplayManager
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.TextRecognizer
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.Text // Ensure this import exists
-import com.google.android.gms.tasks.Task // Add this import for Task
+import android.widget.Toast
+import androidx.core.app.NotificationCompat
 
 class ScreenshotService : Service() {
-    private lateinit var mediaProjectionManager: MediaProjectionManager
-    private lateinit var mediaProjection: MediaProjection
-    private lateinit var imageReader: ImageReader
-    private var resultCode: Int = 0
-    private var resultData: Intent? = null
-    private val CHANNEL = "com.example.overlay/screenshott"
-    private val handler = Handler()
 
-    override fun onCreate() {
-        super.onCreate()
-        mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+    private val CHANNEL_ID = "screenshot_service_channel"
+    private var mediaProjection: MediaProjection? = null
+    private var virtualDisplay: VirtualDisplay? = null
+    private lateinit var imageReader: ImageReader
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        resultCode = intent?.getIntExtra("RESULT_CODE", Activity.RESULT_OK) ?: Activity.RESULT_OK
-        resultData = intent?.getParcelableExtra("RESULT_DATA")
+        startForeground(1, createNotification())
 
-        if (resultData != null) {
-            startCaptureScreen()
-        } else {
-            Log.e("ScreenshotService", "Permission not granted or invalid result data")
+        val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        val resultCode = intent?.getIntExtra("resultCode", Activity.RESULT_OK)
+        val data = intent?.getParcelableExtra<Intent>("data")
+
+        if (resultCode != null && data != null) {
+            mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data)
+            startCapture()
         }
 
         return START_NOT_STICKY
     }
 
-    private fun startCaptureScreen() {
-        mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, resultData!!)
-        val metrics = DisplayMetrics()
+    private fun createNotification(): Notification {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelName = "Screenshot Service"
+            val channel = NotificationChannel(
+                CHANNEL_ID, channelName,
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Taking Screenshot")
+            .setContentText("The app is capturing a screenshot.")
+            .setSmallIcon(android.R.drawable.ic_menu_camera)
+            .build()
+    }
+
+    private fun startCapture() {
         val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
 
-        imageReader = ImageReader.newInstance(metrics.widthPixels, metrics.heightPixels, PixelFormat.RGBA_8888, 2)
-        val virtualDisplay = mediaProjection.createVirtualDisplay(
-                "ScreenCapture",
-                metrics.widthPixels,
-                metrics.heightPixels,
-                metrics.densityDpi,
-                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                imageReader.surface,
-                null,
-                handler
+        val width = metrics.widthPixels
+        val height = metrics.heightPixels
+        val density = metrics.densityDpi
+
+        imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
+        virtualDisplay = mediaProjection?.createVirtualDisplay(
+            "ScreenCapture",
+            width, height, density,
+            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+            imageReader.surface, null, Handler(Looper.getMainLooper())
         )
 
-        imageReader.setOnImageAvailableListener(object : ImageReader.OnImageAvailableListener {
-            override fun onImageAvailable(reader: ImageReader) {
-                val image = reader.acquireLatestImage()
-                if (image != null) {
-                    val planes = image.planes
-                    val buffer: ByteBuffer = planes[0].buffer
-                    val width = image.width
-                    val height = image.height
-                    val pixelStride = planes[0].pixelStride
-                    val rowStride = planes[0].rowStride
-                    val rowPadding = rowStride - pixelStride * width
-                    val bitmap = Bitmap.createBitmap(
-                            width + rowPadding / pixelStride,
-                            height,
-                            Bitmap.Config.ARGB_8888
-                    )
-                    bitmap.copyPixelsFromBuffer(buffer)
-                    image.close()
+        imageReader.setOnImageAvailableListener({ reader ->
+            val image = reader.acquireLatestImage()
+            if (image != null) {
+                val planes = image.planes
+                val buffer = planes[0].buffer
+                val pixelStride = planes[0].pixelStride
+                val rowStride = planes[0].rowStride
+                val rowPadding = rowStride - pixelStride * width
 
-                    saveScreenshotAndExtractText(bitmap)
+                val bitmap = Bitmap.createBitmap(
+                    width + rowPadding / pixelStride,
+                    height,
+                    Bitmap.Config.ARGB_8888
+                )
+                bitmap.copyPixelsFromBuffer(buffer)
 
-                    virtualDisplay.release()
-                    imageReader.close()
-                    mediaProjection.stop()
-                    stopSelf() // Stop the service after completing the task
-                }
+                saveScreenshot(bitmap)
+                image.close()
             }
-        }, handler)
+        }, Handler(Looper.getMainLooper()))
     }
 
-    private fun saveScreenshotAndExtractText(bitmap: Bitmap) {
-        try {
-            val screenshotFile = File(getExternalFilesDir(null), "screenshot.png")
-            val outputStream = FileOutputStream(screenshotFile)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            outputStream.flush()
-            outputStream.close()
-
-            Log.d("ScreenshotService", "Screenshot saved at: ${screenshotFile.absolutePath}")
-            extractTextFromImage(screenshotFile.absolutePath)
-        } catch (e: Exception) {
-            Log.e("ScreenshotService", "Failed to save screenshot", e)
-        }
+    private fun saveScreenshot(bitmap: Bitmap) {
+        // Here you can modify to save the screenshot image to storage
+        // Example: Save to file and send the file path back to Flutter for OCR
+        Toast.makeText(this, "Screenshot taken!", Toast.LENGTH_SHORT).show()
+        stopSelf()
     }
 
-    private fun extractTextFromImage(imagePath: String) {
-        val image = InputImage.fromFilePath(this, Uri.fromFile(File(imagePath)))
-
-        // Create an instance of TextRecognizerOptions
-        val textRecognizerOptions = TextRecognizerOptions.Builder().build() // Adjust options as needed
-        val textRecognizer = TextRecognition.getClient(textRecognizerOptions)
-
-        // Perform text recognition
-        textRecognizer.process(image) // Correct method
-                .addOnSuccessListener { text ->
-                    Log.d("ScreenshotService", "Detected Text: ${text.text}")
-                    sendDetectedTextToFlutter(text.text)
-                }
-                .addOnFailureListener { e ->
-                    Log.e("ScreenshotService", "Text recognition failed", e)
-                }
-    }
-
-    private fun sendDetectedTextToFlutter(detectedText: String) {
-        val flutterEngine = FlutterEngineCache.getInstance().get("my_engine_id")
-        if (flutterEngine != null) {
-            MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
-                    .invokeMethod("onTextDetected", detectedText)
-        } else {
-            Log.e("ScreenshotService", "FlutterEngine is not initialized")
-        }
-    }
-
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
+    override fun onDestroy() {
+        super.onDestroy()
+        virtualDisplay?.release()
+        mediaProjection?.stop()
+        imageReader.close()
     }
 }

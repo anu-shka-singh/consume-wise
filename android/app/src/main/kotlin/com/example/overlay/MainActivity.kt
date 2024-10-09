@@ -1,58 +1,46 @@
 package com.example.overlay
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
+import android.os.Bundle
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
-import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.embedding.engine.FlutterEngineCache
-import io.flutter.plugins.GeneratedPluginRegistrant
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
-    private val CHANNEL = "com.example.overlay/screenshot"
-    private val REQUEST_CODE = 1000
+    private val SCREEN_CAPTURE_REQUEST_CODE = 1001
+    private lateinit var mediaProjectionManager: MediaProjectionManager
 
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-        super.configureFlutterEngine(flutterEngine)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        // Register FlutterEngine to be accessible in ScreenshotService
-        FlutterEngineCache.getInstance().put("my_engine_id", flutterEngine)
-
-        // Register the plugins
-        GeneratedPluginRegistrant.registerWith(flutterEngine)
-
-        // Setting up the method channel
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
-            when (call.method) {
-                "requestProjection" -> {
-                    requestScreenCapture(result)
-                }
-                else -> {
+        // Make sure this matches the channel string in your Flutter code
+        MethodChannel(flutterEngine?.dartExecutor?.binaryMessenger ?: return, "com.example.screenshot/capture")
+            .setMethodCallHandler { call, result ->
+                if (call.method == "captureScreenshot") {
+                    startScreenCapture()
+                    result.success(null)
+                } else {
                     result.notImplemented()
                 }
             }
-        }
     }
 
-    private fun requestScreenCapture(result: MethodChannel.Result) {
-        val mediaProjectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        val intent = mediaProjectionManager.createScreenCaptureIntent()
-        startActivityForResult(intent, REQUEST_CODE)
-        result.success(REQUEST_CODE)  // Notify Flutter that the request was initiated
+    private fun startScreenCapture() {
+        mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), SCREEN_CAPTURE_REQUEST_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-            val screenshotServiceIntent = Intent(this, ScreenshotService::class.java).apply {
-                putExtra("RESULT_CODE", resultCode)
-                putExtra("RESULT_DATA", data)
-            }
-            startService(screenshotServiceIntent) // Start your screenshot service
-        } else {
-            // You may want to handle the case where permission was not granted
-            // For example, you could send a message back to Flutter
+
+        if (requestCode == SCREEN_CAPTURE_REQUEST_CODE) {
+            val screenshotIntent = Intent(this, ScreenshotService::class.java)
+            screenshotIntent.putExtra("resultCode", resultCode)
+            screenshotIntent.putExtra("data", data)
+            startService(screenshotIntent)
         }
     }
 }

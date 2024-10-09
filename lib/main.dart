@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:overlay/database/database_service.dart';
 import 'package:overlay/monitoring_service/utils/flutter_background_service_utils.dart';
+import 'package:overlay/overaly_test_page.dart';
 import 'package:overlay/overlays/circular_overlay.dart';
 import 'package:overlay/overlays/health_overlay.dart';
 import 'package:overlay/screens/splash_screen.dart';
@@ -72,10 +73,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(
-        dbService: widget.dbService,
-        permissionsAvailable: widget.permissionsAvailable,
-      ),
+      home: HomePage(),
+      // SplashScreen(
+      //   dbService: widget.dbService,
+      //   permissionsAvailable: widget.permissionsAvailable,
+      //
+      // ),
     );
   }
 }

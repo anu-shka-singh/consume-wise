@@ -1,10 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:overlay/database/database_service.dart';
 import 'package:overlay/monitoring_service/utils/flutter_background_service_utils.dart';
-import 'package:overlay/overaly_test_page.dart';
 import 'package:overlay/overlays/circular_overlay.dart';
-import 'package:overlay/overlays/health_overlay.dart';
 import 'package:overlay/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -35,9 +35,9 @@ onStart() async {
 Future<void> requestPermissions() async {
   var status = await Permission.mediaLibrary.request();
   if (status.isGranted) {
-    print("Media Projection Permission Granted");
+    log("Media Projection Permission Granted");
   } else {
-    print("Media Projection Permission Denied");
+    log("Media Projection Permission Denied");
   }
 }
 
@@ -74,10 +74,9 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: //HomePage(),
-      SplashScreen(
+          SplashScreen(
         dbService: widget.dbService,
         permissionsAvailable: widget.permissionsAvailable,
-      
       ),
     );
   }

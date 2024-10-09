@@ -29,9 +29,10 @@ class _LeafOverlayState extends State<LeafOverlay> {
       // Call the native method to take the screenshot
       await platform.invokeMethod('captureScreenshot');
     } on PlatformException catch (e) {
-      print("Failed to take screenshot: '${e.message}'.");
+      log("Failed to take screenshot: '${e.message}'.");
     }
   }
+
   String detectedText2 = '';
 
   @override
@@ -52,10 +53,10 @@ class _LeafOverlayState extends State<LeafOverlay> {
   //   try {
   //     final int resultCode = await platform.invokeMethod('requestProjection');
   //     if (resultCode == null) {
-  //       print("Permission not granted");
+  //       log("Permission not granted");
   //     }
   //   } on PlatformException catch (e) {
-  //     print("Error starting screen capture: ${e.message}");
+  //     log("Error starting screen capture: ${e.message}");
   //   }
   // }
 
@@ -76,12 +77,12 @@ class _LeafOverlayState extends State<LeafOverlay> {
         final url = Uri.parse(
             'https://world.openfoodfacts.org/cgi/search.pl?search_terms=$productName&countries_tags_en=india&languages_tags_en=english&json=true&page=1&page_size=1');
 
-        print("Searching product: $productName, attempt ${retry + 1}");
+        log("Searching product: $productName, attempt ${retry + 1}");
 
         final response = await http.get(url).timeout(timeoutDuration);
 
         if (response.statusCode == 200) {
-          print("Search status-code: ${response.statusCode}");
+          log("Search status-code: ${response.statusCode}");
           final data = json.decode(response.body);
 
           if (data['products'] != null && data['products'].isNotEmpty) {
@@ -89,21 +90,21 @@ class _LeafOverlayState extends State<LeafOverlay> {
 
             break; // Exit retry loop if a product is found
           } else {
-            print("No products found");
+            log("No products found");
             break;
           }
         } else {
-          print("Error fetching search result: ${response.statusCode}");
+          log("Error fetching search result: ${response.statusCode}");
           break; // Stop further requests in case of non-200 status code
         }
       } on TimeoutException catch (e) {
-        print("Request timed out, attempt ${retry + 1}: $e");
+        log("Request timed out, attempt ${retry + 1}: $e");
 
         if (retry == retryCount - 1) {
-          print("Max retries reached. No product found.");
+          log("Max retries reached. No product found.");
         }
       } catch (e) {
-        print("An error occurred: $e");
+        log("An error occurred: $e");
         break;
       }
     }
@@ -133,9 +134,9 @@ class _LeafOverlayState extends State<LeafOverlay> {
 
   Future<void> showReport() async {
     final screenshot = await loadAssetImageForOCR();
-    final detectedText = await ocr(screenshot as InputImage);
+    final detectedText = await ocr(screenshot);
 
-    print("THIS IS THE DETECTED TEXT"+ detectedText2);
+    log("THIS IS THE DETECTED TEXT$detectedText2");
 
     String productName = await identifyProductName(detectedText!);
 
@@ -184,7 +185,8 @@ class _LeafOverlayState extends State<LeafOverlay> {
             context: context,
             barrierDismissible: false, // Prevent dismissing by tapping outside
             builder: (BuildContext context) {
-              return Center( // Ensures it stays centered in the viewport
+              return Center(
+                // Ensures it stays centered in the viewport
                 child: Dialog(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16.0),
@@ -205,7 +207,7 @@ class _LeafOverlayState extends State<LeafOverlay> {
         }
       }
     }
-    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +217,7 @@ class _LeafOverlayState extends State<LeafOverlay> {
         child: GestureDetector(
           onTap: () async {
             log('Leaf overlay tapped');
-            await requestScreenCapture();  // Start the screenshot process
+            await requestScreenCapture(); // Start the screenshot process
             showReport();
           },
           child: Container(

@@ -31,10 +31,10 @@ class ProfilePage extends StatefulWidget {
       required this.user,
       required this.currentIndex}); // Add currentIndex to constructor
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  ProfilePageState createState() => ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class ProfilePageState extends State<ProfilePage> {
   bool isEditMode = false;
 
   TextEditingController nameController = TextEditingController();

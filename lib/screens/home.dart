@@ -25,10 +25,10 @@ class MainScreen extends StatefulWidget {
       this.dbService,
       this.permissionsAvailable});
   @override
-  _MainScreenState createState() => _MainScreenState();
+  MainScreenState createState() => MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class MainScreenState extends State<MainScreen> {
   String searchType = '';
   final TextEditingController _searchController = TextEditingController();
   List<String> searchSuggestions = [];

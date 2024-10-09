@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:overlay/screens/health_analysis.dart';
@@ -47,12 +48,12 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
           final url = Uri.parse(
               'https://world.openfoodfacts.org/cgi/search.pl?search_terms=$query&countries_tags_en=india&languages_tags_en=english&json=true&page=$page&page_size=$productsPerPage');
 
-          print("Fetching page $page, attempt ${retry + 1}");
+          log("Fetching page $page, attempt ${retry + 1}");
 
           final response = await http.get(url).timeout(timeoutDuration);
 
           if (response.statusCode == 200) {
-            print("Page $page: status-code: ${response.statusCode}");
+            log("Page $page: status-code: ${response.statusCode}");
             final data = json.decode(response.body);
 
             if (data['products'] != null && data['products'].isNotEmpty) {
@@ -75,21 +76,21 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
               success = true; // Mark request as successful
               break; // Exit retry loop if successful
             } else {
-              print("No products found on page $page");
+              log("No products found on page $page");
               break;
             }
           } else {
-            print("Error fetching page $page: ${response.statusCode}");
+            log("Error fetching page $page: ${response.statusCode}");
             break; // Stop further requests in case of non-200 status code
           }
         } on TimeoutException catch (e) {
-          print("Request timed out on page $page, attempt ${retry + 1}: $e");
+          log("Request timed out on page $page, attempt ${retry + 1}: $e");
 
           if (retry == retryCount - 1) {
-            print("Max retries reached for page $page. Moving to next page.");
+            log("Max retries reached for page $page. Moving to next page.");
           }
         } catch (e) {
-          print("An error occurred: $e");
+          log("An error occurred: $e");
           break;
         }
       }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class HealthOverlay extends StatefulWidget {

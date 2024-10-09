@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -22,7 +23,7 @@ class _ImageUploadState extends State<ImageUpload> {
 
   // Function to scan barcode
   void scanBarcode(BarcodeCapture capture) {
-    //print("barcode:"+barcode!);
+    //log("barcode:"+barcode!);
     if (!isScanned) {
       setState(() {
         barcode = capture.barcodes.isNotEmpty
@@ -35,7 +36,7 @@ class _ImageUploadState extends State<ImageUpload> {
       // Stop scanning further after first successful scan
       if (isScanned) {
         lastCapture = capture;
-        print("Scanned Image Data: ${lastCapture!.image}");
+        log("Scanned Image Data: ${lastCapture!.image}");
 
         // cameraController.stop();
       }
@@ -44,7 +45,7 @@ class _ImageUploadState extends State<ImageUpload> {
 
   Future<void> fetchProdInfo(String productId) async {
     //productId = "8901262010320";
-    print("product-id : $productId");
+    log("product-id : $productId");
     final url = Uri.parse(
         'https://world.openfoodfacts.org/api/v2/product/$productId.json&fields=ingredients,nutriments,allergens_hierarchy,product_name,brands,image_url');
     final response = await http.get(url);
@@ -53,7 +54,7 @@ class _ImageUploadState extends State<ImageUpload> {
       final data = json.decode(response.body);
       prodInfo = data['product'];
     } else {
-      print('Failed to fetch product information');
+      log('Failed to fetch product information');
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -168,7 +169,7 @@ class _ImageUploadState extends State<ImageUpload> {
 
                     if (isScanned) {
                       cameraController.stop();
-                      print('Barcode Captured: $barcode');
+                      log('Barcode Captured: $barcode');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -242,8 +243,7 @@ class _ImageUploadState extends State<ImageUpload> {
                                           ),
                                         );
                                       } else {
-                                        print(
-                                            "Product information not founddd");
+                                        log("Product information not founddd");
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(

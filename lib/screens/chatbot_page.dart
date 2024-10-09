@@ -10,10 +10,10 @@ class ChatBotScreen extends StatefulWidget {
   ChatBotScreen({super.key, required this.user, required this.currentIndex});
 
   @override
-  _ChatBotScreenState createState() => _ChatBotScreenState();
+  ChatBotScreenState createState() => ChatBotScreenState();
 }
 
-class _ChatBotScreenState extends State<ChatBotScreen> {
+class ChatBotScreenState extends State<ChatBotScreen> {
   final List<Message> _messages = [];
   final TextEditingController _textEditingController = TextEditingController();
 

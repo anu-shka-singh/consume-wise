@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:overlay/screens/health_analysis.dart';
@@ -45,12 +46,12 @@ class _CategoryResultState extends State<CategoryResult> {
           final url = Uri.parse(
               'https://world.openfoodfacts.net/api/v2/search?categories_tags_en=$categories&countries_tags_en=india&languages_tags_en=english&page=$page&page_size=$productsPerPage');
 
-          print("Fetching page $page, attempt ${retry + 1}");
+          log("Fetching page $page, attempt ${retry + 1}");
 
           final response = await http.get(url).timeout(timeoutDuration);
 
           if (response.statusCode == 200) {
-            print("Page $page: status-code: ${response.statusCode}");
+            log("Page $page: status-code: ${response.statusCode}");
             final data = json.decode(response.body);
 
             if (data['products'] != null && data['products'].isNotEmpty) {
@@ -64,21 +65,21 @@ class _CategoryResultState extends State<CategoryResult> {
               success = true;
               break;
             } else {
-              print("No products found on page $page");
+              log("No products found on page $page");
               break;
             }
           } else {
-            print("Error fetching page $page: ${response.statusCode}");
+            log("Error fetching page $page: ${response.statusCode}");
             break;
           }
         } on TimeoutException catch (e) {
-          print("Request timed out on page $page, attempt ${retry + 1}: $e");
+          log("Request timed out on page $page, attempt ${retry + 1}: $e");
 
           if (retry == retryCount - 1) {
-            print("Max retries reached for page $page. Moving to next page.");
+            log("Max retries reached for page $page. Moving to next page.");
           }
         } catch (e) {
-          print("An error occurred: $e");
+          log("An error occurred: $e");
           break;
         }
       }

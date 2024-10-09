@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -89,9 +90,9 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
       setState(() {
         image_url = downloadUrl;
       });
-      print('Front image uploaded: $downloadUrl');
+      log('Front image uploaded: $downloadUrl');
     } catch (e) {
-      print('Error uploading front image: $e');
+      log('Error uploading front image: $e');
       _showErrorSnackbar('Failed to upload front image');
     }
   }
@@ -107,7 +108,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
       });
 
       if (_isScanned) {
-        print("Scanned Barcode: $_barcode");
+        log("Scanned Barcode: $_barcode");
         cameraController.stop();
       }
     }
@@ -199,7 +200,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                         _frontImageText,
                         _ingredientsText,
                         _nutritionalFactsText);
-                    print(response);
+                    log(response);
                     final cleanResponse = getCleanResponse(response);
                     final Map<String, dynamic> productData =
                         jsonDecode(cleanResponse);
@@ -214,7 +215,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                     final List<dynamic> nutritionalValue =
                         productData['nutritionalValue'];
 
-                    print('Data to be saved successfully to Firestore');
+                    log('Data to be saved successfully to Firestore');
 
                     try {
                       await FirebaseFirestore.instance
@@ -228,7 +229,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                         'nutriments': nutritionalValue,
                       });
 
-                      print('Data saved successfully to Firestore');
+                      log('Data saved successfully to Firestore');
 
                       final product =
                           convertGPTResponseToProduct(productData, image_url);
@@ -241,7 +242,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                         ),
                       );
                     } catch (firestoreError) {
-                      print('Error saving data to Firestore: $firestoreError');
+                      log('Error saving data to Firestore: $firestoreError');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content: Text(
@@ -249,7 +250,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
                       );
                     }
                   } catch (error) {
-                    print('Error during data processing: $error');
+                    log('Error during data processing: $error');
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Failed to process data: $error')),
                     );
@@ -361,7 +362,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
         try {
           String response = await dataPreprocessing(_barcode!, _frontImageText,
               _ingredientsText, _nutritionalFactsText);
-          print(response);
+          log(response);
           final cleanResponse = getCleanResponse(response);
           final Map<String, dynamic> productData = jsonDecode(cleanResponse);
           print(productData);
@@ -373,7 +374,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
           final List<dynamic> nutritionalValue =
               productData['nutritionalValue'];
 
-          print('Data to be saved successfully to Firestore');
+          log('Data to be saved successfully to Firestore');
 
           try {
             await FirebaseFirestore.instance.collection('products').add({
@@ -385,7 +386,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
               'nutriments': nutritionalValue,
             });
 
-            print('Data saved successfully to Firestore');
+            log('Data saved successfully to Firestore');
 
             final product = convertGPTResponseToProduct(productData, image_url);
             Navigator.push(
@@ -397,7 +398,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
               ),
             );
           } catch (firestoreError) {
-            print('Error saving data to Firestore: $firestoreError');
+            log('Error saving data to Firestore: $firestoreError');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                   content: Text(
@@ -405,7 +406,7 @@ class _ProductContributionPageState extends State<ProductContributionPage> {
             );
           }
         } catch (error) {
-          print('Error during data processing: $error');
+          log('Error during data processing: $error');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to process data: $error')),
           );

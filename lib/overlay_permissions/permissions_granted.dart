@@ -211,9 +211,8 @@ class _PermissionsGranted extends State<PermissionsGranted> {
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(
-                              color: const Color(0xFF055b49),
-                              width: 2),
+                          side: const BorderSide(
+                              color: Color(0xFF055b49), width: 2),
                         ),
                         //tileColor: Theme.of(context).colorScheme.primary,
                         trailing: InkWell(

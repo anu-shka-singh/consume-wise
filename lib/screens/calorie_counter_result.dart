@@ -8,7 +8,10 @@ import '../services/gemini.dart';
 class ResultScreen extends StatelessWidget {
   final String? response;
 
-  const ResultScreen({super.key, required this.response});
+  const ResultScreen({
+    super.key,
+    required this.response,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +26,11 @@ class ResultScreen extends StatelessWidget {
         onRedirect: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const CalorieCounterPage()),
+            MaterialPageRoute(
+                builder: (context) => CalorieCounterPage(
+                      height: jsonResponse['height'],
+                      weight: jsonResponse['weight'],
+                    )),
           );
         },
       );
@@ -43,7 +50,11 @@ class ResultScreen extends StatelessWidget {
         onRedirect: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const CalorieCounterPage()),
+            MaterialPageRoute(
+                builder: (context) => CalorieCounterPage(
+                      height: jsonResponse['height'],
+                      weight: jsonResponse['weight'],
+                    )),
           );
         },
       );

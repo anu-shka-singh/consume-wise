@@ -1,8 +1,9 @@
 import 'package:overlay/services/gemini.dart';
 
-Future<String?> calorieCalculator(String userMeal) async {
+Future<String?> calorieCalculator(
+    String userMeal, String height, String weight) async {
   final String prompt = '''
-    You are a nutritionist tasked with analyzing a meal based on its content of calories, fat, and protein. Your goal is to calculate the total calories, fat, and protein the user's meal contains, based on the input provided. Additionally, you should offer comments on the meal's overall nutritional value and suggest ways to make the meal more wholesome if necessary. Lastly, provide an estimate of the time required to burn the total calories from the meal through walking and jogging.
+    You are a nutritionist tasked with analyzing a meal based on its content of calories, fat, and protein. Your goal is to calculate the total calories, fat, and protein the user's meal contains, based on the input provided. Additionally, you should offer comments on the meal's overall nutritional value and suggest ways to make the meal more wholesome if necessary. Lastly, provide an estimate of the time required to burn the total calories from the meal through walking and jogging. You may also be given the height and weight of the user. If the height and weight of the user is not given then you have to give calculate the calories and time required to burn those calories with reference to the height and weight of the user.
 
     Please follow these instructions:
     1. If any inedible item is mentioned, return null. 
@@ -12,6 +13,8 @@ Future<String?> calorieCalculator(String userMeal) async {
     Provide the response in the following valid JSON object (using integers for calories, fat, and protein, and strings for comments and time estimates):
     {
       "user_meal": "",
+      "height" : "",
+      "weight": "",
       "total_calories": 0,
       "total_fat": 0,
       "total_protein": 0,
@@ -20,7 +23,10 @@ Future<String?> calorieCalculator(String userMeal) async {
       "time_walk": ""
     }
 
-    Input: $userMeal
+    Input: 
+    User Meal: $userMeal
+    User Height: $height cm
+    User Weight: $weight kg
     ''';
 
   final response = await getResponse(prompt);

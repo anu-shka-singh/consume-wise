@@ -6,12 +6,18 @@ import 'loading_screen.dart';
 
 void main() {
   runApp(const MaterialApp(
-    home: CalorieCounterPage(),
+    home: CalorieCounterPage(
+      height: '154 cm',
+      weight: '45 kg',
+    ),
   ));
 }
 
 class CalorieCounterPage extends StatefulWidget {
-  const CalorieCounterPage({super.key});
+  final String height;
+  final String weight;
+  const CalorieCounterPage(
+      {super.key, required this.height, required this.weight});
 
   @override
   _CalorieCounterPageState createState() => _CalorieCounterPageState();
@@ -187,7 +193,8 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                           );
 
                           // Call your API and wait for the response
-                          var response = await calorieCalculator(userMeal);
+                          var response = await calorieCalculator(
+                              userMeal, widget.height, widget.weight);
 
                           // Once the response is received, pop the loading screen
                           Navigator.pop(context);
@@ -195,8 +202,9 @@ class _CalorieCounterPageState extends State<CalorieCounterPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    ResultScreen(response: response)),
+                                builder: (context) => ResultScreen(
+                                      response: response,
+                                    )),
                           );
                         }
                       },

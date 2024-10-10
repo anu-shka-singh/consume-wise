@@ -445,8 +445,10 @@ class MainScreenState extends State<MainScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const CalorieCounterPage()),
+                                      builder: (context) => CalorieCounterPage(
+                                            height: widget.user['height'],
+                                            weight: widget.user['weight'],
+                                          )),
                                 );
                               },
                               style: ElevatedButton.styleFrom(

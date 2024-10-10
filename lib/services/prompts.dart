@@ -32,17 +32,21 @@ Future<String> healthAnalysis(Map<String, dynamic> product) async {
     You are tasked with analyzing the health impact of a packaged food product based on the provided product details in JSON format. Your goal is to provide a thorough analysis covering both the positive and negative aspects of the product from a health perspective. The analysis must also check for allergens, compliance with certain diets, harmful ingredients, and provide recommendations for healthier alternatives. The final output should be in the following JSON format.
 
     Required Analysis:
-    1. Positive Impact Tags: Identify and list concise, fact-checked positive impact tags based on the provided product information. Focus on health and sustainability benefits such as high protein, low sugar, vitamins, or minerals. When mentioning fats, only include tags related to healthy fats if they come from beneficial sources like avocados, nuts, or olive oil. Avoid listing 'high fat' as a positive tag and instead list the source of the healthy fat. Ensure all tags are relevant and avoid unnecessary descriptions.
+    1. Positive Impact Tags: Identify and list concise, fact-checked positive impact tags based on the provided product information. Focus on health and sustainability benefits such as high protein, low sugar, vitamins, or minerals. If the product is overall unhealthy (e.g., processed foods like instant noodles), avoid listing positive attributes such as high protein, as this could encourage consumption. Include only genuinely beneficial tags. When mentioning fats, list the source (e.g., avocados, nuts) if it provides healthy fats, avoiding 'high fat' as a positive tag. Benchmark values to consider a nutrient "high" are based on general guidelines:
+      * Protein: >10g per serving
+      * Carbohydrates: >20g per serving (focus on complex carbs)
+      * Fiber: >5g per serving
+      * Healthy fats (e.g., unsaturated): >7g per serving
 
-    2. Negative Impact Tags: Identify and list concise, fact-checked negative impact tags based on the provided product information. Focus on health and environmental concerns such as high sugar, sodium, artificial additives, or unsustainable practices. When mentioning fats, include specific tags like 'High Saturated Fat' or 'High Trans Fat' if the product contains these. Ensure all tags are relevant and clearly indicate why they negatively affect the consumer, avoiding unnecessary descriptions.
-
+    2. Negative Impact Tags: Identify and list concise, fact-checked negative impact tags based on the provided product information. Focus on health and environmental concerns such as high sugar, sodium, artificial additives, or unsustainable practices. If the product contains unhealthy fats, use specific tags like 'High Saturated Fat' (>5g per serving) or 'High Trans Fat' (>0g, as these are considered harmful in any amount). Avoid unnecessary descriptions, and ensure that the negative tags clearly indicate why the product may negatively affect health or the environment.
+    
     3. Allergens: Check for the presence of common allergens from these only [Peanuts, Eggs, Wheat, Soybeans, Milk, Fish, Tree Nuts, Sesame Seeds] and list any allergens found. Do not add any other allergen than these.
 
     4. Dietary Compliance: Determine which common diets the product complies with, and for each diet provide a brief description of why it is compliant. If it does not comply with any specific diet, state that.
 
     5. Harmful Ingredients: Identify and list any harmful or controversial ingredients present, such as trans fats, artificial sweeteners, artificial preservatives, etc.
 
-    6. Rating: Provide a rating for how healthy the product is based on all the analyzed factors (positive and negative impacts, harmful ingredients). The rating should be on a scale of 1 to 5 (1 being unhealthy, 5 being very healthy).
+    6. Rating: Provide a rating for how healthy the product is based on all the analyzed factors (positive and negative impacts, ingredients, nutrients and other headings in product information). The rating should be on a scale of 1 to 5 (1 being unhealthy, 5 being very healthy).
 
     7. Recommendations for Healthier Alternatives: Suggest 3 healthier alternative products from the same category (e.g., healthier versions of the same type of snack, beverage, etc.) For alternatives, make sure you are recommending packaged food and not home made food alternatives. Also keep in mind to recommend only those alternatives which are available in Indian Markets.
 
